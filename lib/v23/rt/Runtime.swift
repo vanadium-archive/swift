@@ -38,14 +38,14 @@ public class V23 {
     // We must have all variables initialized before we can throw
     rootContext = Context(handle: ContextHandle(0))
     try SwiftVError.catchAndThrowError { errPtr in
-      ios_io_v_v23_V_nativeInitGlobal(errPtr)
+      swift_io_v_v23_V_nativeInitGlobal(errPtr)
     }
     try loggingOptions.initGo()
-    rootContext = Context(handle: ContextHandle(ios_io_v_impl_google_rt_VRuntimeImpl_nativeInit()))
+    rootContext = Context(handle: ContextHandle(swift_io_v_impl_google_rt_VRuntimeImpl_nativeInit()))
   }
   
   deinit {
-    ios_io_v_impl_google_rt_VRuntimeImpl_nativeShutdown(rootContext.handle.goHandle)
+    swift_io_v_impl_google_rt_VRuntimeImpl_nativeShutdown(rootContext.handle.goHandle)
   }
   
   /// You must call configure before using Vanadium or grabbing an instance.

@@ -86,7 +86,7 @@ public struct VLoggingOptions {
   internal func initGo() throws {
     #if os(OSX)
       try SwiftVError.catchAndThrowError({ errPtr in
-        ios_io_v_v23_V_nativeInitLogging(
+        swift_io_v_v23_V_nativeInitLogging(
           logDir?.toGo() ?? nil,
           logToStderrOnly.toGo(),
           level.rawValue.toGo(),
@@ -95,7 +95,7 @@ public struct VLoggingOptions {
       })
     #else
       try SwiftVError.catchAndThrowError({ errPtr in
-        ios_io_v_v23_V_nativeInitLogging(nil, 0, // no logging to disk
+        swift_io_v_v23_V_nativeInitLogging(nil, 0, // no logging to disk
             level.rawValue.toGo(), moduleSpec?.toGo() ?? nil, errPtr)
       })
     #endif

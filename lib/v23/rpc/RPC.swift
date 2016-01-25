@@ -29,7 +29,7 @@ public struct Client {
     let vomArgs = SwiftByteArrayArray(length: 0, data: nil)
 
     let (asyncId, handleP) = Client.outstandingHandles.newPromise()
-    ios_io_v_impl_google_rpc_ClientImpl_nativeStartCallAsync(
+    swift_io_v_impl_google_rpc_ClientImpl_nativeStartCallAsync(
       self.ctxHandle(ctx).goHandle,
       name.toGo(),
       method.toGo(),
@@ -86,7 +86,7 @@ public struct Client {
   }
   
   public func close(ctx:Context?=nil) {
-    ios_io_v_impl_google_rpc_ClientImpl_nativeClose(ctxHandle(ctx).goHandle)
+    swift_io_v_impl_google_rpc_ClientImpl_nativeClose(ctxHandle(ctx).goHandle)
   }
 }
 
@@ -110,20 +110,20 @@ public class ClientCall {
   
   deinit {
     if callHandle != 0 {
-      ios_io_v_impl_google_rpc_ClientCallImpl_nativeFinalize(callHandle)
+      swift_io_v_impl_google_rpc_ClientCallImpl_nativeFinalize(callHandle)
     }
   }
   
   public func closeSend() throws {
     try SwiftVError.catchAndThrowError { errPtr in
-      ios_io_v_impl_google_rpc_ClientCallImpl_nativeCloseSend(ctxHandle.goHandle, callHandle, errPtr)
+      swift_io_v_impl_google_rpc_ClientCallImpl_nativeCloseSend(ctxHandle.goHandle, callHandle, errPtr)
     }
   }
  
   private static let outstandingFinishes = GoPromises<[AnyObject]?>(timeout: nil)
   public func finish() throws -> Promise<[AnyObject]?> {
     let (asyncId, p) = ClientCall.outstandingFinishes.newPromise()
-    ios_io_v_impl_google_rpc_ClientCallImpl_nativeFinishAsync(
+    swift_io_v_impl_google_rpc_ClientCallImpl_nativeFinishAsync(
       ctxHandle.goHandle, callHandle, returnArgsLength.toGo(), asyncId,
       { asyncId, byteArrayArray in ClientCall.finishDidSucceed(asyncId, byteArrayArray: byteArrayArray) },
       { asyncId, err in ClientCall.finishDidFail(asyncId, err: err) })

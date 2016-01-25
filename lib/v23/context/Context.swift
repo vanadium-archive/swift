@@ -81,7 +81,7 @@ public struct Context {
     guard _isCancellable else { throw ContextError.ContextNotCancellable }
     _isCancelled = true
     let (asyncId, p) = Context.outstandingCancels.newPromise()
-    ios_io_v_v23_context_CancelableVContext_nativeCancelAsync(handle.goHandle, asyncId, { asyncId in
+    swift_io_v_v23_context_CancelableVContext_nativeCancelAsync(handle.goHandle, asyncId, { asyncId in
       if let p = Context.outstandingCancels.getAndDeleteRef(asyncId) {
         RunOnMain {
           do {
@@ -114,7 +114,7 @@ public struct Context {
       fatalError("Deadline was assumed to not be nil here, yet was marked as dirty")
     }
     let goHandle = try SwiftVError.catchAndThrowError { errPtr in
-      return ios_io_v_v23_context_VContext_nativeWithDeadline(
+      return swift_io_v_v23_context_VContext_nativeWithDeadline(
         self.handle.goHandle, deadline.timeIntervalSince1970, errPtr)
     }
     _isCancellable = true
@@ -124,7 +124,7 @@ public struct Context {
   
   private mutating func updateHandleForCancellable() throws {
     let goHandle = try SwiftVError.catchAndThrowError { errPtr in
-      return ios_io_v_v23_context_VContext_nativeWithCancel(
+      return swift_io_v_v23_context_VContext_nativeWithCancel(
         self.handle.goHandle, errPtr)
     }
     _isCancellable = true
@@ -148,7 +148,7 @@ public class ContextHandle: CustomStringConvertible, CustomDebugStringConvertibl
 
   deinit {
     if goHandle != 0 {
-      ios_io_v_v23_context_VContext_nativeFinalize(goHandle)
+      swift_io_v_v23_context_VContext_nativeFinalize(goHandle)
     }
   }
   
