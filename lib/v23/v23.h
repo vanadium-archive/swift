@@ -11,7 +11,4 @@ FOUNDATION_EXPORT double v23VersionNumber;
 FOUNDATION_EXPORT const unsigned char v23VersionString[];
 
 // Generated Go headers
-#import <v23/ios.h>
-#import <v23/context.h>
-#import <v23/rt.h>
-#import <v23/rpc.h>
+#import <v23/cgo_exports.h>

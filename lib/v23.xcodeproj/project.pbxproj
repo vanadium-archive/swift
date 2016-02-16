@@ -7,13 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9306529E1BFD0E3F0093B650 /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = 9306529D1BFD0E3F0093B650 /* types.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		930652A11BFD236E0093B650 /* context.h in Headers */ = {isa = PBXBuildFile; fileRef = 930652A01BFD236E0093B650 /* context.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		930652A51BFD42BC0093B650 /* rpc.h in Headers */ = {isa = PBXBuildFile; fileRef = 930652A41BFD42BC0093B650 /* rpc.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9306FB831BFC012500DE7190 /* rt.h in Headers */ = {isa = PBXBuildFile; fileRef = 9306FB801BFC012500DE7190 /* rt.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9306FB841BFC012500DE7190 /* ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 9306FB811BFC012500DE7190 /* ios.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9306FB851BFC012500DE7190 /* v23.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 9306FB821BFC012500DE7190 /* v23.dylib */; };
-		9306FB861BFC020A00DE7190 /* v23.dylib in Copy Files */ = {isa = PBXBuildFile; fileRef = 9306FB821BFC012500DE7190 /* v23.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		3047CD471C5B279500E23E1B /* cgo_exports.h in Headers */ = {isa = PBXBuildFile; fileRef = 3047CD461C5B279500E23E1B /* cgo_exports.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3047CD6E1C629F1600E23E1B /* v23_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3047CD6D1C629F1600E23E1B /* v23_amd64.a */; };
+		30FBF6C81C582D13003522B2 /* v23_arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30FBF6C01C582D13003522B2 /* v23_arm64.a */; };
+		30FBF6CA1C582ED7003522B2 /* go_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 30FBF6C91C582ED7003522B2 /* go_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9394170A1BF547AB00F3F996 /* v23.h in Headers */ = {isa = PBXBuildFile; fileRef = 939417091BF547AB00F3F996 /* v23.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		939417111BF547AB00F3F996 /* v23.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 939417061BF547AB00F3F996 /* v23.framework */; };
 		939417161BF547AB00F3F996 /* v23Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939417151BF547AB00F3F996 /* v23Tests.swift */; };
@@ -50,7 +47,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				9306FB861BFC020A00DE7190 /* v23.dylib in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -58,12 +54,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		9306529D1BFD0E3F0093B650 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
-		930652A01BFD236E0093B650 /* context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = context.h; sourceTree = "<group>"; };
-		930652A41BFD42BC0093B650 /* rpc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rpc.h; sourceTree = "<group>"; };
-		9306FB801BFC012500DE7190 /* rt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rt.h; sourceTree = "<group>"; };
-		9306FB811BFC012500DE7190 /* ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ios.h; sourceTree = "<group>"; };
-		9306FB821BFC012500DE7190 /* v23.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = v23.dylib; sourceTree = "<group>"; };
+		3047CD461C5B279500E23E1B /* cgo_exports.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cgo_exports.h; sourceTree = "<group>"; };
+		3047CD6D1C629F1600E23E1B /* v23_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = v23_amd64.a; sourceTree = "<group>"; };
+		30FBF6C01C582D13003522B2 /* v23_arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = v23_arm64.a; sourceTree = "<group>"; };
+		30FBF6C91C582ED7003522B2 /* go_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = go_types.h; sourceTree = "<group>"; };
 		939417061BF547AB00F3F996 /* v23.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = v23.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		939417091BF547AB00F3F996 /* v23.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = v23.h; sourceTree = "<group>"; };
 		9394170B1BF547AB00F3F996 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -91,7 +85,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9306FB851BFC012500DE7190 /* v23.dylib in Frameworks */,
+				3047CD6E1C629F1600E23E1B /* v23_amd64.a in Frameworks */,
+				30FBF6C81C582D13003522B2 /* v23_arm64.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,49 +101,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9306529F1BFD236E0093B650 /* v23 */ = {
+		30FBF6B41C582D13003522B2 /* x */ = {
 			isa = PBXGroup;
 			children = (
-				930652A01BFD236E0093B650 /* context.h */,
-			);
-			path = v23;
-			sourceTree = "<group>";
-		};
-		9306FB7C1BFC012500DE7190 /* x */ = {
-			isa = PBXGroup;
-			children = (
-				9306FB7D1BFC012500DE7190 /* ios */,
-				9306FB811BFC012500DE7190 /* ios.h */,
-				9306529D1BFD0E3F0093B650 /* types.h */,
-				9306FB821BFC012500DE7190 /* v23.dylib */,
+				3047CD6D1C629F1600E23E1B /* v23_amd64.a */,
+				30FBF6C01C582D13003522B2 /* v23_arm64.a */,
+				30FBF6C91C582ED7003522B2 /* go_types.h */,
+				3047CD461C5B279500E23E1B /* cgo_exports.h */,
 			);
 			path = x;
-			sourceTree = "<group>";
-		};
-		9306FB7D1BFC012500DE7190 /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				9306529F1BFD236E0093B650 /* v23 */,
-				9306FB7E1BFC012500DE7190 /* impl */,
-			);
-			path = ios;
-			sourceTree = "<group>";
-		};
-		9306FB7E1BFC012500DE7190 /* impl */ = {
-			isa = PBXGroup;
-			children = (
-				9306FB7F1BFC012500DE7190 /* google */,
-			);
-			path = impl;
-			sourceTree = "<group>";
-		};
-		9306FB7F1BFC012500DE7190 /* google */ = {
-			isa = PBXGroup;
-			children = (
-				930652A41BFD42BC0093B650 /* rpc.h */,
-				9306FB801BFC012500DE7190 /* rt.h */,
-			);
-			path = google;
 			sourceTree = "<group>";
 		};
 		939416FC1BF547AB00F3F996 = {
@@ -179,7 +140,7 @@
 				93B626601C0E598800C5C1D0 /* rpc */,
 				93B626621C0E598800C5C1D0 /* rt */,
 				93B626651C0E598800C5C1D0 /* util */,
-				9306FB7C1BFC012500DE7190 /* x */,
+				30FBF6B41C582D13003522B2 /* x */,
 			);
 			path = v23;
 			sourceTree = "<group>";
@@ -249,11 +210,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9306FB831BFC012500DE7190 /* rt.h in Headers */,
-				9306FB841BFC012500DE7190 /* ios.h in Headers */,
-				9306529E1BFD0E3F0093B650 /* types.h in Headers */,
-				930652A51BFD42BC0093B650 /* rpc.h in Headers */,
-				930652A11BFD236E0093B650 /* context.h in Headers */,
+				30FBF6CA1C582ED7003522B2 /* go_types.h in Headers */,
+				3047CD471C5B279500E23E1B /* cgo_exports.h in Headers */,
 				9394170A1BF547AB00F3F996 /* v23.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -484,11 +442,13 @@
 		9394171B1BF547AB00F3F996 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = v23/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -501,17 +461,20 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
 		9394171C1BF547AB00F3F996 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = arm64;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = v23/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -523,6 +486,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = v.io.v23;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
