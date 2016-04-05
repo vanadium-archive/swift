@@ -10,13 +10,20 @@ public enum PromiseErrors<ResolveType>: ErrorType {
   case Timeout
 }
 
+public enum PromiseResolution<ResolveType> {
+  case Pending
+  case Resolved(obj:ResolveType)
+  case Rejected(err:ErrorType?)
+}
+
 public class Promise<ResolveType> : Lockable {
+
   private var resolveCallbacks:[(dispatch_queue_t?, ResolveType->())]? = nil
   private var rejectCallbacks:[(dispatch_queue_t?, ErrorType?->())]? = nil
-  private var alwaysCallbacks:[(dispatch_queue_t?, Resolution<ResolveType>->())]? = nil
+  private var alwaysCallbacks:[(dispatch_queue_t?, PromiseResolution<ResolveType>->())]? = nil
   private let resolutionSemaphore = dispatch_semaphore_create(0)
   
-  internal var status: Resolution<ResolveType> = Resolution.Pending {
+  internal var status: PromiseResolution<ResolveType> = PromiseResolution.Pending {
     didSet {
       updatedStatus()
     }
@@ -26,12 +33,12 @@ public class Promise<ResolveType> : Lockable {
   
   public convenience init(resolved obj: ResolveType) {
     self.init()
-    status = Resolution.Resolved(obj: obj)
+    status = PromiseResolution<ResolveType>.Resolved(obj: obj)
   }
 
   public convenience init(rejected err: ErrorType?) {
     self.init()
-    status = Resolution.Rejected(err: err)
+    status = PromiseResolution<ResolveType>.Rejected(err: err)
   }
   
   // Resolve/reject
@@ -41,7 +48,7 @@ public class Promise<ResolveType> : Lockable {
     switch (status) {
     case .Rejected(let err): throw PromiseErrors<ResolveType>.AlreadyRejected(existingErr: err)
     case .Resolved(let obj): throw PromiseErrors<ResolveType>.AlreadyResolved(existingObj: obj)
-    case .Pending: status = Resolution.Resolved(obj: obj)
+    case .Pending: status = PromiseResolution.Resolved(obj: obj)
     }
   }
   
@@ -51,7 +58,7 @@ public class Promise<ResolveType> : Lockable {
     switch (status) {
     case .Rejected(let err): throw PromiseErrors<ResolveType>.AlreadyRejected(existingErr: err)
     case .Resolved(let obj): throw PromiseErrors<ResolveType>.AlreadyResolved(existingObj: obj)
-    case .Pending: status = Resolution.Rejected(err: err)
+    case .Pending: status = PromiseResolution.Rejected(err: err)
     }
   }
 
@@ -90,7 +97,7 @@ public class Promise<ResolveType> : Lockable {
   }
   
   public func always(on queue: dispatch_queue_t?=dispatch_get_main_queue(),
-                     _ callback:Resolution<ResolveType>->()) -> Promise<ResolveType> {
+                     _ callback:PromiseResolution<ResolveType>->()) -> Promise<ResolveType> {
     objc_sync_enter(self)
     defer { objc_sync_exit(self) }
     let s = status
@@ -105,7 +112,7 @@ public class Promise<ResolveType> : Lockable {
     return self
   }
   
-  public func await(timeout: NSTimeInterval?=nil) throws -> Resolution<ResolveType> {
+  public func await(timeout: NSTimeInterval?=nil) throws -> PromiseResolution<ResolveType> {
     switch (status) {
     case .Pending:
       if let timeout = timeout {
@@ -172,7 +179,7 @@ public class ResolvedPromise<ResolveType>: Promise<ResolveType> {
   }
 
   override public func always(on queue: dispatch_queue_t?=dispatch_get_main_queue(),
-    _ callback:Resolution<ResolveType>->()) -> Promise<ResolveType> {
+    _ callback:PromiseResolution<ResolveType>->()) -> Promise<ResolveType> {
       dispatch_maybe_async(queue, block: { callback(self.status) })
       return self
   }
@@ -205,7 +212,7 @@ public class RejectedPromise: Promise<Void> {
   }
 
   override public func always(on queue: dispatch_queue_t?=dispatch_get_main_queue(),
-    _ callback:Resolution<Void>->()) -> Promise<Void> {
+    _ callback:PromiseResolution<Void>->()) -> Promise<Void> {
     dispatch_maybe_async(queue, block: { callback(self.status) })
     return self
   }
@@ -217,12 +224,6 @@ public class RejectedPromise: Promise<Void> {
   override public func reject(err:ErrorType?) throws {
     throw PromiseErrors<Void>.AlreadyRejected(existingErr: self.err)
   }
-}
-
-public enum Resolution<ResolveType> {
-  case Pending
-  case Resolved(obj:ResolveType)
-  case Rejected(err:ErrorType?)
 }
 
 /// Quick initializers for already resolved/rejected constructors

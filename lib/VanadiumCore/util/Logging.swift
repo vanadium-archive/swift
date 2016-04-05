@@ -7,27 +7,27 @@ import Foundation
 internal let log = VLogger()
 
 public struct VLogger {
-  internal func debug(@autoclosure closure: () -> String, functionName: String = __FUNCTION__, fileName: String = __FILE__, lineNumber: Int = __LINE__) {
+  internal func debug(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("DEBUG", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
   
-  internal func info(@autoclosure closure: () -> String, functionName: String = __FUNCTION__, fileName: String = __FILE__, lineNumber: Int = __LINE__) {
+  internal func info(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("INFO", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
   
-  internal func warning(@autoclosure closure: () -> String, functionName: String = __FUNCTION__, fileName: String = __FILE__, lineNumber: Int = __LINE__) {
+  internal func warning(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("WARN", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
   
-  internal func error(@autoclosure closure: () -> String, functionName: String = __FUNCTION__, fileName: String = __FILE__, lineNumber: Int = __LINE__) {
+  internal func error(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("ERROR", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
   
-  internal func fatal(@autoclosure closure: () -> String, functionName: String = __FUNCTION__, fileName: String = __FILE__, lineNumber: Int = __LINE__) {
+  internal func fatal(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("FATAL", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
   
-  private func log(level:String, str:String, functionName: String = __FUNCTION__, fileName: String = __FILE__, lineNumber: Int = __LINE__) {
+  private func log(level:String, str:String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     if let threadName = NSThread.currentThread().name where threadName != "" {
       print("[", level, "] ", (fileName as NSString).lastPathComponent, ":", lineNumber, " (", threadName, ") ", str, separator: "")
     } else {

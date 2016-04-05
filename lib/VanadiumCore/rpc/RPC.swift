@@ -4,11 +4,11 @@
 
 import Foundation
 
-public typealias BlessingPattern = String
 public typealias GranterHandle = Int32
 
 public enum RpcClientOption {
-  case AllowedServersPolicy(polices:[BlessingPattern])
+  // TODO(zinman): Uncomment when VDL generation is baked in to build process
+//  case AllowedServersPolicy(polices:[BlessingPattern])
   case RetryTimeout(timeout:NSTimeInterval)
   case Granter(granter:GranterHandle)
 }
@@ -73,7 +73,7 @@ public struct Client {
   }
   
   internal static func callDidFail(asyncId:AsyncCallbackIdentifier, err:SwiftVError) {
-    let verr = VError._delegate.lookupErr(err.toSwift())
+    let verr = err.toSwift()
     if let p = Client.outstandingHandles.getAndDeleteRef(asyncId) {
       RunOnMain {
         do {
@@ -165,7 +165,7 @@ public class ClientCall {
   }
   
   internal static func finishDidFail(asyncId:AsyncCallbackIdentifier, err:SwiftVError) {
-    let verr = VError._delegate.lookupErr(err.toSwift())
+    let verr = err.toSwift()
     if let p = ClientCall.outstandingFinishes.getAndDeleteRef(asyncId) {
       RunOnMain {
         do {
@@ -177,7 +177,7 @@ public class ClientCall {
     }
   }
   
-  public func remoteBlessings() -> (blessings:[String], cryptoBlessings:[Blessings]) {
-    fatalError("Unimplemented")
-  }
+//  public func remoteBlessings() -> (blessings:[String], cryptoBlessings:[Blessings]) {
+//    fatalError("Unimplemented")
+//  }
 }

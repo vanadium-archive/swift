@@ -4,29 +4,29 @@
 
 import Foundation
 
-public struct VError : ErrorType {
+/// VError is the primary vehicle for errors in Vanadium. Errors can be defined and customized
+/// in VDL which will get auto-generated to static instantiations of VError. Runtime errors
+/// should contain all the context-sensitive information such as a stacktrace, messages, etc.
+public struct VError : ErrorType, Equatable {
   public let identity:String
   public let action:ErrorAction
   public let msg:String?
   public let stacktrace:String?
-  public static var _delegate:_VErrorHandler = DefaultVErrorHandler()
 }
 
-public protocol _VErrorHandler {
-  func lookupErr(err:VError) -> ErrorType
-  func doThrow(err:VError) throws
-}
-
-public struct DefaultVErrorHandler:  _VErrorHandler {
-  public func lookupErr(err:VError) -> ErrorType {
-    return err
-  }
-  
-  public func doThrow(err:VError) throws {
-    log.warning("Throwing low-level error without handler (did VDL generation fail?):\n\tIdentity: " +
-      "\(err.identity)\n\tAction: \(err.action)\n\tMsg: \(err.msg ?? "")\n\tStacktrace: \(err.stacktrace ?? "")")
-    throw err
-  }
+/// Equality for VError is determined SOLEY by comparing identifiers. Identifiers are required
+/// to be unique in VDL. Equality is defined this way as the primary use case is to compare
+/// runtime VErrors against VDL-generated static errors. For example:
+///
+/// do { throw VError(identity: "syncbase.Error", action: ErrorAction.NoRetry,
+///                   msg: "some msg", stacktrace: nil)
+/// } catch let e as VError {
+///   switch e {
+///   case Syncbase.Error: print("Comparing only identity allowed this")
+///   }
+/// }
+public func ==(lhs: VError, rhs: VError) -> Bool {
+  return lhs.identity == rhs.identity
 }
 
 /// SwiftVError is the C struct that the go bridge uses to transfer an error to Swift.
@@ -46,7 +46,7 @@ internal extension SwiftVError {
     let verr = ptr.memory
     if !verr.isEmpty() {
       let err = verr.toSwift()
-      try VError._delegate.doThrow(err)
+      throw err
     }
     return ret
   }

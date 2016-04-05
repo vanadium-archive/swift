@@ -5,7 +5,7 @@
 /// Class to hold onto promises that get referenced by AsyncId between Go and Swift.
 /// The larger motivation is closures that get passed as function pointers have to be 'context-free'
 /// so we can't closure on a reference to a given future. By allowing the end user to hold onto
-/// this in various places (strongly typed to the appropriate ResloveType) then we can pass a handle
+/// this in various places (strongly typed to the appropriate ResolveType) then we can pass a handle
 /// back and forth safely.
 internal class GoPromises<ResolveType> : Lockable {
   typealias AsyncId = Int32

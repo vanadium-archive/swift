@@ -7,13 +7,13 @@
 //
 
 import XCTest
-@testable import v23
+@testable import VanadiumCore
 
-class v23Tests: XCTestCase {
+class VanadiumCoreTests: XCTestCase {
     func testInit() {
       // Currently this fails because of environmental flags passed by the Unit Test framework
       // that Vanadium ends up reading in and barfing on. Need to solve at some point.
-      try! v23.V23.configure()
-      let instance = v23.V23.instance
+      try! V23.configure()
+      let instance = V23.instance
     }
 }

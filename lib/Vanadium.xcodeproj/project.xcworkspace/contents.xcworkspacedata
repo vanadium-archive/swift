@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:v23.xcodeproj">
+      location = "self:Vanadium.xcodeproj">
    </FileRef>
 </Workspace>

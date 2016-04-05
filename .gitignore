@@ -1,7 +1,7 @@
 /.jiri
 
 # Don't include any generated content from CGo
-lib/v23/x
+lib/VanadiumCore/x
 
 # Xcode
 #

@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import v23
+import VanadiumCore
 
 enum TestErrors : ErrorType {
   case SomeError
@@ -17,7 +17,7 @@ enum TestErrors : ErrorType {
 class PromiseTests: XCTestCase {
   func testBasicResolution() {
     var alwaysRan = false
-    let p = v23.Promise<Int>()
+    let p = Promise<Int>()
       .onResolve { obj in XCTAssertEqual(obj, 5) }
       .onReject { err in XCTFail("Shouldn't have gotten \(err)") }
       .always { status in
@@ -39,7 +39,7 @@ class PromiseTests: XCTestCase {
 
   func testBasicRejection() {
     var alwaysRan = false
-    let p = v23.Promise<Int>()
+    let p = Promise<Int>()
       .onResolve { obj in XCTFail("Shouldn't have gotten \(obj)") }
       .onReject { err in
         guard let e = err else { XCTFail("Invalid nil error"); return }
@@ -66,7 +66,7 @@ class PromiseTests: XCTestCase {
   }
 
   func testResolutionDoesntRunOnResolve() {
-    let p = v23.Promise<Int>()
+    let p = Promise<Int>()
     p.onResolve { obj in
       XCTFail("Shouldn't have gotten \(obj)")
     }
@@ -74,7 +74,7 @@ class PromiseTests: XCTestCase {
   }
   
   func testRejectionDoesntRunOnResolve() {
-    let p = v23.Promise<Int>()
+    let p = Promise<Int>()
     p.onReject { err in
       XCTFail("Shouldn't have gotten \(err)")
     }
@@ -82,7 +82,7 @@ class PromiseTests: XCTestCase {
   }
   
   func testThenTransforms() {
-    let p = v23.Promise<Int>()
+    let p = Promise<Int>()
     try! p.resolve(5)
     
     var finalResult:String = ""
@@ -97,7 +97,7 @@ class PromiseTests: XCTestCase {
   }
 
   func testThenPropagatesError() {
-    let p = v23.Promise<Int>()
+    let p = Promise<Int>()
     
     var didReject = false
     p.then { obj -> String in
@@ -111,10 +111,10 @@ class PromiseTests: XCTestCase {
   }
   
   func testThenReturningPromiseWorks() {
-    let p = v23.Promise<Int>()
+    let p = Promise<Int>()
     let bgQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
     let finalP = p.then(on: bgQueue) { x -> Promise<Int> in
-      let newP = v23.Promise<Int>()
+      let newP = Promise<Int>()
       dispatch_async(bgQueue) {
         try! newP.resolve(x + 10)
       }
