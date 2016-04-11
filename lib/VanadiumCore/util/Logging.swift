@@ -4,29 +4,29 @@
 
 import Foundation
 
-internal let log = VLogger()
+public let log = VLogger()
 
 public struct VLogger {
-  internal func debug(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
+  public func debug(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("DEBUG", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
-  
-  internal func info(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
+
+  public func info(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("INFO", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
-  
-  internal func warning(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
+
+  public func warning(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("WARN", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
-  
-  internal func error(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
+
+  public func error(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("ERROR", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
-  
-  internal func fatal(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
+
+  public func fatal(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     log("FATAL", str: closure(), functionName: functionName, fileName: fileName, lineNumber: lineNumber)
   }
-  
+
   private func log(level:String, str:String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {
     if let threadName = NSThread.currentThread().name where threadName != "" {
       print("[", level, "] ", (fileName as NSString).lastPathComponent, ":", lineNumber, " (", threadName, ") ", str, separator: "")
@@ -46,22 +46,22 @@ public enum VLogLevel: Int {
 public struct VLoggingOptions {
   /// Enable V-leveled logging at the specified level.
   let level: VLogLevel
-  
+
   /// The syntax of the argument is a comma-separated list of pattern=N,
   /// where pattern is a literal file name (minus the ".go" suffix) or
   /// "glob" pattern and N is a V level. For instance, gopher*=3
   /// sets the V level to 3 in all Go files whose names begin "gopher".
   let moduleSpec: String?
-  
+
   // We only log to disk on OS X
   #if os(OSX)
   /// If true, logs are written to standard error instead of to files
   let logToStderrOnly: Bool
-  
+
   /// Log files will be wirtten to this directory instead of the default temp dir
   let logDir: String?
   #endif
-  
+
   #if os(OSX)
   public init(level:VLogLevel=VLogLevel.Info,
       moduleSpec:String?=nil,
@@ -81,7 +81,7 @@ public struct VLoggingOptions {
     self.moduleSpec = moduleSpec
   }
   #endif
- 
+
   /// Call the init logging function in go -- INTERNAL ONLY
   internal func initGo() throws {
     #if os(OSX)

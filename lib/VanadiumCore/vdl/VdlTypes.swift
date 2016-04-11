@@ -4,7 +4,7 @@
 
 import Foundation
 
-// Define protocols 
+// Define protocols
 
 public protocol VdlTypeProtocol {
   static var vdlTypeName: String { get }
@@ -147,7 +147,7 @@ public indirect enum VdlType /* : Hashable, CustomStringConvertible*/ {
   case Float32(name:SwiftString?)
   /// 64 bit IEEE 754 floating point
   case Float64(name:SwiftString?)
-  /// {realimag} each 32 bit IEEE 754 floating point
+  /// unicode string (encoded as UTF-8 in memory)
   case String(name:SwiftString?)
   /// one of a set of labels
   case Enum(name:SwiftString?, labels:[SwiftString]?)

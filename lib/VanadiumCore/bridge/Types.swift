@@ -43,35 +43,35 @@ extension String {
 //      block(empty)
 //      return
 //    }
-//    
+//
 //    // We use the NSString bridge as its an order of magnitude faster than using nulTerminatedUtf8,
 //    // the UTF8 views, or withCString as of Swift 2.1 (11/17/15)
 //    let utf8 = (str as NSString).UTF8String
 //    let goStr = GoString(p: UnsafeMutablePointer<Int8>(utf8), n: GoInt(strlen(utf8)))
 //    block(goStr)
 //  }
-//  
+//
 //  /// An empty (nil) string
 //  static let empty = GoString(p: nil, n: 0)
 //}
 
 extension SwiftByteArrayArray : CollectionType, CustomDebugStringConvertible {
   public typealias Index = Int
-  
+
   public var startIndex: Int {
     return 0
   }
-  
+
   public var endIndex: Int {
     return count()
   }
-  
+
   public subscript(i: Int) -> SwiftByteArray {
     return data[i]
   }
-  
+
   public func count() -> Int { return Int(length) }
-  
+
   public func dealloc() {
     for i in 0..<length {
       let byteArray = data[Int(i)]
@@ -79,7 +79,7 @@ extension SwiftByteArrayArray : CollectionType, CustomDebugStringConvertible {
     }
     data.dealloc(count())
   }
-  
+
   public var debugDescription: String {
     get {
       var totalSize = 0
@@ -93,15 +93,19 @@ extension SwiftByteArrayArray : CollectionType, CustomDebugStringConvertible {
 
 extension SwiftByteArray : CustomDebugStringConvertible {
   public func count() -> Int { return Int(length) }
-  
+
   public func dealloc() {
     data.dealloc(count())
   }
-  
+
   public func toNSDataNoCopyNoFree() -> NSData {
     return NSData(bytesNoCopy: data, length: count(), freeWhenDone: false)
   }
-  
+
+  public func toNSDataNoCopyFreeWhenDone() -> NSData {
+    return NSData(bytesNoCopy: data, length: count(), freeWhenDone: true)
+  }
+
   public var debugDescription: String {
     get {
       let utf8 = NSString(

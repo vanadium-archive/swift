@@ -1,10 +1,6 @@
-//
-//  Strings.swift
-//  v23
-//
-//  Created by Aaron Zinman on 12/1/15.
-//  Copyright © 2015 Google Inc. All rights reserved.
-//
+// Copyright 2015 The Vanadium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 import Foundation
 
@@ -13,4 +9,8 @@ internal extension String {
     return String.init(bytesNoCopy: ptr, length: Int(strlen(ptr)),
       encoding: NSUTF8StringEncoding, freeWhenDone: true)
   }
+}
+
+public enum StringErrors : ErrorType {
+  case InvalidString
 }

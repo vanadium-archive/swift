@@ -14,22 +14,22 @@ public struct Context {
   private var _isCancellable:Bool = false
   private var dirty:ContextFeatures = []
   public var userInfo:[String: Any] = [:]
-  
+
   internal init(handle:ContextHandle) {
     self.handle = handle
   }
-  
+
   internal init(handle:ContextHandle, existingDeadline:NSDate?, isCancellable:Bool) {
     self.handle = handle
     self.deadline = existingDeadline
     self._isCancellable = isCancellable
   }
-  
+
   public mutating func client() throws -> Client {
     try updateHandleIfNeeded()
     return Client(defaultContext: self)
   }
-  
+
   public var deadline:NSDate? {
     didSet {
       guard oldValue != deadline else { return }
@@ -46,9 +46,9 @@ public struct Context {
       dirty.insert(ContextFeatures.Deadline)
     }
   }
-  
+
   public var isCancelled:Bool { return _isCancelled }
-  
+
   public var isCancellable:Bool {
     get {
       return !_isCancelled && (_isCancellable || dirty.contains(ContextFeatures.Cancellable))
@@ -67,7 +67,7 @@ public struct Context {
       dirty.insert(ContextFeatures.Cancellable)
     }
   }
-  
+
   /// Cancels all associated RPC with this context and renders it unusable. Call newContext afterwards
   /// to get a similar context that is workable.
   ///
@@ -94,21 +94,21 @@ public struct Context {
     })
     return p
   }
-  
+
   internal mutating func updateHandleIfNeeded() throws {
     if (_isCancelled) {
       throw ContextError.ContextIsAlreadyCancelled
     }
-    
+
     if dirty.contains(ContextFeatures.Deadline) {
       try updateHandleForDeadline()
     }
-    
+
     if dirty.contains(ContextFeatures.Cancellable) {
       try updateHandleForCancellable()
     }
   }
-  
+
   private mutating func updateHandleForDeadline() throws {
     guard let deadline = deadline else {
       fatalError("Deadline was assumed to not be nil here, yet was marked as dirty")
@@ -121,7 +121,7 @@ public struct Context {
     dirty.remove(ContextFeatures.Deadline)
     handle = ContextHandle(goHandle)
   }
-  
+
   private mutating func updateHandleForCancellable() throws {
     let goHandle = try SwiftVError.catchAndThrowError { errPtr in
       return swift_io_v_v23_context_VContext_nativeWithCancel(
@@ -131,7 +131,7 @@ public struct Context {
     dirty.remove(ContextFeatures.Cancellable)
     handle = ContextHandle(goHandle)
   }
-  
+
   internal mutating func run<T>(@autoclosure block: () throws ->T) throws -> T {
     guard !_isCancelled else { throw ContextError.ContextIsAlreadyCancelled }
     try updateHandleIfNeeded()
@@ -141,7 +141,7 @@ public struct Context {
 
 public class ContextHandle: CustomStringConvertible, CustomDebugStringConvertible {
   internal let goHandle:GoContextHandle
-  
+
   internal init(_ goHandle:GoContextHandle) {
     self.goHandle = goHandle
   }
@@ -151,7 +151,7 @@ public class ContextHandle: CustomStringConvertible, CustomDebugStringConvertibl
       swift_io_v_v23_context_VContext_nativeFinalize(goHandle)
     }
   }
-  
+
   public var description: String { return "[ContextHandle \(goHandle)]" }
   public var debugDescription: String { return "[ContextHandle handle=\(goHandle)]" }
 }

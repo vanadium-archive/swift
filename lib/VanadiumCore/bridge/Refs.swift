@@ -15,20 +15,20 @@ internal class GoPromises<ResolveType> : Lockable {
   internal init(timeout:NSTimeInterval?) {
     timeoutDelay = timeout
   }
-  
+
   internal func newPromise() -> (AsyncId, Promise<ResolveType>) {
     let p = Promise<ResolveType>()
     if let timeout = timeoutDelay { p.rejectAfterDelay(delay: timeout) }
     let asyncId = OSAtomicIncrement32(&lastId)
     lock { self.promises[asyncId] = p }
     p.always { _ in
-      // Guaruntee we delete the ref on resolution 
+      // Guarantee we delete the ref on resolution
       // (can happen on delayed timeout that it wouldn't get cleaned)
       self.lock { self.promises[asyncId] = nil }
     }
     return (asyncId, p)
   }
-  
+
   internal func getAndDeleteRef(asyncId:AsyncId) -> Promise<ResolveType>? {
     guard let p = promises[asyncId] else { return nil }
     lock { self.promises[asyncId] = nil }

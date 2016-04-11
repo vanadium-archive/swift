@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		93B980D31CAB9B6100CE42E0 /* Principal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B980D21CAB9B6100CE42E0 /* Principal.swift */; };
+		93B980DC1CAB9D3D00CE42E0 /* Syncbase.h in Headers */ = {isa = PBXBuildFile; fileRef = 93B980DB1CAB9D3D00CE42E0 /* Syncbase.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		93B980E31CAB9D3D00CE42E0 /* Syncbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93B980D91CAB9D3D00CE42E0 /* Syncbase.framework */; };
+		93B980E81CAB9D3D00CE42E0 /* SyncbaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B980E71CAB9D3D00CE42E0 /* SyncbaseTests.swift */; };
+		93B980F31CAB9D6E00CE42E0 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B980F21CAB9D6E00CE42E0 /* Security.swift */; };
+		93B980F51CAB9D9000CE42E0 /* Syncbase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B980F41CAB9D9000CE42E0 /* Syncbase.swift */; };
 		93BC21591C9E199F0074C612 /* VanadiumCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 93BC21581C9E199F0074C612 /* VanadiumCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		93BC21601C9E199F0074C612 /* VanadiumCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93BC21551C9E199F0074C612 /* VanadiumCore.framework */; };
 		93BC21F21C9E1B540074C612 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BC21711C9E1B540074C612 /* Errors.swift */; };
@@ -32,6 +38,76 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		93B980E41CAB9D3D00CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93BC214C1C9E199F0074C612 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 93B980D81CAB9D3D00CE42E0;
+			remoteInfo = Syncbase;
+		};
+		93B980F01CAB9D5800CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93BC214C1C9E199F0074C612 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 93BC21541C9E199F0074C612;
+			remoteInfo = VanadiumCore;
+		};
+		93B981011CAC57B400CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F8111E3319A95C8B0040E7D1;
+			remoteInfo = "Alamofire iOS";
+		};
+		93B981031CAC57B400CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F8111E3E19A95C8B0040E7D1;
+			remoteInfo = "Alamofire iOS Tests";
+		};
+		93B981051CAC57B400CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4DD67C0B1A5C55C900ED2280;
+			remoteInfo = "Alamofire OSX";
+		};
+		93B981071CAC57B400CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F829C6B21A7A94F100A2CD59;
+			remoteInfo = "Alamofire OSX Tests";
+		};
+		93B981091CAC57B400CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CF626EF1BA7CB3E0011A099;
+			remoteInfo = "Alamofire tvOS";
+		};
+		93B9810B1CAC57B400CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4CF626F81BA7CB3E0011A099;
+			remoteInfo = "Alamofire tvOS Tests";
+		};
+		93B9810D1CAC57B400CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E4202FE01B667AA100C997FB;
+			remoteInfo = "Alamofire watchOS";
+		};
+		93B9810F1CAC57F400CE42E0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F8111E3219A95C8B0040E7D1;
+			remoteInfo = "Alamofire iOS";
+		};
 		93BC21611C9E199F0074C612 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 93BC214C1C9E199F0074C612 /* Project object */;
@@ -42,6 +118,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		93B980D21CAB9B6100CE42E0 /* Principal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Principal.swift; path = security/Principal.swift; sourceTree = "<group>"; };
+		93B980D91CAB9D3D00CE42E0 /* Syncbase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Syncbase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		93B980DB1CAB9D3D00CE42E0 /* Syncbase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Syncbase.h; sourceTree = "<group>"; };
+		93B980DD1CAB9D3D00CE42E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		93B980E21CAB9D3D00CE42E0 /* SyncbaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncbaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		93B980E71CAB9D3D00CE42E0 /* SyncbaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncbaseTests.swift; sourceTree = "<group>"; };
+		93B980E91CAB9D3D00CE42E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		93B980F21CAB9D6E00CE42E0 /* Security.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Security.swift; sourceTree = "<group>"; };
+		93B980F41CAB9D9000CE42E0 /* Syncbase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Syncbase.swift; sourceTree = "<group>"; };
+		93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = "../../../third_party/swift/Alamofire-3.3.0/Alamofire.xcodeproj"; sourceTree = "<group>"; };
 		93BC21551C9E199F0074C612 /* VanadiumCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VanadiumCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		93BC21581C9E199F0074C612 /* VanadiumCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VanadiumCore.h; sourceTree = "<group>"; };
 		93BC215A1C9E199F0074C612 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -70,6 +156,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		93B980D51CAB9D3D00CE42E0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93B980DF1CAB9D3D00CE42E0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93B980E31CAB9D3D00CE42E0 /* Syncbase.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		93BC21511C9E199F0074C612 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -90,12 +191,57 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		93B980D11CAB9B3E00CE42E0 /* security */ = {
+			isa = PBXGroup;
+			children = (
+				93B980D21CAB9B6100CE42E0 /* Principal.swift */,
+			);
+			name = security;
+			sourceTree = "<group>";
+		};
+		93B980DA1CAB9D3D00CE42E0 /* Syncbase */ = {
+			isa = PBXGroup;
+			children = (
+				93B980DB1CAB9D3D00CE42E0 /* Syncbase.h */,
+				93B980DD1CAB9D3D00CE42E0 /* Info.plist */,
+				93B980F21CAB9D6E00CE42E0 /* Security.swift */,
+				93B980F41CAB9D9000CE42E0 /* Syncbase.swift */,
+			);
+			path = Syncbase;
+			sourceTree = "<group>";
+		};
+		93B980E61CAB9D3D00CE42E0 /* SyncbaseTests */ = {
+			isa = PBXGroup;
+			children = (
+				93B980E71CAB9D3D00CE42E0 /* SyncbaseTests.swift */,
+				93B980E91CAB9D3D00CE42E0 /* Info.plist */,
+			);
+			path = SyncbaseTests;
+			sourceTree = "<group>";
+		};
+		93B980F81CAC57B400CE42E0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				93B981021CAC57B400CE42E0 /* Alamofire.framework */,
+				93B981041CAC57B400CE42E0 /* Alamofire iOS Tests.xctest */,
+				93B981061CAC57B400CE42E0 /* Alamofire.framework */,
+				93B981081CAC57B400CE42E0 /* Alamofire OSX Tests.xctest */,
+				93B9810A1CAC57B400CE42E0 /* Alamofire.framework */,
+				93B9810C1CAC57B400CE42E0 /* Alamofire tvOS Tests.xctest */,
+				93B9810E1CAC57B400CE42E0 /* Alamofire.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		93BC214B1C9E199F0074C612 = {
 			isa = PBXGroup;
 			children = (
 				93BC21571C9E199F0074C612 /* VanadiumCore */,
 				93BC21631C9E199F0074C612 /* VanadiumCoreTests */,
+				93B980DA1CAB9D3D00CE42E0 /* Syncbase */,
+				93B980E61CAB9D3D00CE42E0 /* SyncbaseTests */,
 				93BC21561C9E199F0074C612 /* Products */,
+				93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -104,6 +250,8 @@
 			children = (
 				93BC21551C9E199F0074C612 /* VanadiumCore.framework */,
 				93BC215F1C9E199F0074C612 /* VanadiumCoreTests.xctest */,
+				93B980D91CAB9D3D00CE42E0 /* Syncbase.framework */,
+				93B980E21CAB9D3D00CE42E0 /* SyncbaseTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,6 +265,7 @@
 				93BC21741C9E1B540074C612 /* context */,
 				93BC21761C9E1B540074C612 /* rpc */,
 				93BC21781C9E1B540074C612 /* rt */,
+				93B980D11CAB9B3E00CE42E0 /* security */,
 				93BC217A1C9E1B540074C612 /* util */,
 				93BC21821C9E1B540074C612 /* vdl */,
 				93BC21861C9E1B540074C612 /* x */,
@@ -212,6 +361,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		93B980D61CAB9D3D00CE42E0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93B980DC1CAB9D3D00CE42E0 /* Syncbase.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		93BC21521C9E199F0074C612 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -225,6 +382,44 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		93B980D81CAB9D3D00CE42E0 /* Syncbase */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93B980EA1CAB9D3D00CE42E0 /* Build configuration list for PBXNativeTarget "Syncbase" */;
+			buildPhases = (
+				93B980D41CAB9D3D00CE42E0 /* Sources */,
+				93B980D51CAB9D3D00CE42E0 /* Frameworks */,
+				93B980D61CAB9D3D00CE42E0 /* Headers */,
+				93B980D71CAB9D3D00CE42E0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93B981101CAC57F400CE42E0 /* PBXTargetDependency */,
+				93B980F11CAB9D5800CE42E0 /* PBXTargetDependency */,
+			);
+			name = Syncbase;
+			productName = Syncbase;
+			productReference = 93B980D91CAB9D3D00CE42E0 /* Syncbase.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		93B980E11CAB9D3D00CE42E0 /* SyncbaseTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93B980ED1CAB9D3D00CE42E0 /* Build configuration list for PBXNativeTarget "SyncbaseTests" */;
+			buildPhases = (
+				93B980DE1CAB9D3D00CE42E0 /* Sources */,
+				93B980DF1CAB9D3D00CE42E0 /* Frameworks */,
+				93B980E01CAB9D3D00CE42E0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93B980E51CAB9D3D00CE42E0 /* PBXTargetDependency */,
+			);
+			name = SyncbaseTests;
+			productName = SyncbaseTests;
+			productReference = 93B980E21CAB9D3D00CE42E0 /* SyncbaseTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		93BC21541C9E199F0074C612 /* VanadiumCore */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 93BC21691C9E199F0074C612 /* Build configuration list for PBXNativeTarget "VanadiumCore" */;
@@ -268,10 +463,16 @@
 		93BC214C1C9E199F0074C612 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Google, Inc.";
 				TargetAttributes = {
+					93B980D81CAB9D3D00CE42E0 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+					93B980E11CAB9D3D00CE42E0 = {
+						CreatedOnToolsVersion = 7.3;
+					};
 					93BC21541C9E199F0074C612 = {
 						CreatedOnToolsVersion = 7.2.1;
 					};
@@ -290,15 +491,89 @@
 			mainGroup = 93BC214B1C9E199F0074C612;
 			productRefGroup = 93BC21561C9E199F0074C612 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 93B980F81CAC57B400CE42E0 /* Products */;
+					ProjectRef = 93B980F71CAC57B400CE42E0 /* Alamofire.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				93BC21541C9E199F0074C612 /* VanadiumCore */,
 				93BC215E1C9E199F0074C612 /* VanadiumCoreTests */,
+				93B980D81CAB9D3D00CE42E0 /* Syncbase */,
+				93B980E11CAB9D3D00CE42E0 /* SyncbaseTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		93B981021CAC57B400CE42E0 /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = 93B981011CAC57B400CE42E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93B981041CAC57B400CE42E0 /* Alamofire iOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Alamofire iOS Tests.xctest";
+			remoteRef = 93B981031CAC57B400CE42E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93B981061CAC57B400CE42E0 /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = 93B981051CAC57B400CE42E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93B981081CAC57B400CE42E0 /* Alamofire OSX Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Alamofire OSX Tests.xctest";
+			remoteRef = 93B981071CAC57B400CE42E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93B9810A1CAC57B400CE42E0 /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = 93B981091CAC57B400CE42E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93B9810C1CAC57B400CE42E0 /* Alamofire tvOS Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Alamofire tvOS Tests.xctest";
+			remoteRef = 93B9810B1CAC57B400CE42E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		93B9810E1CAC57B400CE42E0 /* Alamofire.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Alamofire.framework;
+			remoteRef = 93B9810D1CAC57B400CE42E0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
+		93B980D71CAB9D3D00CE42E0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93B980E01CAB9D3D00CE42E0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		93BC21531C9E199F0074C612 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -333,6 +608,23 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		93B980D41CAB9D3D00CE42E0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93B980F31CAB9D6E00CE42E0 /* Security.swift in Sources */,
+				93B980F51CAB9D9000CE42E0 /* Syncbase.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93B980DE1CAB9D3D00CE42E0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93B980E81CAB9D3D00CE42E0 /* SyncbaseTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		93BC21501C9E199F0074C612 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -346,6 +638,7 @@
 				93BC21F81C9E1B540074C612 /* Dates.swift in Sources */,
 				93BC21F71C9E1B540074C612 /* Runtime.swift in Sources */,
 				93BC22011C9E1B540074C612 /* VdlUtil.swift in Sources */,
+				93B980D31CAB9B6100CE42E0 /* Principal.swift in Sources */,
 				93BC21FD1C9E1B540074C612 /* Threads.swift in Sources */,
 				93BC21F61C9E1B540074C612 /* RPC.swift in Sources */,
 				93BC21FB1C9E1B540074C612 /* Promise.swift in Sources */,
@@ -366,6 +659,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		93B980E51CAB9D3D00CE42E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 93B980D81CAB9D3D00CE42E0 /* Syncbase */;
+			targetProxy = 93B980E41CAB9D3D00CE42E0 /* PBXContainerItemProxy */;
+		};
+		93B980F11CAB9D5800CE42E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 93BC21541C9E199F0074C612 /* VanadiumCore */;
+			targetProxy = 93B980F01CAB9D5800CE42E0 /* PBXContainerItemProxy */;
+		};
+		93B981101CAC57F400CE42E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Alamofire iOS";
+			targetProxy = 93B9810F1CAC57F400CE42E0 /* PBXContainerItemProxy */;
+		};
 		93BC21621C9E199F0074C612 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 93BC21541C9E199F0074C612 /* VanadiumCore */;
@@ -374,6 +682,67 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		93B980EB1CAB9D3D00CE42E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = Syncbase/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.v.Syncbase;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		93B980EC1CAB9D3D00CE42E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = Syncbase/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.v.Syncbase;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		93B980EE1CAB9D3D00CE42E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				INFOPLIST_FILE = SyncbaseTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.v.SyncbaseTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		93B980EF1CAB9D3D00CE42E0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				INFOPLIST_FILE = SyncbaseTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.v.SyncbaseTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		93BC21671C9E199F0074C612 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -398,6 +767,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -449,6 +819,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -476,7 +847,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = VanadiumCore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -499,7 +869,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = VanadiumCore/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -541,6 +910,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		93B980EA1CAB9D3D00CE42E0 /* Build configuration list for PBXNativeTarget "Syncbase" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93B980EB1CAB9D3D00CE42E0 /* Debug */,
+				93B980EC1CAB9D3D00CE42E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		93B980ED1CAB9D3D00CE42E0 /* Build configuration list for PBXNativeTarget "SyncbaseTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93B980EE1CAB9D3D00CE42E0 /* Debug */,
+				93B980EF1CAB9D3D00CE42E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		93BC214F1C9E199F0074C612 /* Build configuration list for PBXProject "Vanadium" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

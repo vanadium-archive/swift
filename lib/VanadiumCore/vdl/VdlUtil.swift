@@ -1,10 +1,6 @@
-//
-//  VdlUtil.swift
-//  v23
-//
-//  Created by zinman on 2/18/16.
-//  Copyright © 2016 Google Inc. All rights reserved.
-//
+// Copyright 2015 The Vanadium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 import Foundation
 

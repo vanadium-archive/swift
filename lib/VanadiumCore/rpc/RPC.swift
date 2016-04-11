@@ -15,15 +15,15 @@ public enum RpcClientOption {
 
 public struct Client {
   internal let defaultContext:Context
-  
+
   internal init(defaultContext:Context) {
     self.defaultContext = defaultContext
   }
-  
+
   internal func ctxHandle(ctx:Context?) -> ContextHandle {
     return (ctx ?? defaultContext).handle
   }
-  
+
   public func startCall(ctx:Context?=nil, name:String, method:String, args:[AnyObject]?=nil, returnArgsLength:Int,
                         skipServerAuth:Bool=false) -> Promise<ClientCall> {
     let vomArgs = SwiftByteArrayArray(length: 0, data: nil)
@@ -43,9 +43,9 @@ public struct Client {
         ctxHandle: self.ctxHandle(ctx), callHandle: handle, returnArgsLength: returnArgsLength)
     }
   }
- 
+
   private static let outstandingHandles = GoPromises<GoClientCallHandle>(timeout: nil)
-  
+
   public func call(ctx:Context?=nil, name:String, method:String, args:[AnyObject]?=nil, returnArgsLength:Int,
                    skipServerAuth:Bool=false) -> Promise<[AnyObject]?> {
     return startCall(
@@ -71,7 +71,7 @@ public struct Client {
       }
     }
   }
-  
+
   internal static func callDidFail(asyncId:AsyncCallbackIdentifier, err:SwiftVError) {
     let verr = err.toSwift()
     if let p = Client.outstandingHandles.getAndDeleteRef(asyncId) {
@@ -84,7 +84,7 @@ public struct Client {
       }
     }
   }
-  
+
   public func close(ctx:Context?=nil) {
     swift_io_v_impl_google_rpc_ClientImpl_nativeClose(ctxHandle(ctx).goHandle)
   }
@@ -98,7 +98,7 @@ public class ClientCall {
   internal let ctxHandle:ContextHandle
   internal let callHandle:GoClientCallHandle
   internal let returnArgsLength:Int
- 
+
   internal init(ctxHandle:ContextHandle, callHandle:GoClientCallHandle, returnArgsLength:Int) throws {
     self.ctxHandle = ctxHandle
     self.callHandle = callHandle
@@ -107,19 +107,19 @@ public class ClientCall {
       throw ClientCallErrors.NilHandlerOnInit
     }
   }
-  
+
   deinit {
     if callHandle != 0 {
       swift_io_v_impl_google_rpc_ClientCallImpl_nativeFinalize(callHandle)
     }
   }
-  
+
   public func closeSend() throws {
     try SwiftVError.catchAndThrowError { errPtr in
       swift_io_v_impl_google_rpc_ClientCallImpl_nativeCloseSend(ctxHandle.goHandle, callHandle, errPtr)
     }
   }
- 
+
   private static let outstandingFinishes = GoPromises<[AnyObject]?>(timeout: nil)
   public func finish() throws -> Promise<[AnyObject]?> {
     let (asyncId, p) = ClientCall.outstandingFinishes.newPromise()
@@ -137,12 +137,12 @@ public class ClientCall {
       byteArrayArray.dealloc()
       return
     }
-   
+
     // VOM decode in background to let Go get free'd up and to not block main
     RunInBackground {
       // Deallocate associated bytes malloc'd in Go
       defer { byteArrayArray.dealloc() }
-      
+
       do {
         // TODO Decode via VOM
 //        log.debug("Got back byteArrayArray \(byteArrayArray) and data \(byteArrayArray.data)")
@@ -155,7 +155,7 @@ public class ClientCall {
         do { try p.reject(e) } catch {}
         return
       }
-      
+
       do {
         try p.resolve(nil)
       } catch let e {
@@ -163,7 +163,7 @@ public class ClientCall {
       }
     }
   }
-  
+
   internal static func finishDidFail(asyncId:AsyncCallbackIdentifier, err:SwiftVError) {
     let verr = err.toSwift()
     if let p = ClientCall.outstandingFinishes.getAndDeleteRef(asyncId) {
@@ -176,7 +176,7 @@ public class ClientCall {
       }
     }
   }
-  
+
 //  public func remoteBlessings() -> (blessings:[String], cryptoBlessings:[Blessings]) {
 //    fatalError("Unimplemented")
 //  }

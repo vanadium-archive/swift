@@ -1,25 +1,157 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="15d-HP-TF3">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
-        <scene sceneID="tne-QT-ifu">
+        <!--Google Sign In Demo-->
+        <scene sceneID="Hgr-13-GMH">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Google Sign In Demo" id="8TU-wk-63a" customClass="GoogleSignInDemo" customModule="Demo" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
-                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                        <viewControllerLayoutGuide type="top" id="MR1-FP-sSo"/>
+                        <viewControllerLayoutGuide type="bottom" id="tfN-75-F8Y"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                    <view key="view" contentMode="scaleToFill" id="u09-Ag-jpU">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ndt-M5-a4a" customClass="GIDSignInButton">
+                                <rect key="frame" x="144" y="512" width="312" height="48"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="312" id="0wY-RG-RRb"/>
+                                    <constraint firstAttribute="height" constant="48" id="dF6-ny-qHf"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="signInClicked:" destination="8TU-wk-63a" eventType="valueChanged" id="y4A-mj-Ghn"/>
+                                </connections>
+                            </view>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="v23-icon-white" translatesAutoresizingMaskIntoConstraints="NO" id="OuH-Zv-fPN">
+                                <rect key="frame" x="220" y="220" width="160" height="160"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="160" id="EA7-Lf-wIG"/>
+                                    <constraint firstAttribute="width" constant="160" id="EPR-vP-4Sh"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fpo-3d-9vU">
+                                <rect key="frame" x="30" y="512" width="560" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.066666666669999999" green="0.52549019610000003" blue="0.58823529409999997" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="OuH-Zv-fPN" firstAttribute="centerX" secondItem="u09-Ag-jpU" secondAttribute="centerX" id="CXn-pE-Kkd"/>
+                            <constraint firstItem="ndt-M5-a4a" firstAttribute="top" secondItem="fpo-3d-9vU" secondAttribute="bottom" id="Df6-wr-seA"/>
+                            <constraint firstItem="fpo-3d-9vU" firstAttribute="leading" secondItem="u09-Ag-jpU" secondAttribute="leadingMargin" constant="10" id="Ixz-qQ-jIh"/>
+                            <constraint firstItem="OuH-Zv-fPN" firstAttribute="centerY" secondItem="u09-Ag-jpU" secondAttribute="centerY" id="OEL-7A-Etb"/>
+                            <constraint firstItem="ndt-M5-a4a" firstAttribute="centerX" secondItem="u09-Ag-jpU" secondAttribute="centerX" id="WjZ-X6-olq"/>
+                            <constraint firstItem="fpo-3d-9vU" firstAttribute="trailing" secondItem="u09-Ag-jpU" secondAttribute="trailingMargin" constant="10" id="cUB-wf-NSv"/>
+                            <constraint firstItem="tfN-75-F8Y" firstAttribute="top" secondItem="ndt-M5-a4a" secondAttribute="bottom" constant="40" id="pdh-aG-wHG"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="signInButton" destination="ndt-M5-a4a" id="Jyd-ag-upy"/>
+                        <outlet property="statusLabel" destination="fpo-3d-9vU" id="AbD-30-7B2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EUE-7A-7S3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="654" y="-823"/>
+        </scene>
+        <!--Demos-->
+        <scene sceneID="o8K-Q4-OW7">
+            <objects>
+                <tableViewController title="Demos" id="j6k-Fl-n3R" customClass="DemoViewController" customModule="Demo" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="gIT-ZK-by2">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="DemoNameCells" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="DemoNameCells" textLabel="Pqo-lf-iHB" style="IBUITableViewCellStyleDefault" id="eMk-7N-VeI">
+                                <rect key="frame" x="0.0" y="92" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="eMk-7N-VeI" id="zOH-mh-gvr">
+                                    <rect key="frame" x="0.0" y="0.0" width="567" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Pqo-lf-iHB">
+                                            <rect key="frame" x="15" y="0.0" width="550" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="j6k-Fl-n3R" id="jXE-1C-FNq"/>
+                            <outlet property="delegate" destination="j6k-Fl-n3R" id="cDg-gP-dgr"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Demos" id="20e-LI-k33"/>
+                    <connections>
+                        <segue destination="BV7-jR-rDh" kind="show" identifier="RPCDemo" id="3ch-Dh-9Ah"/>
+                        <segue destination="8TU-wk-63a" kind="show" identifier="GoogleSignInDemo" id="eZj-zG-Lbo"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OQS-6w-6FP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1056" y="269"/>
+        </scene>
+        <!--RPC Demo-->
+        <scene sceneID="Zk7-If-Oyb">
+            <objects>
+                <viewController title="RPC Demo" id="BV7-jR-rDh" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Gg1-8I-HxU"/>
+                        <viewControllerLayoutGuide type="bottom" id="E0S-a1-x1p"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="QqW-Hd-lXw">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RPC Demo is in console" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vhQ-hW-SP4">
+                                <rect key="frame" x="209.5" y="289" width="181.5" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="vhQ-hW-SP4" firstAttribute="centerX" secondItem="QqW-Hd-lXw" secondAttribute="centerX" id="5PI-tW-8e5"/>
+                            <constraint firstItem="vhQ-hW-SP4" firstAttribute="centerY" secondItem="QqW-Hd-lXw" secondAttribute="centerY" id="RMv-dU-zak"/>
+                        </constraints>
                     </view>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="K2H-Mp-r9g" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="654" y="1144"/>
+        </scene>
+        <!--Vanadium-->
+        <scene sceneID="DQO-5c-O5y">
+            <objects>
+                <navigationController title="Vanadium" id="15d-HP-TF3" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="gMf-Oe-60N">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="j6k-Fl-n3R" kind="relationship" relationship="rootViewController" id="71R-HV-CKE"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SnP-Ps-3nA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="112" y="269"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="v23-icon-white" width="320" height="320"/>
+    </resources>
 </document>

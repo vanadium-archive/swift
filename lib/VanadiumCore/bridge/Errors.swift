@@ -14,7 +14,7 @@ public struct VError : ErrorType, Equatable {
   public let stacktrace:String?
 }
 
-/// Equality for VError is determined SOLEY by comparing identifiers. Identifiers are required
+/// Equality for VError is determined SOLELY by comparing identifiers. Identifiers are required
 /// to be unique in VDL. Equality is defined this way as the primary use case is to compare
 /// runtime VErrors against VDL-generated static errors. For example:
 ///
@@ -32,7 +32,7 @@ public func ==(lhs: VError, rhs: VError) -> Bool {
 /// SwiftVError is the C struct that the go bridge uses to transfer an error to Swift.
 internal extension SwiftVError {
   internal func isEmpty() -> Bool { return identity == nil || identity.memory == 0 }
- 
+
   /// Helper to run a go-bridge method that might fill out this struct on error. In that scenario
   /// we translate that into a Swift-based error and throw it.
   /// VError's static _delegate slot is the actual function that throws a given converted VError
@@ -51,7 +51,7 @@ internal extension SwiftVError {
     return ret
   }
 
-  /// Convert the C Struct into a Swift-based VError struct. 
+  /// Convert the C Struct into a Swift-based VError struct.
   /// Go allocates the underlying strings, and swift must take control of them and free them when done
   internal func toSwift() -> VError {
     return VError(

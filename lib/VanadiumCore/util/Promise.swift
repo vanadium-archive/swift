@@ -22,15 +22,15 @@ public class Promise<ResolveType> : Lockable {
   private var rejectCallbacks:[(dispatch_queue_t?, ErrorType?->())]? = nil
   private var alwaysCallbacks:[(dispatch_queue_t?, PromiseResolution<ResolveType>->())]? = nil
   private let resolutionSemaphore = dispatch_semaphore_create(0)
-  
+
   internal var status: PromiseResolution<ResolveType> = PromiseResolution.Pending {
     didSet {
       updatedStatus()
     }
   }
-  
+
   public init() { }
-  
+
   public convenience init(resolved obj: ResolveType) {
     self.init()
     status = PromiseResolution<ResolveType>.Resolved(obj: obj)
@@ -40,7 +40,7 @@ public class Promise<ResolveType> : Lockable {
     self.init()
     status = PromiseResolution<ResolveType>.Rejected(err: err)
   }
-  
+
   // Resolve/reject
   public func resolve(obj:ResolveType) throws {
     objc_sync_enter(self)
@@ -51,7 +51,7 @@ public class Promise<ResolveType> : Lockable {
     case .Pending: status = PromiseResolution.Resolved(obj: obj)
     }
   }
-  
+
   public func reject(err:ErrorType?) throws {
     objc_sync_enter(self)
     defer { objc_sync_exit(self) }
@@ -76,10 +76,10 @@ public class Promise<ResolveType> : Lockable {
       }
       resolveCallbacks!.append((queue, callback))
     }
-                          
+
     return self
   }
-  
+
   public func onReject(on queue: dispatch_queue_t?=dispatch_get_main_queue(),
                        _ callback:ErrorType?->()) -> Promise<ResolveType> {
     objc_sync_enter(self)
@@ -95,7 +95,7 @@ public class Promise<ResolveType> : Lockable {
     }
     return self
   }
-  
+
   public func always(on queue: dispatch_queue_t?=dispatch_get_main_queue(),
                      _ callback:PromiseResolution<ResolveType>->()) -> Promise<ResolveType> {
     objc_sync_enter(self)
@@ -111,7 +111,7 @@ public class Promise<ResolveType> : Lockable {
     }
     return self
   }
-  
+
   public func await(timeout: NSTimeInterval?=nil) throws -> PromiseResolution<ResolveType> {
     switch (status) {
     case .Pending:
@@ -126,7 +126,7 @@ public class Promise<ResolveType> : Lockable {
     }
     return status
   }
-  
+
   // Changing states
   internal func updatedStatus() {
     // Do reject/resolve callbacks, then always callbacks
@@ -148,7 +148,7 @@ public class Promise<ResolveType> : Lockable {
         }
       }
     }
-    
+
     defer { dispatch_semaphore_signal(resolutionSemaphore) }
     guard let callbacks = alwaysCallbacks else { return }
     for (queue, callback) in callbacks {
@@ -161,17 +161,17 @@ public class Promise<ResolveType> : Lockable {
 
 public class ResolvedPromise<ResolveType>: Promise<ResolveType> {
   var resolvedObj:ResolveType
-  
+
   override private init() {
     fatalError("Cannot init this way")
   }
-  
+
   public convenience init(_ resolved: ResolveType) {
     self.init(resolved: resolved)
     self.resolvedObj = resolved
     dispatch_semaphore_signal(resolutionSemaphore)
   }
-  
+
   override public func onResolve(on queue: dispatch_queue_t?=dispatch_get_main_queue(),
     _ callback:ResolveType->()) -> Promise<ResolveType> {
       dispatch_maybe_async(queue, block: { callback(self.resolvedObj) })
@@ -183,7 +183,7 @@ public class ResolvedPromise<ResolveType>: Promise<ResolveType> {
       dispatch_maybe_async(queue, block: { callback(self.status) })
       return self
   }
-  
+
   override public func resolve(obj:ResolveType) throws {
     throw PromiseErrors<ResolveType>.AlreadyResolved(existingObj: resolvedObj)
   }
@@ -195,17 +195,17 @@ public class ResolvedPromise<ResolveType>: Promise<ResolveType> {
 
 public class RejectedPromise: Promise<Void> {
   var err:ErrorType?
-  
+
   override private init() {
     fatalError("Cannot init this way")
   }
-  
+
   public convenience init(_ error: ErrorType?) {
     self.init(rejected: error)
     self.err = error
     dispatch_semaphore_signal(resolutionSemaphore)
   }
-  
+
   override public func onReject(on queue: dispatch_queue_t?, _ callback: ErrorType? -> ()) -> Promise<Void> {
     dispatch_maybe_async(queue, block: { callback(self.err) })
     return self
@@ -216,7 +216,7 @@ public class RejectedPromise: Promise<Void> {
     dispatch_maybe_async(queue, block: { callback(self.status) })
     return self
   }
-  
+
   override public func resolve(obj:Void) throws {
     throw PromiseErrors<Void>.AlreadyRejected(existingErr: self.err)
   }
@@ -251,12 +251,12 @@ public extension Promise {
     }
     return p
   }
- 
+
   /// Specialize then for when it returns another Promise to hook onto that automatically
   func then<T>(on queue: dispatch_queue_t?=dispatch_get_main_queue(),
                _ callback:ResolveType throws ->Promise<T>) -> Promise<T> {
     let p = Promise<T>()
-                
+
     onResolve(on: queue) { obj in
       do {
         let newPromise = try callback(obj)
@@ -274,13 +274,13 @@ public extension Promise {
         try! p.reject(e)
       }
     }
-                
+
     onReject(on: queue) { err in
       try! p.reject(err)
     }
     return p
   }
-  
+
   func thenInBackground<T>(callback:ResolveType throws ->T) -> Promise<T> {
     return then(on: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), callback)
   }
@@ -298,14 +298,14 @@ public extension Promise {
     default: return false
     }
   }
-  
+
   public func isResolved() -> Bool {
     switch (status) {
     case .Resolved: return true
     default: return false
     }
   }
-  
+
   public func isRejected() -> Bool {
     switch (status) {
     case .Rejected: return true

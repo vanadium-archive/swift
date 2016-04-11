@@ -32,33 +32,48 @@ public class V23 {
       _instance = newValue
     }
   }
-  
+
   /// Private constructor for V23.
   private init(loggingOptions:VLoggingOptions) throws {
     // We must have all variables initialized before we can throw
     rootContext = Context(handle: ContextHandle(0))
-    try SwiftVError.catchAndThrowError { errPtr in
-      swift_io_v_v23_V_nativeInitGlobal(errPtr)
+
+    let appSupportUrl = NSURL(fileURLWithPath:
+      NSSearchPathForDirectoriesInDomains(.ApplicationSupportDirectory, .UserDomainMask, true)[0])
+    let v23Url = appSupportUrl.URLByAppendingPathComponent("Vanadium")
+    let credentialsPath = v23Url.path!
+    log.debug("Using credentials path \(credentialsPath)")
+    if !NSFileManager.defaultManager().fileExistsAtPath(credentialsPath) {
+      // Create it
+      let attrs = [NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication]
+      try NSFileManager.defaultManager().createDirectoryAtPath(
+        credentialsPath, withIntermediateDirectories: true, attributes: attrs)
     }
+    try SwiftVError.catchAndThrowError { errPtr in
+      swift_io_v_v23_V_nativeInitGlobal(credentialsPath.toGo(), errPtr)
+    }
+
     try loggingOptions.initGo()
     rootContext = Context(handle: ContextHandle(swift_io_v_impl_google_rt_VRuntimeImpl_nativeInit()))
   }
-  
+
   deinit {
     swift_io_v_impl_google_rt_VRuntimeImpl_nativeShutdown(rootContext.handle.goHandle)
   }
-  
+
   /// You must call configure before using Vanadium or grabbing an instance.
   /// This is where you pass any logging options... (TBD)
   ///
   /// **Warning:** You may only call this once. It will otherwise crash with a fatalError.
   ///
-  /// :param: loggingOptions Logging options used by the Vandadium internals. 
+  /// :param: loggingOptions Logging options used by the Vandadium internals.
   ///         See documentation on VLoggingOptions for more information
   public class func configure(loggingOptions:VLoggingOptions?=nil) throws {
-    instance = try V23(loggingOptions: loggingOptions ?? VLoggingOptions())
+    if _instance == nil {
+      instance = try V23(loggingOptions: loggingOptions ?? VLoggingOptions())
+    }
   }
-  
+
   public var context: Context {
     get {
       return rootContext
