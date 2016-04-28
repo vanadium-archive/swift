@@ -6,8 +6,13 @@ import UIKit
 import VanadiumCore
 
 class DemoViewController: UITableViewController {
-  let demos:[DemoDescription] = [RPCDemoDescription(), GoogleSignInDemoDescription()]
-  var currentDemo:Demo? = nil
+  let demos: [DemoDescription] = [
+    RPCDemoDescription(),
+    GoogleSignInDemoDescription(),
+    BleAdvertiseUtilityDemoDescription(),
+    BleDiscoveryUtilityDemoDescription()]
+  var currentDemo: Demo? = nil
+  var currentDemoDescription: DemoDescription? = nil
 
   override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return demos.count
@@ -34,11 +39,15 @@ class DemoViewController: UITableViewController {
   override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
     let demo = demos[indexPath.row]
     currentDemo = demo.instance
+    currentDemoDescription = demo
     performSegueWithIdentifier(demo.segue, sender: self)
   }
 
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     // Starts any non-UI demos
+    if segue.identifier == "ConsoleDemo" {
+      segue.destinationViewController.title = currentDemoDescription?.description
+    }
     currentDemo?.start()
   }
 }

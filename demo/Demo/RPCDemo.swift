@@ -5,8 +5,8 @@
 import UIKit
 import VanadiumCore
 
-struct RPCDemoDescription : DemoDescription {
-  let segue:String = "RPCDemo"
+struct RPCDemoDescription: DemoDescription {
+  let segue: String = "ConsoleDemo"
 
   var description: String {
     return "RPC Demo"
@@ -17,7 +17,7 @@ struct RPCDemoDescription : DemoDescription {
   }
 }
 
-struct RPCDemo : Demo {
+struct RPCDemo: Demo {
   mutating func start() {
     startVanadium()
     testHelloCall()
@@ -25,7 +25,7 @@ struct RPCDemo : Demo {
   }
 
   let addr = "/" + "@6@wsh@100.110.93.71:23000@@b6752aa9f33f86b9aecf25ecad73c8a4@l@tutorial@@"
-  var instance:V23? = nil
+  var instance: V23? = nil
 
   mutating func startVanadium() {
     do {
@@ -48,7 +48,7 @@ struct RPCDemo : Demo {
       client.call(name: addr, method: "Get", args: nil, returnArgsLength: 1, skipServerAuth: true)
         .onResolve { result -> () in
           print("Finished with \(result)")
-        }
+      }
         .onReject { err -> () in
           print("Errored with \(err)")
       }
@@ -69,14 +69,14 @@ struct RPCDemo : Demo {
       client.call(name: addr, method: "Get", args: nil, returnArgsLength: 1, skipServerAuth: true)
         .onResolve { result -> () in
           print("Call shouldnt have finished with \(result)")
-        }
+      }
         .onReject { err -> () in
           print("Call errored with \(err)")
       }
       try ctx.cancel()
         .onResolve {
           print("Cancelled correctly")
-        }
+      }
         .onReject { err -> () in
           print("Cancel errored with \(err)")
       }

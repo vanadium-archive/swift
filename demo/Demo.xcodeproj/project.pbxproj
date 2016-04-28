@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		30029EAC1CCA0F7300B76510 /* AdvertiseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30029EA61CCA0F7300B76510 /* AdvertiseViewController.swift */; };
+		30029EAE1CCA0F7300B76510 /* BleModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30029EA81CCA0F7300B76510 /* BleModel.swift */; };
+		30029EAF1CCA0F7300B76510 /* BleUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30029EA91CCA0F7300B76510 /* BleUtil.swift */; };
+		30029EB01CCA0F7300B76510 /* DeviceInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30029EAA1CCA0F7300B76510 /* DeviceInfoViewController.swift */; };
+		30029EB11CCA0F7300B76510 /* DevicesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30029EAB1CCA0F7300B76510 /* DevicesViewController.swift */; };
+		30029EBB1CCA0FD500B76510 /* BleDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30029EBA1CCA0FD500B76510 /* BleDemo.swift */; };
 		30A291DD1CAC981E00F3612E /* RPCDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A291DC1CAC981E00F3612E /* RPCDemo.swift */; };
 		30A291DF1CAC982900F3612E /* Demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A291DE1CAC982900F3612E /* Demo.swift */; };
 		30A291E11CAC996F00F3612E /* GoogleSignInDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A291E01CAC996F00F3612E /* GoogleSignInDemo.swift */; };
@@ -170,6 +176,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		30029EA61CCA0F7300B76510 /* AdvertiseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdvertiseViewController.swift; sourceTree = "<group>"; };
+		30029EA81CCA0F7300B76510 /* BleModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleModel.swift; sourceTree = "<group>"; };
+		30029EA91CCA0F7300B76510 /* BleUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleUtil.swift; sourceTree = "<group>"; };
+		30029EAA1CCA0F7300B76510 /* DeviceInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceInfoViewController.swift; sourceTree = "<group>"; };
+		30029EAB1CCA0F7300B76510 /* DevicesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DevicesViewController.swift; sourceTree = "<group>"; };
+		30029EBA1CCA0FD500B76510 /* BleDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleDemo.swift; sourceTree = "<group>"; };
 		30A291C81CAC97BC00F3612E /* Vanadium.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Vanadium.xcodeproj; path = ../lib/Vanadium.xcodeproj; sourceTree = "<group>"; };
 		30A291DC1CAC981E00F3612E /* RPCDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RPCDemo.swift; sourceTree = "<group>"; };
 		30A291DE1CAC982900F3612E /* Demo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Demo.swift; sourceTree = "<group>"; };
@@ -221,6 +233,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		30029EA51CCA0F7300B76510 /* BLE */ = {
+			isa = PBXGroup;
+			children = (
+				30029EA61CCA0F7300B76510 /* AdvertiseViewController.swift */,
+				30029EBA1CCA0FD500B76510 /* BleDemo.swift */,
+				30029EA81CCA0F7300B76510 /* BleModel.swift */,
+				30029EA91CCA0F7300B76510 /* BleUtil.swift */,
+				30029EAA1CCA0F7300B76510 /* DeviceInfoViewController.swift */,
+				30029EAB1CCA0F7300B76510 /* DevicesViewController.swift */,
+			);
+			path = BLE;
+			sourceTree = "<group>";
+		};
 		30A291C91CAC97BC00F3612E /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -304,6 +329,7 @@
 				9306FB951BFC049400DE7190 /* DemoViewController.swift */,
 				9306FB971BFC049400DE7190 /* Main.storyboard */,
 				30A291DE1CAC982900F3612E /* Demo.swift */,
+				30029EA51CCA0F7300B76510 /* BLE */,
 				30A291F91CACB14000F3612E /* Vanadium Core Demos */,
 				30A291F81CACB13700F3612E /* Google Sign In */,
 				9306FB9A1BFC049400DE7190 /* Assets.xcassets */,
@@ -525,7 +551,13 @@
 				30A291E11CAC996F00F3612E /* GoogleSignInDemo.swift in Sources */,
 				9306FB961BFC049400DE7190 /* DemoViewController.swift in Sources */,
 				9306FB941BFC049400DE7190 /* AppDelegate.swift in Sources */,
+				30029EAF1CCA0F7300B76510 /* BleUtil.swift in Sources */,
+				30029EAC1CCA0F7300B76510 /* AdvertiseViewController.swift in Sources */,
+				30029EAE1CCA0F7300B76510 /* BleModel.swift in Sources */,
 				30A291DF1CAC982900F3612E /* Demo.swift in Sources */,
+				30029EBB1CCA0FD500B76510 /* BleDemo.swift in Sources */,
+				30029EB01CCA0F7300B76510 /* DeviceInfoViewController.swift in Sources */,
+				30029EB11CCA0F7300B76510 /* DevicesViewController.swift in Sources */,
 				30A291DD1CAC981E00F3612E /* RPCDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

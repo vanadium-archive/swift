@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import UIKit
+import Foundation
 
-protocol DemoDescription: CustomStringConvertible {
-  var segue: String { get }
-  var instance: Demo { get }
-}
-
-protocol Demo {
-  mutating func start()
+extension NSData {
+  func toString() -> String {
+    return String(data: self, encoding: NSUTF8StringEncoding) ?? self.description
+  }
 }

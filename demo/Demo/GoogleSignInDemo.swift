@@ -6,11 +6,11 @@ import UIKit
 import Syncbase
 import VanadiumCore
 
-struct GoogleSignInDemoDescription : DemoDescription {
+struct GoogleSignInDemoDescription: DemoDescription {
   let segue: String = "GoogleSignInDemo"
 
   var description: String {
-    return "Google Sign-In Demo"
+    return "Google Sign-In"
   }
 
   var instance: Demo {
@@ -18,7 +18,7 @@ struct GoogleSignInDemoDescription : DemoDescription {
   }
 }
 
-@objc class GoogleSignInDemo : UIViewController, Demo, GIDSignInDelegate, GIDSignInUIDelegate {
+@objc class GoogleSignInDemo: UIViewController, Demo, GIDSignInDelegate, GIDSignInUIDelegate {
   @IBOutlet weak var signInButton: GIDSignInButton!
   @IBOutlet weak var statusLabel: UILabel!
 
@@ -82,7 +82,7 @@ struct GoogleSignInDemoDescription : DemoDescription {
     }
   }
 
-  func didSignIn(user:GIDGoogleUser, auth:GIDAuthentication) {
+  func didSignIn(user: GIDGoogleUser, auth: GIDAuthentication) {
     signInButton.hidden = true
 
     let oauthToken = auth.accessToken
@@ -94,18 +94,18 @@ struct GoogleSignInDemoDescription : DemoDescription {
     getBlessing(oauthToken)
   }
 
-  func getBlessing(oauthToken:String) {
+  func getBlessing(oauthToken: String) {
     weak var this = self
     let credentials = GoogleCredentials(oauthToken: oauthToken)
     credentials.authorize()
       .onReject { err in
         debugPrint("Unable to get blessing: \(err)")
         this?.statusLabel.text = "Unable to get blessing: \(err)"
-      }
+    }
       .onResolve { _ in
-        let blessings:String! = try? Principal.blessingsDebugString() ?? "<error>"
+        let blessings: String! = try? Principal.blessingsDebugString() ?? "<error>"
         debugPrint("Got blessings \(blessings)")
         this?.statusLabel.text = "Got blessing: \(blessings)"
-      }
+    }
   }
 }
