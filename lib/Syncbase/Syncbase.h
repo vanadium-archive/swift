@@ -9,3 +9,5 @@ FOUNDATION_EXPORT double SyncbaseVersionNumber;
 
 //! Project version string for Syncbase.
 FOUNDATION_EXPORT const unsigned char SyncbaseVersionString[];
+
+#import "Util.h"

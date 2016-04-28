@@ -8,10 +8,10 @@ import Alamofire
 import VanadiumCore
 
 public protocol VanadiumBlesser {
-  func blessingsFromGoogle(googleOauthToken:String) -> Promise<NSData>
+  func blessingsFromGoogle(googleOauthToken: String) -> Promise<NSData>
 }
 
-enum VanadiumUrls : String, URLStringConvertible {
+enum VanadiumUrls: String, URLStringConvertible {
   case DevBlessings = "https://dev.v.io/auth/google/bless"
 
   var URLString: String {
@@ -19,30 +19,30 @@ enum VanadiumUrls : String, URLStringConvertible {
   }
 }
 
-enum BlessingOutputFormat : String {
+enum BlessingOutputFormat: String {
   case Base64VOM = "base64vom"
 }
 
-public enum VanadiumBlesserError : ErrorType {
+public enum VanadiumBlesserError: ErrorType {
   case EmptyResult
-  case NotBase64Encoded(invalid:String)
+  case NotBase64Encoded(invalid: String)
 }
 
 public extension VanadiumBlesser {
-  public func blessingsFromGoogle(googleOauthToken:String) -> Promise<NSData> {
+  public func blessingsFromGoogle(googleOauthToken: String) -> Promise<NSData> {
     // Make sure the Syncbase instance exists, which inits V23
     let _ = Syncbase.instance
     let p = Promise<NSData>()
     do {
-      let params:[String:AnyObject] = [
-          "token": googleOauthToken,
-          "public_key": try VanadiumCore.Principal.publicKey(),
-          "output_format": BlessingOutputFormat.Base64VOM.rawValue]
+      let params: [String: AnyObject] = [
+        "token": googleOauthToken,
+        "public_key": try VanadiumCore.Principal.publicKey(),
+        "output_format": BlessingOutputFormat.Base64VOM.rawValue]
       let request = Alamofire.request(.GET,
-                        VanadiumUrls.DevBlessings,
-                        parameters: params,
-                        encoding: ParameterEncoding.URLEncodedInURL,
-                        headers:nil)
+        VanadiumUrls.DevBlessings,
+        parameters: params,
+        encoding: ParameterEncoding.URLEncodedInURL,
+        headers: nil)
       request.responseString { resp in
         guard let base64 = resp.result.value else {
           if let err = resp.result.error {
@@ -72,10 +72,10 @@ public extension VanadiumBlesser {
 }
 
 public protocol OAuthCredentials {
-  var oauthToken:String { get }
+  var oauthToken: String { get }
 }
 
-public struct GoogleCredentials : OAuthCredentials, VanadiumBlesser {
+public struct GoogleCredentials: OAuthCredentials, VanadiumBlesser {
   public let oauthToken: String
 
   public init(oauthToken: String) {

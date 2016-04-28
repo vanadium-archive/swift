@@ -7,10 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		305A8E751CCF64E7007656D0 /* Batch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E641CCF64E7007656D0 /* Batch.swift */; };
+		305A8E761CCF64E7007656D0 /* Blob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E651CCF64E7007656D0 /* Blob.swift */; };
+		305A8E771CCF64E7007656D0 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E661CCF64E7007656D0 /* Collection.swift */; };
+		305A8E781CCF64E7007656D0 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E671CCF64E7007656D0 /* Database.swift */; };
+		305A8E791CCF64E7007656D0 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E681CCF64E7007656D0 /* Errors.swift */; };
+		305A8E7A1CCF64E7007656D0 /* Id.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E691CCF64E7007656D0 /* Id.swift */; };
+		305A8E7B1CCF64E7007656D0 /* Marshal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E6A1CCF64E7007656D0 /* Marshal.swift */; };
+		305A8E7C1CCF64E7007656D0 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E6B1CCF64E7007656D0 /* Permissions.swift */; };
+		305A8E7D1CCF64E7007656D0 /* Row.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E6C1CCF64E7007656D0 /* Row.swift */; };
+		305A8E7E1CCF64E7007656D0 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E6D1CCF64E7007656D0 /* Service.swift */; };
+		305A8E7F1CCF64E7007656D0 /* Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E6E1CCF64E7007656D0 /* Stream.swift */; };
+		305A8E801CCF64E7007656D0 /* Syncgroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E6F1CCF64E7007656D0 /* Syncgroup.swift */; };
+		305A8E811CCF64E7007656D0 /* Util.h in Headers */ = {isa = PBXBuildFile; fileRef = 305A8E701CCF64E7007656D0 /* Util.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		305A8E821CCF64E7007656D0 /* Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E711CCF64E7007656D0 /* Util.m */; };
+		305A8E831CCF64E7007656D0 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E721CCF64E7007656D0 /* Util.swift */; };
+		305A8E841CCF64E7007656D0 /* Vom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E731CCF64E7007656D0 /* Vom.swift */; };
+		305A8E851CCF64E7007656D0 /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 305A8E741CCF64E7007656D0 /* Watch.swift */; };
+		30B111C41CCEA9C7000F3750 /* NSNumberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B111C31CCEA9C7000F3750 /* NSNumberTests.swift */; };
+		30B1120B1CCF586C000F3750 /* JsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30B1120A1CCF586C000F3750 /* JsonTests.swift */; };
 		93B980D31CAB9B6100CE42E0 /* Principal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B980D21CAB9B6100CE42E0 /* Principal.swift */; };
 		93B980DC1CAB9D3D00CE42E0 /* Syncbase.h in Headers */ = {isa = PBXBuildFile; fileRef = 93B980DB1CAB9D3D00CE42E0 /* Syncbase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		93B980E31CAB9D3D00CE42E0 /* Syncbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93B980D91CAB9D3D00CE42E0 /* Syncbase.framework */; };
-		93B980E81CAB9D3D00CE42E0 /* SyncbaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B980E71CAB9D3D00CE42E0 /* SyncbaseTests.swift */; };
 		93B980F31CAB9D6E00CE42E0 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B980F21CAB9D6E00CE42E0 /* Security.swift */; };
 		93B980F51CAB9D9000CE42E0 /* Syncbase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B980F41CAB9D9000CE42E0 /* Syncbase.swift */; };
 		93BC21591C9E199F0074C612 /* VanadiumCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 93BC21581C9E199F0074C612 /* VanadiumCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -118,12 +136,30 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		305A8E641CCF64E7007656D0 /* Batch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Batch.swift; sourceTree = "<group>"; };
+		305A8E651CCF64E7007656D0 /* Blob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Blob.swift; sourceTree = "<group>"; };
+		305A8E661CCF64E7007656D0 /* Collection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
+		305A8E671CCF64E7007656D0 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		305A8E681CCF64E7007656D0 /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
+		305A8E691CCF64E7007656D0 /* Id.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Id.swift; sourceTree = "<group>"; };
+		305A8E6A1CCF64E7007656D0 /* Marshal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Marshal.swift; sourceTree = "<group>"; };
+		305A8E6B1CCF64E7007656D0 /* Permissions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
+		305A8E6C1CCF64E7007656D0 /* Row.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Row.swift; sourceTree = "<group>"; };
+		305A8E6D1CCF64E7007656D0 /* Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
+		305A8E6E1CCF64E7007656D0 /* Stream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stream.swift; sourceTree = "<group>"; };
+		305A8E6F1CCF64E7007656D0 /* Syncgroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Syncgroup.swift; sourceTree = "<group>"; };
+		305A8E701CCF64E7007656D0 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
+		305A8E711CCF64E7007656D0 /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Util.m; sourceTree = "<group>"; };
+		305A8E721CCF64E7007656D0 /* Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		305A8E731CCF64E7007656D0 /* Vom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vom.swift; sourceTree = "<group>"; };
+		305A8E741CCF64E7007656D0 /* Watch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
+		30B111C31CCEA9C7000F3750 /* NSNumberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSNumberTests.swift; sourceTree = "<group>"; };
+		30B1120A1CCF586C000F3750 /* JsonTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonTests.swift; sourceTree = "<group>"; };
 		93B980D21CAB9B6100CE42E0 /* Principal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Principal.swift; path = security/Principal.swift; sourceTree = "<group>"; };
 		93B980D91CAB9D3D00CE42E0 /* Syncbase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Syncbase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		93B980DB1CAB9D3D00CE42E0 /* Syncbase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Syncbase.h; sourceTree = "<group>"; };
 		93B980DD1CAB9D3D00CE42E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		93B980E21CAB9D3D00CE42E0 /* SyncbaseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncbaseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		93B980E71CAB9D3D00CE42E0 /* SyncbaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncbaseTests.swift; sourceTree = "<group>"; };
 		93B980E91CAB9D3D00CE42E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		93B980F21CAB9D6E00CE42E0 /* Security.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Security.swift; sourceTree = "<group>"; };
 		93B980F41CAB9D9000CE42E0 /* Syncbase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Syncbase.swift; sourceTree = "<group>"; };
@@ -202,10 +238,27 @@
 		93B980DA1CAB9D3D00CE42E0 /* Syncbase */ = {
 			isa = PBXGroup;
 			children = (
-				93B980DB1CAB9D3D00CE42E0 /* Syncbase.h */,
+				305A8E641CCF64E7007656D0 /* Batch.swift */,
+				305A8E651CCF64E7007656D0 /* Blob.swift */,
+				305A8E661CCF64E7007656D0 /* Collection.swift */,
+				305A8E671CCF64E7007656D0 /* Database.swift */,
+				305A8E681CCF64E7007656D0 /* Errors.swift */,
+				305A8E691CCF64E7007656D0 /* Id.swift */,
 				93B980DD1CAB9D3D00CE42E0 /* Info.plist */,
+				305A8E6A1CCF64E7007656D0 /* Marshal.swift */,
+				305A8E6B1CCF64E7007656D0 /* Permissions.swift */,
+				305A8E6C1CCF64E7007656D0 /* Row.swift */,
 				93B980F21CAB9D6E00CE42E0 /* Security.swift */,
+				305A8E6D1CCF64E7007656D0 /* Service.swift */,
+				305A8E6E1CCF64E7007656D0 /* Stream.swift */,
+				93B980DB1CAB9D3D00CE42E0 /* Syncbase.h */,
 				93B980F41CAB9D9000CE42E0 /* Syncbase.swift */,
+				305A8E6F1CCF64E7007656D0 /* Syncgroup.swift */,
+				305A8E701CCF64E7007656D0 /* Util.h */,
+				305A8E711CCF64E7007656D0 /* Util.m */,
+				305A8E721CCF64E7007656D0 /* Util.swift */,
+				305A8E731CCF64E7007656D0 /* Vom.swift */,
+				305A8E741CCF64E7007656D0 /* Watch.swift */,
 			);
 			path = Syncbase;
 			sourceTree = "<group>";
@@ -213,8 +266,9 @@
 		93B980E61CAB9D3D00CE42E0 /* SyncbaseTests */ = {
 			isa = PBXGroup;
 			children = (
-				93B980E71CAB9D3D00CE42E0 /* SyncbaseTests.swift */,
 				93B980E91CAB9D3D00CE42E0 /* Info.plist */,
+				30B111C31CCEA9C7000F3750 /* NSNumberTests.swift */,
+				30B1120A1CCF586C000F3750 /* JsonTests.swift */,
 			);
 			path = SyncbaseTests;
 			sourceTree = "<group>";
@@ -365,6 +419,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				305A8E811CCF64E7007656D0 /* Util.h in Headers */,
 				93B980DC1CAB9D3D00CE42E0 /* Syncbase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -612,8 +667,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				305A8E7C1CCF64E7007656D0 /* Permissions.swift in Sources */,
+				305A8E7A1CCF64E7007656D0 /* Id.swift in Sources */,
+				305A8E781CCF64E7007656D0 /* Database.swift in Sources */,
+				305A8E831CCF64E7007656D0 /* Util.swift in Sources */,
+				305A8E761CCF64E7007656D0 /* Blob.swift in Sources */,
+				305A8E801CCF64E7007656D0 /* Syncgroup.swift in Sources */,
+				305A8E821CCF64E7007656D0 /* Util.m in Sources */,
+				305A8E851CCF64E7007656D0 /* Watch.swift in Sources */,
+				305A8E771CCF64E7007656D0 /* Collection.swift in Sources */,
+				305A8E7E1CCF64E7007656D0 /* Service.swift in Sources */,
+				305A8E751CCF64E7007656D0 /* Batch.swift in Sources */,
+				305A8E7D1CCF64E7007656D0 /* Row.swift in Sources */,
 				93B980F31CAB9D6E00CE42E0 /* Security.swift in Sources */,
+				305A8E7F1CCF64E7007656D0 /* Stream.swift in Sources */,
+				305A8E841CCF64E7007656D0 /* Vom.swift in Sources */,
 				93B980F51CAB9D9000CE42E0 /* Syncbase.swift in Sources */,
+				305A8E7B1CCF64E7007656D0 /* Marshal.swift in Sources */,
+				305A8E791CCF64E7007656D0 /* Errors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -621,7 +692,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				93B980E81CAB9D3D00CE42E0 /* SyncbaseTests.swift in Sources */,
+				30B111C41CCEA9C7000F3750 /* NSNumberTests.swift in Sources */,
+				30B1120B1CCF586C000F3750 /* JsonTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

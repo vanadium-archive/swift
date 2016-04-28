@@ -5,7 +5,7 @@
 import XCTest
 import VanadiumCore
 
-enum TestErrors : ErrorType {
+enum TestErrors: ErrorType {
   case SomeError
   case SomeOtherError
 }
@@ -25,7 +25,7 @@ class PromiseTests: XCTestCase {
       }
     try! p.resolve(5)
     XCTAssertTrue(alwaysRan)
-    
+
     var ranNow = false
     p.onResolve { obj in
       ranNow = true
@@ -68,7 +68,7 @@ class PromiseTests: XCTestCase {
     }
     try! p.reject(TestErrors.SomeError)
   }
-  
+
   func testRejectionDoesntRunOnResolve() {
     let p = Promise<Int>()
     p.onReject { err in
@@ -76,12 +76,12 @@ class PromiseTests: XCTestCase {
     }
     try! p.resolve(5)
   }
-  
+
   func testThenTransforms() {
     let p = Promise<Int>()
     try! p.resolve(5)
-    
-    var finalResult:String = ""
+
+    var finalResult: String = ""
     p.then { obj -> String in
       XCTAssertEqual(obj, 5)
       return "hello"
@@ -94,7 +94,7 @@ class PromiseTests: XCTestCase {
 
   func testThenPropagatesError() {
     let p = Promise<Int>()
-    
+
     var didReject = false
     p.then { obj -> String in
       XCTAssertEqual(obj, 5)
@@ -105,7 +105,7 @@ class PromiseTests: XCTestCase {
     try! p.reject(TestErrors.SomeError)
     XCTAssertTrue(didReject)
   }
-  
+
   func testThenReturningPromiseWorks() {
     let p = Promise<Int>()
     let bgQueue = dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)
@@ -116,7 +116,7 @@ class PromiseTests: XCTestCase {
       }
       return newP
     }
-    
+
     try! p.resolve(5)
     let finalStatus = try! finalP.await()
     switch (finalStatus) {
