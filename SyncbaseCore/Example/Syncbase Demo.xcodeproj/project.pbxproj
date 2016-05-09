@@ -1,0 +1,454 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		30A291DF1CAC982900F3612E /* Demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A291DE1CAC982900F3612E /* Demo.swift */; };
+		30A291E11CAC996F00F3612E /* GoogleSignInDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A291E01CAC996F00F3612E /* GoogleSignInDemo.swift */; };
+		30A291F11CACB0F000F3612E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A291F01CACB0F000F3612E /* AddressBook.framework */; };
+		30A291F31CACB0F500F3612E /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A291F21CACB0F500F3612E /* SafariServices.framework */; };
+		30A291F51CACB0FB00F3612E /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A291F41CACB0FB00F3612E /* SystemConfiguration.framework */; };
+		30A291F71CACB13200F3612E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 30A291F61CACB13200F3612E /* GoogleService-Info.plist */; };
+		30A292041CACB4C300F3612E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 30A292031CACB4C300F3612E /* libz.tbd */; };
+		30D45FE51CE1513F004A59FA /* SyncbaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30D45FE21CE15131004A59FA /* SyncbaseCore.framework */; };
+		30D45FE61CE1513F004A59FA /* SyncbaseCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 30D45FE21CE15131004A59FA /* SyncbaseCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		30D45FEB1CE15154004A59FA /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30D45FE91CE15154004A59FA /* GoogleSignIn.bundle */; };
+		30D45FEC1CE15154004A59FA /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30D45FEA1CE15154004A59FA /* GoogleSignIn.framework */; };
+		9306FB941BFC049400DE7190 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9306FB931BFC049400DE7190 /* AppDelegate.swift */; };
+		9306FB961BFC049400DE7190 /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9306FB951BFC049400DE7190 /* DemoViewController.swift */; };
+		9306FB991BFC049400DE7190 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB971BFC049400DE7190 /* Main.storyboard */; };
+		9306FB9B1BFC049400DE7190 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB9A1BFC049400DE7190 /* Assets.xcassets */; };
+		9306FB9E1BFC049400DE7190 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB9C1BFC049400DE7190 /* LaunchScreen.storyboard */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		30D45FE11CE15131004A59FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30D45FDB1CE15131004A59FA /* SyncbaseCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 30AD2DFF1CDD506700A28A0C;
+			remoteInfo = SyncbaseCore;
+		};
+		30D45FE31CE15131004A59FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30D45FDB1CE15131004A59FA /* SyncbaseCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 30AD2E091CDD506700A28A0C;
+			remoteInfo = SyncbaseCoreTests;
+		};
+		30D45FE71CE1513F004A59FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 30D45FDB1CE15131004A59FA /* SyncbaseCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 30AD2DFE1CDD506700A28A0C;
+			remoteInfo = SyncbaseCore;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		30A2920A1CADD82D00F3612E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				30D45FE61CE1513F004A59FA /* SyncbaseCore.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		30A291DE1CAC982900F3612E /* Demo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Demo.swift; sourceTree = "<group>"; };
+		30A291E01CAC996F00F3612E /* GoogleSignInDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoogleSignInDemo.swift; sourceTree = "<group>"; };
+		30A291F01CACB0F000F3612E /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		30A291F21CACB0F500F3612E /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
+		30A291F41CACB0FB00F3612E /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		30A291F61CACB13200F3612E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		30A291FA1CACB1D400F3612E /* Demo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Demo-Bridging-Header.h"; sourceTree = "<group>"; };
+		30A292031CACB4C300F3612E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		30D45FDB1CE15131004A59FA /* SyncbaseCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncbaseCore.xcodeproj; path = ../SyncbaseCore.xcodeproj; sourceTree = "<group>"; };
+		30D45FE91CE15154004A59FA /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleSignIn.bundle; path = ../../../../third_party/swift/google_signin_sdk_3_0_0/GoogleSignIn.bundle; sourceTree = "<group>"; };
+		30D45FEA1CE15154004A59FA /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = ../../../../third_party/swift/google_signin_sdk_3_0_0/GoogleSignIn.framework; sourceTree = "<group>"; };
+		9306FB901BFC049400DE7190 /* Syncbase Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Syncbase Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9306FB931BFC049400DE7190 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9306FB951BFC049400DE7190 /* DemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewController.swift; sourceTree = "<group>"; };
+		9306FB981BFC049400DE7190 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		9306FB9A1BFC049400DE7190 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9306FB9D1BFC049400DE7190 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9306FB9F1BFC049400DE7190 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9306FB8D1BFC049400DE7190 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30A292041CACB4C300F3612E /* libz.tbd in Frameworks */,
+				30D45FEC1CE15154004A59FA /* GoogleSignIn.framework in Frameworks */,
+				30A291F51CACB0FB00F3612E /* SystemConfiguration.framework in Frameworks */,
+				30D45FE51CE1513F004A59FA /* SyncbaseCore.framework in Frameworks */,
+				30A291F31CACB0F500F3612E /* SafariServices.framework in Frameworks */,
+				30A291F11CACB0F000F3612E /* AddressBook.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		30A291F81CACB13700F3612E /* Google Sign In */ = {
+			isa = PBXGroup;
+			children = (
+				30A291E01CAC996F00F3612E /* GoogleSignInDemo.swift */,
+				30A291F61CACB13200F3612E /* GoogleService-Info.plist */,
+			);
+			name = "Google Sign In";
+			sourceTree = "<group>";
+		};
+		30A292121CAE290500F3612E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				30D45FE91CE15154004A59FA /* GoogleSignIn.bundle */,
+				30D45FEA1CE15154004A59FA /* GoogleSignIn.framework */,
+				30D45FDB1CE15131004A59FA /* SyncbaseCore.xcodeproj */,
+				30A291F01CACB0F000F3612E /* AddressBook.framework */,
+				30A291F21CACB0F500F3612E /* SafariServices.framework */,
+				30A291F41CACB0FB00F3612E /* SystemConfiguration.framework */,
+				30A292031CACB4C300F3612E /* libz.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		30D45FDC1CE15131004A59FA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				30D45FE21CE15131004A59FA /* SyncbaseCore.framework */,
+				30D45FE41CE15131004A59FA /* SyncbaseCoreTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9306FB871BFC049400DE7190 = {
+			isa = PBXGroup;
+			children = (
+				9306FB921BFC049400DE7190 /* Demo */,
+				30A292121CAE290500F3612E /* Frameworks */,
+				9306FB911BFC049400DE7190 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9306FB911BFC049400DE7190 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9306FB901BFC049400DE7190 /* Syncbase Demo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9306FB921BFC049400DE7190 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				9306FB931BFC049400DE7190 /* AppDelegate.swift */,
+				9306FB951BFC049400DE7190 /* DemoViewController.swift */,
+				9306FB971BFC049400DE7190 /* Main.storyboard */,
+				30A291DE1CAC982900F3612E /* Demo.swift */,
+				30A291F81CACB13700F3612E /* Google Sign In */,
+				9306FB9A1BFC049400DE7190 /* Assets.xcassets */,
+				9306FB9C1BFC049400DE7190 /* LaunchScreen.storyboard */,
+				9306FB9F1BFC049400DE7190 /* Info.plist */,
+				30A291FA1CACB1D400F3612E /* Demo-Bridging-Header.h */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9306FB8F1BFC049400DE7190 /* Syncbase Demo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9306FBAD1BFC049400DE7190 /* Build configuration list for PBXNativeTarget "Syncbase Demo" */;
+			buildPhases = (
+				9306FB8C1BFC049400DE7190 /* Sources */,
+				9306FB8D1BFC049400DE7190 /* Frameworks */,
+				9306FB8E1BFC049400DE7190 /* Resources */,
+				30A2920A1CADD82D00F3612E /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				30D45FE81CE1513F004A59FA /* PBXTargetDependency */,
+			);
+			name = "Syncbase Demo";
+			productName = Demo;
+			productReference = 9306FB901BFC049400DE7190 /* Syncbase Demo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9306FB881BFC049400DE7190 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = "Google Inc.";
+				TargetAttributes = {
+					9306FB8F1BFC049400DE7190 = {
+						CreatedOnToolsVersion = 7.1;
+					};
+				};
+			};
+			buildConfigurationList = 9306FB8B1BFC049400DE7190 /* Build configuration list for PBXProject "Syncbase Demo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9306FB871BFC049400DE7190;
+			productRefGroup = 9306FB911BFC049400DE7190 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 30D45FDC1CE15131004A59FA /* Products */;
+					ProjectRef = 30D45FDB1CE15131004A59FA /* SyncbaseCore.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				9306FB8F1BFC049400DE7190 /* Syncbase Demo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		30D45FE21CE15131004A59FA /* SyncbaseCore.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SyncbaseCore.framework;
+			remoteRef = 30D45FE11CE15131004A59FA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		30D45FE41CE15131004A59FA /* SyncbaseCoreTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SyncbaseCoreTests.xctest;
+			remoteRef = 30D45FE31CE15131004A59FA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9306FB8E1BFC049400DE7190 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9306FB9E1BFC049400DE7190 /* LaunchScreen.storyboard in Resources */,
+				30D45FEB1CE15154004A59FA /* GoogleSignIn.bundle in Resources */,
+				30A291F71CACB13200F3612E /* GoogleService-Info.plist in Resources */,
+				9306FB9B1BFC049400DE7190 /* Assets.xcassets in Resources */,
+				9306FB991BFC049400DE7190 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9306FB8C1BFC049400DE7190 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30A291E11CAC996F00F3612E /* GoogleSignInDemo.swift in Sources */,
+				9306FB961BFC049400DE7190 /* DemoViewController.swift in Sources */,
+				9306FB941BFC049400DE7190 /* AppDelegate.swift in Sources */,
+				30A291DF1CAC982900F3612E /* Demo.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		30D45FE81CE1513F004A59FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SyncbaseCore;
+			targetProxy = 30D45FE71CE1513F004A59FA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		9306FB971BFC049400DE7190 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9306FB981BFC049400DE7190 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		9306FB9C1BFC049400DE7190 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9306FB9D1BFC049400DE7190 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		9306FBAB1BFC049400DE7190 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_BITCODE = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9306FBAC1BFC049400DE7190 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9306FBAE1BFC049400DE7190 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_SEARCH_PATHS = "${PROJECT_DIR}/../../../../third_party/swift/google_signin_sdk_3_0_0";
+				INFOPLIST_FILE = Demo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(OTHER_LDFLAGS)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = v.io.SyncbaseDemo;
+				PRODUCT_NAME = "Syncbase Demo";
+				SWIFT_OBJC_BRIDGING_HEADER = "Demo/Demo-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		9306FBAF1BFC049400DE7190 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_SEARCH_PATHS = "${PROJECT_DIR}/../../../../third_party/swift/google_signin_sdk_3_0_0";
+				INFOPLIST_FILE = Demo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"$(OTHER_LDFLAGS)",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = v.io.SyncbaseDemo;
+				PRODUCT_NAME = "Syncbase Demo";
+				SWIFT_OBJC_BRIDGING_HEADER = "Demo/Demo-Bridging-Header.h";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9306FB8B1BFC049400DE7190 /* Build configuration list for PBXProject "Syncbase Demo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9306FBAB1BFC049400DE7190 /* Debug */,
+				9306FBAC1BFC049400DE7190 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9306FBAD1BFC049400DE7190 /* Build configuration list for PBXNativeTarget "Syncbase Demo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9306FBAE1BFC049400DE7190 /* Debug */,
+				9306FBAF1BFC049400DE7190 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9306FB881BFC049400DE7190 /* Project object */;
+}
