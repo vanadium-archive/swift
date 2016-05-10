@@ -27,7 +27,6 @@
 		30AD2E451CDD508700A28A0C /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E2F1CDD508700A28A0C /* Watch.swift */; };
 		30AD2E4D1CDD508D00A28A0C /* JsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E491CDD508D00A28A0C /* JsonTests.swift */; };
 		30AD2E4E1CDD508D00A28A0C /* NSNumberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E4A1CDD508D00A28A0C /* NSNumberTests.swift */; };
-		30AD2E731CDD548C00A28A0C /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 30AD2E711CDD548C00A28A0C /* GoogleSignIn.bundle */; };
 		30AD2E761CDD55F400A28A0C /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AD2E641CDD547F00A28A0C /* Alamofire.framework */; };
 		30AD2E7F1CDD569200A28A0C /* Locking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E781CDD569200A28A0C /* Locking.swift */; };
 		30AD2E801CDD569200A28A0C /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E791CDD569200A28A0C /* Logging.swift */; };
@@ -135,7 +134,6 @@
 		30AD2E491CDD508D00A28A0C /* JsonTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonTests.swift; sourceTree = "<group>"; };
 		30AD2E4A1CDD508D00A28A0C /* NSNumberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSNumberTests.swift; sourceTree = "<group>"; };
 		30AD2E591CDD547F00A28A0C /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = "../../../../third_party/swift/Alamofire-3.3.0/Alamofire.xcodeproj"; sourceTree = "<group>"; };
-		30AD2E711CDD548C00A28A0C /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleSignIn.bundle; path = /Users/zinman/vanadium/third_party/swift/google_signin_sdk_3_0_0/GoogleSignIn.bundle; sourceTree = "<absolute>"; };
 		30AD2E781CDD569200A28A0C /* Locking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Locking.swift; path = util/Locking.swift; sourceTree = "<group>"; };
 		30AD2E791CDD569200A28A0C /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Logging.swift; path = util/Logging.swift; sourceTree = "<group>"; };
 		30AD2E7A1CDD569200A28A0C /* Strings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Strings.swift; path = util/Strings.swift; sourceTree = "<group>"; };
@@ -432,7 +430,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30AD2E731CDD548C00A28A0C /* GoogleSignIn.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
