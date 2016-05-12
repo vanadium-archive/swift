@@ -39,8 +39,12 @@
 		30AD2E931CDD60A600A28A0C /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E921CDD60A600A28A0C /* Types.swift */; };
 		30D45FC91CE14A8A004A59FA /* cgo_exports.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D45FC41CE14A8A004A59FA /* cgo_exports.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30D45FCA1CE14A8A004A59FA /* go_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D45FC51CE14A8A004A59FA /* go_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		30D45FCB1CE14A8A004A59FA /* sbcore_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30D45FC61CE14A8A004A59FA /* sbcore_amd64.a */; };
 		30D45FCD1CE14A8A004A59FA /* sbcore_arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30D45FC81CE14A8A004A59FA /* sbcore_arm64.a */; };
+		9351A4941CE46DB9009CC4F4 /* sbcore_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9351A4931CE46DB9009CC4F4 /* sbcore_amd64.a */; };
+		93D3AD5C1CE4392A00A80CDA /* libleveldb_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D3AD581CE4392A00A80CDA /* libleveldb_amd64.a */; };
+		93D3AD5D1CE4392A00A80CDA /* libleveldb_arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D3AD591CE4392A00A80CDA /* libleveldb_arm64.a */; };
+		93D3AD5E1CE4392A00A80CDA /* libsnappy_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D3AD5A1CE4392A00A80CDA /* libsnappy_amd64.a */; };
+		93D3AD5F1CE4392A00A80CDA /* libsnappy_arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D3AD5B1CE4392A00A80CDA /* libsnappy_arm64.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,8 +149,12 @@
 		30AD2E921CDD60A600A28A0C /* Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Types.swift; path = util/Types.swift; sourceTree = "<group>"; };
 		30D45FC41CE14A8A004A59FA /* cgo_exports.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cgo_exports.h; sourceTree = "<group>"; };
 		30D45FC51CE14A8A004A59FA /* go_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = go_types.h; sourceTree = "<group>"; };
-		30D45FC61CE14A8A004A59FA /* sbcore_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = sbcore_amd64.a; sourceTree = "<group>"; };
 		30D45FC81CE14A8A004A59FA /* sbcore_arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = sbcore_arm64.a; sourceTree = "<group>"; };
+		9351A4931CE46DB9009CC4F4 /* sbcore_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = sbcore_amd64.a; sourceTree = "<group>"; };
+		93D3AD581CE4392A00A80CDA /* libleveldb_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libleveldb_amd64.a; sourceTree = "<group>"; };
+		93D3AD591CE4392A00A80CDA /* libleveldb_arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libleveldb_arm64.a; sourceTree = "<group>"; };
+		93D3AD5A1CE4392A00A80CDA /* libsnappy_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsnappy_amd64.a; sourceTree = "<group>"; };
+		93D3AD5B1CE4392A00A80CDA /* libsnappy_arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsnappy_arm64.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,8 +163,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				30D45FCD1CE14A8A004A59FA /* sbcore_arm64.a in Frameworks */,
-				30D45FCB1CE14A8A004A59FA /* sbcore_amd64.a in Frameworks */,
+				93D3AD5E1CE4392A00A80CDA /* libsnappy_amd64.a in Frameworks */,
+				93D3AD5F1CE4392A00A80CDA /* libsnappy_arm64.a in Frameworks */,
+				93D3AD5C1CE4392A00A80CDA /* libleveldb_amd64.a in Frameworks */,
 				30AD2E761CDD55F400A28A0C /* Alamofire.framework in Frameworks */,
+				93D3AD5D1CE4392A00A80CDA /* libleveldb_arm64.a in Frameworks */,
+				9351A4941CE46DB9009CC4F4 /* sbcore_amd64.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,7 +245,11 @@
 			children = (
 				30D45FC41CE14A8A004A59FA /* cgo_exports.h */,
 				30D45FC51CE14A8A004A59FA /* go_types.h */,
-				30D45FC61CE14A8A004A59FA /* sbcore_amd64.a */,
+				93D3AD581CE4392A00A80CDA /* libleveldb_amd64.a */,
+				93D3AD591CE4392A00A80CDA /* libleveldb_arm64.a */,
+				93D3AD5A1CE4392A00A80CDA /* libsnappy_amd64.a */,
+				93D3AD5B1CE4392A00A80CDA /* libsnappy_arm64.a */,
+				9351A4931CE46DB9009CC4F4 /* sbcore_amd64.a */,
 				30D45FC81CE14A8A004A59FA /* sbcore_arm64.a */,
 			);
 			path = Generated;
@@ -504,7 +520,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -524,7 +540,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -542,7 +558,10 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -557,7 +576,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -577,7 +596,7 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -588,7 +607,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lc++",
+				);
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
