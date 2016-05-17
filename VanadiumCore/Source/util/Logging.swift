@@ -95,7 +95,7 @@ public struct VLoggingOptions {
       })
     #else
       try SwiftVError.catchAndThrowError({ errPtr in
-        swift_io_v_v23_V_nativeInitLogging(nil, 0, // no logging to disk
+        swift_io_v_v23_V_nativeInitLogging(nil, 1, // no logging to disk
             level.rawValue.toGo(), moduleSpec?.toGo() ?? nil, errPtr)
       })
     #endif

@@ -11,4 +11,5 @@ protocol DemoDescription: CustomStringConvertible {
 
 protocol Demo {
   mutating func start()
+  mutating func stop()
 }

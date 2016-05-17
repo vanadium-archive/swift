@@ -79,4 +79,9 @@ public class V23 {
       return rootContext
     }
   }
+
+  /// Shutdown will shutdown the root V23 context and runtime, removing the instance from memory.
+  public func shutdown() {
+    V23._instance = nil
+  }
 }

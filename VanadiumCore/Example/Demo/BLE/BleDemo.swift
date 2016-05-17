@@ -30,6 +30,6 @@ struct BleAdvertiseUtilityDemoDescription: DemoDescription {
 }
 
 struct BleUtilityDemo: Demo {
-  mutating func start() {
-  }
+  mutating func start() { }
+  mutating func stop() { }
 }

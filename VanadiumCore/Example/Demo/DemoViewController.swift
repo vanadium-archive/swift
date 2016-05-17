@@ -9,7 +9,8 @@ class DemoViewController: UITableViewController {
   let demos: [DemoDescription] = [
     RPCDemoDescription(),
     BleAdvertiseUtilityDemoDescription(),
-    BleDiscoveryUtilityDemoDescription()]
+    BleDiscoveryUtilityDemoDescription(),
+    DiscoveryDemoDescription()]
   var currentDemo: Demo? = nil
   var currentDemoDescription: DemoDescription? = nil
 
@@ -48,5 +49,10 @@ class DemoViewController: UITableViewController {
       segue.destinationViewController.title = currentDemoDescription?.description
     }
     currentDemo?.start()
+  }
+
+  override func viewWillAppear(animated: Bool) {
+    currentDemo?.stop()
+    currentDemo = nil
   }
 }

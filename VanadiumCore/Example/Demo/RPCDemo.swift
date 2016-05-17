@@ -24,6 +24,10 @@ struct RPCDemo: Demo {
     testCancel()
   }
 
+  mutating func stop() {
+    V23.instance.shutdown()
+  }
+
   let addr = "/" + "@6@wsh@100.110.93.71:23000@@b6752aa9f33f86b9aecf25ecad73c8a4@l@tutorial@@"
   var instance: V23? = nil
 

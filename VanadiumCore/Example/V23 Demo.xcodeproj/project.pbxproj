@@ -26,6 +26,7 @@
 		9306FB991BFC049400DE7190 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB971BFC049400DE7190 /* Main.storyboard */; };
 		9306FB9B1BFC049400DE7190 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB9A1BFC049400DE7190 /* Assets.xcassets */; };
 		9306FB9E1BFC049400DE7190 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB9C1BFC049400DE7190 /* LaunchScreen.storyboard */; };
+		93BDAFE41CE17BB800D9CECA /* DiscoveryDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BDAFE31CE17BB800D9CECA /* DiscoveryDemo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +88,7 @@
 		9306FB9A1BFC049400DE7190 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9306FB9D1BFC049400DE7190 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9306FB9F1BFC049400DE7190 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		93BDAFE31CE17BB800D9CECA /* DiscoveryDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiscoveryDemo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				30A291DC1CAC981E00F3612E /* RPCDemo.swift */,
+				93BDAFE31CE17BB800D9CECA /* DiscoveryDemo.swift */,
 			);
 			name = "Vanadium Core Demos";
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 				30029EAC1CCA0F7300B76510 /* AdvertiseViewController.swift in Sources */,
 				30029EAE1CCA0F7300B76510 /* BleModel.swift in Sources */,
 				30A291DF1CAC982900F3612E /* Demo.swift in Sources */,
+				93BDAFE41CE17BB800D9CECA /* DiscoveryDemo.swift in Sources */,
 				30029EBB1CCA0FD500B76510 /* BleDemo.swift in Sources */,
 				30029EB01CCA0F7300B76510 /* DeviceInfoViewController.swift in Sources */,
 				30029EB11CCA0F7300B76510 /* DevicesViewController.swift in Sources */,

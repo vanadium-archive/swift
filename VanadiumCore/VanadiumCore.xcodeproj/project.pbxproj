@@ -30,6 +30,12 @@
 		30AD2DC81CDD4D5C00A28A0C /* go_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 30AD2DC41CDD4D5C00A28A0C /* go_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30AD2DC91CDD4D5C00A28A0C /* v23_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AD2DC51CDD4D5C00A28A0C /* v23_amd64.a */; };
 		30AD2DCA1CDD4D5C00A28A0C /* v23_arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AD2DC61CDD4D5C00A28A0C /* v23_arm64.a */; };
+		93BDAFDA1CE176B800D9CECA /* Advertisement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BDAFD81CE176B800D9CECA /* Advertisement.swift */; };
+		93BDAFDB1CE176B800D9CECA /* Discovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BDAFD91CE176B800D9CECA /* Discovery.swift */; };
+		93BDAFDF1CE17B3900D9CECA /* CBAdvertisingDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 93BDAFDC1CE17B3900D9CECA /* CBAdvertisingDriver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		93BDAFE11CE17B3900D9CECA /* CBDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 93BDAFDE1CE17B3900D9CECA /* CBDriver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		93BDAFE71CE1967300D9CECA /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BDAFE61CE1967300D9CECA /* Json.swift */; };
+		93EC80BD1CEAB5190077891F /* CBScanningDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 93EC80BC1CEAB5190077891F /* CBScanningDriver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +75,12 @@
 		30AD2DC51CDD4D5C00A28A0C /* v23_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = v23_amd64.a; sourceTree = "<group>"; };
 		30AD2DC61CDD4D5C00A28A0C /* v23_arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = v23_arm64.a; sourceTree = "<group>"; };
 		93BC21551C9E199F0074C612 /* VanadiumCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VanadiumCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		93BDAFD81CE176B800D9CECA /* Advertisement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Advertisement.swift; sourceTree = "<group>"; };
+		93BDAFD91CE176B800D9CECA /* Discovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Discovery.swift; sourceTree = "<group>"; };
+		93BDAFDC1CE17B3900D9CECA /* CBAdvertisingDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CBAdvertisingDriver.h; path = ../../../../go/src/v.io/x/ref/lib/discovery/plugins/ble/corebluetooth/CBAdvertisingDriver.h; sourceTree = "<group>"; };
+		93BDAFDE1CE17B3900D9CECA /* CBDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CBDriver.h; path = ../../../../go/src/v.io/x/ref/lib/discovery/plugins/ble/corebluetooth/CBDriver.h; sourceTree = "<group>"; };
+		93BDAFE61CE1967300D9CECA /* Json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
+		93EC80BC1CEAB5190077891F /* CBScanningDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CBScanningDriver.h; path = ../../../../go/src/v.io/x/ref/lib/discovery/plugins/ble/corebluetooth/CBScanningDriver.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,14 +107,15 @@
 		30AD2D771CDD4C9B00A28A0C /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				30AD2D901CDD4C9B00A28A0C /* VanadiumCore.h */,
+				30AD2D821CDD4C9B00A28A0C /* Info.plist */,
 				30AD2D791CDD4C9B00A28A0C /* bridge */,
 				30AD2D7D1CDD4C9B00A28A0C /* context */,
-				30AD2D821CDD4C9B00A28A0C /* Info.plist */,
+				93BDAFD71CE176B800D9CECA /* discovery */,
 				30AD2D831CDD4C9B00A28A0C /* rpc */,
 				30AD2D851CDD4C9B00A28A0C /* rt */,
 				30AD2D871CDD4C9B00A28A0C /* security */,
 				30AD2D891CDD4C9B00A28A0C /* util */,
-				30AD2D901CDD4C9B00A28A0C /* VanadiumCore.h */,
 				30AD2D911CDD4C9B00A28A0C /* vdl */,
 			);
 			path = Source;
@@ -159,6 +172,7 @@
 				30AD2D8D1CDD4C9B00A28A0C /* Promise.swift */,
 				30AD2D8E1CDD4C9B00A28A0C /* Strings.swift */,
 				30AD2D8F1CDD4C9B00A28A0C /* Threads.swift */,
+				93BDAFE61CE1967300D9CECA /* Json.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -212,6 +226,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		93BDAFD71CE176B800D9CECA /* discovery */ = {
+			isa = PBXGroup;
+			children = (
+				93BDAFD81CE176B800D9CECA /* Advertisement.swift */,
+				93BDAFD91CE176B800D9CECA /* Discovery.swift */,
+				93BDAFDC1CE17B3900D9CECA /* CBAdvertisingDriver.h */,
+				93EC80BC1CEAB5190077891F /* CBScanningDriver.h */,
+				93BDAFDE1CE17B3900D9CECA /* CBDriver.h */,
+			);
+			path = discovery;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -220,6 +246,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				30AD2DC81CDD4D5C00A28A0C /* go_types.h in Headers */,
+				93EC80BD1CEAB5190077891F /* CBScanningDriver.h in Headers */,
+				93BDAFDF1CE17B3900D9CECA /* CBAdvertisingDriver.h in Headers */,
+				93BDAFE11CE17B3900D9CECA /* CBDriver.h in Headers */,
 				30AD2DC71CDD4D5C00A28A0C /* cgo_exports.h in Headers */,
 				30AD2DA51CDD4C9B00A28A0C /* VanadiumCore.h in Headers */,
 			);
@@ -355,9 +384,12 @@
 				30AD2DA61CDD4C9B00A28A0C /* VdlTypes.swift in Sources */,
 				30AD2D971CDD4C9B00A28A0C /* Types.swift in Sources */,
 				30AD2D981CDD4C9B00A28A0C /* Context.swift in Sources */,
+				93BDAFDB1CE176B800D9CECA /* Discovery.swift in Sources */,
 				30AD2DA31CDD4C9B00A28A0C /* Strings.swift in Sources */,
 				30AD2DA41CDD4C9B00A28A0C /* Threads.swift in Sources */,
+				93BDAFE71CE1967300D9CECA /* Json.swift in Sources */,
 				30AD2D9D1CDD4C9B00A28A0C /* Runtime.swift in Sources */,
+				93BDAFDA1CE176B800D9CECA /* Advertisement.swift in Sources */,
 				30AD2DA71CDD4C9B00A28A0C /* VdlUtil.swift in Sources */,
 				30AD2DA21CDD4C9B00A28A0C /* Promise.swift in Sources */,
 				30AD2DA11CDD4C9B00A28A0C /* Logging.swift in Sources */,
