@@ -23,6 +23,8 @@ enum BlessingOutputFormat: String {
 
 public enum VanadiumBlesserError: ErrorType {
   case EmptyResult
+  case GatewayTimeout
+  case InvalidHttpResponse(statusCode: Int)
   case NotBase64Encoded(invalid: String)
 }
 
@@ -41,27 +43,40 @@ public extension VanadiumBlesser {
         encoding: ParameterEncoding.URLEncodedInURL,
         headers: nil)
       request.responseString { resp in
-        guard let base64 = resp.result.value else {
-          if let err = resp.result.error {
-            callback(nil, err)
-          } else {
-            callback(nil, VanadiumBlesserError.EmptyResult)
-          }
-          return
+        guard let base64 = resp.result.value,
+          let response = resp.response where response.statusCode == 200 else {
+            if let err = resp.result.error {
+              callback(nil, err)
+            } else if let code = resp.response?.statusCode {
+              switch code {
+              case 504: callback(nil, VanadiumBlesserError.GatewayTimeout)
+              default: callback(nil, VanadiumBlesserError.InvalidHttpResponse(statusCode: code))
+              }
+            } else {
+              callback(nil, VanadiumBlesserError.EmptyResult)
+            }
+            return
         }
 
         // The base64 values are encoded using Go's URL-variant of base64 encoding, which is not
         // compatible with Apple's base64 encoder/decoder. So we call out to to Go directly to
         // decode this value into the vom-encoded byte array.
-        // TODO(zinman): Fix this once we have unified our types for the CGO bridge
-        preconditionFailure("Implement me")
-//        let swiftArray = swift_io_v_swift_impl_util_type_nativeBase64UrlDecode(base64.toGo())
-//        if swiftArray.length == 0 {
-//          callback(nil, VanadiumBlesserError.NotBase64Encoded(invalid: base64))
-//          return
-//        }
-//        let data = swiftArray.toNSDataNoCopyFreeWhenDone()
-//        callback(data, nil)
+        var cErr = v23_syncbase_VError()
+        var cData = v23_syncbase_Bytes()
+        guard let cBase64 = try? base64.toCgoString() else {
+          callback(nil, VanadiumBlesserError.EmptyResult)
+          return
+        }
+        v23_syncbase_Base64UrlDecode(cBase64, &cData, &cErr)
+        if let err = cErr.toVError() {
+          callback(nil, err)
+          return
+        }
+        guard let data = cData.toNSData() else {
+          callback(nil, VanadiumBlesserError.EmptyResult)
+          return
+        }
+        callback(data, nil)
       }
     } catch let err {
       callback(nil, err)

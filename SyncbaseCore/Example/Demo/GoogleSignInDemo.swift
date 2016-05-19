@@ -20,11 +20,17 @@ struct GoogleSignInDemoDescription: DemoDescription {
 @objc class GoogleSignInDemo: UIViewController, Demo, GIDSignInDelegate, GIDSignInUIDelegate {
   @IBOutlet weak var signInButton: GIDSignInButton!
   @IBOutlet weak var statusLabel: UILabel!
+  @IBOutlet weak var doneButton: UIBarButtonItem!
+  var dismissOnSignIn = false
 
   override func viewDidLoad() {
     super.viewDidLoad()
     statusLabel.text = ""
     configureGoogle()
+  }
+
+  @IBAction func cancelPressed(sender: UIBarButtonItem) {
+    dismissViewControllerAnimated(true) { }
   }
 
   func start() {
@@ -102,9 +108,14 @@ struct GoogleSignInDemoDescription: DemoDescription {
         this?.statusLabel.text = "Unable to get blessing: \(err!)"
         return
       }
-      let blessings: String! = try? Principal.blessingsDebugString() ?? "<error>"
+      let blessings: String = Principal.blessingsDebugString() ?? "<error>"
       debugPrint("Got blessings \(blessings)")
       this?.statusLabel.text = "Got blessing: \(blessings)"
+      if this?.dismissOnSignIn ?? false {
+        dispatch_async(dispatch_get_main_queue(), {
+          this?.dismissViewControllerAnimated(true) { }
+        })
+      }
     })
   }
 }

@@ -5,9 +5,9 @@
 import Foundation
 import CoreGraphics
 
-internal extension NSNumber {
+extension NSNumber {
   /// Returns true if value can be cast to NSNumber or NSNumber?
-  internal static func isNSNumber<V>(value: V) -> Bool {
+  static func isNSNumber<V>(value: V) -> Bool {
     // Can't do this:
     // if value is NSNumber {
     // because it will always succeed through type coercion, even if value is an Int.
@@ -23,7 +23,7 @@ internal extension NSNumber {
   ///
   /// Caveat: Currently this function makes no attempt to determine signed/unsigned correctness of
   /// the underlying data, although this is sometimes knowable with NSNumber.objCType.
-  internal func isTargetCastable<T>(inout target: T?) -> Bool {
+  func isTargetCastable<T>(inout target: T?) -> Bool {
     // Allow matching types of this size, and bigger. Signed and unsigned of same size are not allowed.
     // Swift: https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/TheBasics.html
     // C types: https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaTouch64BitGuide/Major64-BitChanges/Major64-BitChanges.html

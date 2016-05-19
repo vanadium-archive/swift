@@ -5,7 +5,7 @@
 import Foundation
 
 public struct ResumeMarker {
-  internal let data: [UInt8]
+  let data: [UInt8]
 }
 
 public struct WatchChange {
@@ -14,7 +14,7 @@ public struct WatchChange {
   }
 
   /// Collection is the id of the collection that contains the changed row.
-  let collectionId: CollectionId
+  let collectionId: Identifier
 
   /// Row is the key of the changed row.
   let row: String

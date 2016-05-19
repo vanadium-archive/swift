@@ -7,6 +7,7 @@ import UIKit
 class DemoViewController: UITableViewController {
   let demos: [DemoDescription] = [
     GoogleSignInDemoDescription(),
+    DatabasesDemoDescription(),
   ]
   var currentDemo: Demo? = nil
   var currentDemoDescription: DemoDescription? = nil

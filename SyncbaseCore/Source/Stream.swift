@@ -27,7 +27,7 @@ public struct AnonymousStream<T>: Stream {
   let cancelFunction: CancelFunction
   private var lastErr: SyncbaseError?
   private var isCancelled: Bool = false
-  internal init(fetchNextFunction: FetchNextFunction, cancelFunction: CancelFunction) {
+  init(fetchNextFunction: FetchNextFunction, cancelFunction: CancelFunction) {
     self.fetchNextFunction = fetchNextFunction
     self.cancelFunction = cancelFunction
   }

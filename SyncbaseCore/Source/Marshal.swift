@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// NOTE: This file is largely temporary until we have a proper Swift-VOM implementation.
+
 import Foundation
 
 public enum JsonErrors: ErrorType {
@@ -33,6 +35,16 @@ extension NSJSONSerialization {
     // Hack of first and last runes, which also happen to be single byte UTF8s
     return data.subdataWithRange(NSMakeRange(1, data.length - 2))
   }
+
+  static func deserialize(data: NSData) throws -> AnyObject {
+    do {
+      return try NSJSONSerialization.JSONObjectWithData(data, options: [.AllowFragments])
+    } catch (let e) {
+      let str = NSString(data: data, encoding: NSUTF8StringEncoding) ?? data.description
+      log.warning("Unable to json deserialize data: \(str)")
+      throw e
+    }
+  }
 }
 
 public enum JsonDataType: Int {
@@ -47,6 +59,25 @@ public enum JsonDataType: Int {
 
 public protocol SyncbaseJsonConvertible {
   func toSyncbaseJson() throws -> (NSData, JsonDataType)
+  static func fromSyncbaseJson<T: SyncbaseJsonConvertible>(data: NSData) throws -> T
+}
+
+extension SyncbaseJsonConvertible {
+  public static func fromSyncbaseJson<T: SyncbaseJsonConvertible>(data: NSData) throws -> T {
+    let obj = try NSJSONSerialization.deserialize(data)
+    var target: T? = nil
+    if NSNumber.isNSNumber(obj) {
+      let nsnumber = obj as! NSNumber
+      if !nsnumber.isTargetCastable(&target) {
+        throw JsonErrors.CastError(value: nsnumber, target: target)
+      }
+      return nsnumber as! T
+    }
+    if let cast = obj as? T {
+      return cast
+    }
+    throw JsonErrors.CastError(value: obj, target: target)
+  }
 }
 
 extension Bool: SyncbaseJsonConvertible {

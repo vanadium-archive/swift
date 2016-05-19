@@ -11,7 +11,7 @@ import Foundation
 /// users (blessings, specifically) and the set of methods, much like "Roles" do
 /// in Role Based Access Control.
 /// (http://en.wikipedia.org/wiki/Role-based_access_control)
-public typealias Permissions = [String: BlessingPattern]
+public typealias Permissions = [String: AccessList]
 
 /// BlessingPattern is a pattern that is matched by specific blessings.
 ///
@@ -31,7 +31,7 @@ public typealias PermissionsVersion = String
 /// AccessList represents a set of blessings that should be granted access.
 ///
 /// See also: https://vanadium.github.io/glossary.html#access-list
-public struct AcccessList {
+public struct AccessList {
   /// allowed denotes the set of blessings (represented as BlessingPatterns) that
   /// should be granted access, unless blacklisted by an entry in notAllowed.
   ///
@@ -51,6 +51,10 @@ public struct AcccessList {
   /// "alice:friend:carol" etc. but NOT to a principal that presents
   /// "alice:friend:bob" or "alice:friend:bob:spouse" etc.
   public let notAllowed: [BlessingPattern]
+
+  func toJsonable() -> [String: AnyObject] {
+    return ["In": allowed, "NotIn": notAllowed]
+  }
 }
 
 /// AccessController provides access control for various syncbase objects.

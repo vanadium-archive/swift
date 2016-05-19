@@ -13,39 +13,63 @@ public enum Principal {
   public static func setBlessings(vomEncodedBlessings: NSData) throws {
     // We can safely force this case because we know that CGO won't actually modify any of the
     // NSData's bytes.
-//    let cgoData = unsafeBitCast(vomEncodedBlessings.bytes, UnsafeMutablePointer<Void>.self)
-//    let data = SwiftByteArray(length: UInt64(vomEncodedBlessings.length), data: cgoData)
-//    try SwiftVError.catchAndThrowError { errPtr in
-//      swift_io_v_v23_security_simple_nativeSetBlessings(ctx.handle.goHandle, data, errPtr)
-//    }
-    preconditionFailure("IMPLEMENT ME")
+    let data = v23_syncbase_Bytes(vomEncodedBlessings)
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_SetVomEncodedBlessings(data, errPtr)
+    }
   }
 
   /// Returns a string that encapsulates the current blessing of the principal. It will look
   /// something like dev.v.io:o:6183738471-jsl8jlsaj.apps.googleusercontent.com:frank@gmail.com
-  public static func blessingsDebugString() throws -> String {
-//    let ctx = V23.instance.context
-//    let cstr = swift_io_v_v23_security_simple_nativeBlessingsDebugString(ctx.handle.goHandle)
-//    let str = String.fromCStringNoCopy(cstr, freeWhenDone: true)
-//    if str == nil {
-//      throw StringErrors.InvalidString
-//    }
-//    return str!
-    preconditionFailure("IMPLEMENT ME")
+  public static func blessingsDebugString() -> String? {
+    var cStr = v23_syncbase_String()
+    v23_syncbase_BlessingsStoreDebugString(&cStr)
+    let str = cStr.toString()
+    log.debug("Got back blessings: \(str)")
+    return str
+  }
+
+  /// Returns the user blessings from the main context. This can be used for collection blessings
+  /// in constructing CollectionIds.
+  public static func userBlessings() throws -> String {
+    let cStr: v23_syncbase_String = try VError.maybeThrow { errPtr in
+      var cStr = v23_syncbase_String()
+      v23_syncbase_UserBlessingFromContext(&cStr, errPtr)
+      return cStr
+    }
+    guard let str = cStr.toString() else {
+      throw SyncbaseError.NotAuthorized
+    }
+    return str
+  }
+
+  public static func appBlessings() throws -> String {
+    let cStr: v23_syncbase_String = try VError.maybeThrow { errPtr in
+      var cStr = v23_syncbase_String()
+      v23_syncbase_AppBlessingFromContext(&cStr, errPtr)
+      return cStr
+    }
+    guard let str = cStr.toString() else {
+      throw SyncbaseError.NotAuthorized
+    }
+    return str
+  }
+
+  public static func hasValidBlessings() -> Bool {
+    var b = v23_syncbase_Bool(false)
+    v23_syncbase_HasValidBlessings(&b)
+    return b.toBool()
   }
 
   /// Base64 DER-encoded representation of the auto-generated public-key using Golang's URLEncoding,
   /// which is not compatible with NSData's base64 encoder/decoder.
   public static func publicKey() throws -> String {
-//    let str:String? = try SwiftVError.catchAndThrowError { errPtr in
-//      let ctx = V23.instance.context
-//      let cstr = swift_io_v_v23_security_simple_nativePublicKey(ctx.handle.goHandle, errPtr)
-//      return String.fromCStringNoCopy(cstr, freeWhenDone: true)
-//    }
-//    if str == nil {
-//      throw StringErrors.InvalidString
-//    }
-//    return str!
-    preconditionFailure("IMPLEMENT ME")
+    let str: String? = try VError.maybeThrow { errPtr in
+      var cStr = v23_syncbase_String()
+      v23_syncbase_PublicKey(&cStr, errPtr)
+      return cStr.toString()
+    }
+    // We know this works, and should crash if it doesn't as it's unexpected behavior.
+    return str!
   }
 }

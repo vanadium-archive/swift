@@ -23,6 +23,7 @@
 		9306FB991BFC049400DE7190 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB971BFC049400DE7190 /* Main.storyboard */; };
 		9306FB9B1BFC049400DE7190 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB9A1BFC049400DE7190 /* Assets.xcassets */; };
 		9306FB9E1BFC049400DE7190 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9306FB9C1BFC049400DE7190 /* LaunchScreen.storyboard */; };
+		9351A47F1CE46B96009CC4F4 /* DatabasesDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9351A47E1CE46B96009CC4F4 /* DatabasesDemo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		9306FB9A1BFC049400DE7190 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9306FB9D1BFC049400DE7190 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9306FB9F1BFC049400DE7190 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9351A47E1CE46B96009CC4F4 /* DatabasesDemo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabasesDemo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,15 +155,16 @@
 		9306FB921BFC049400DE7190 /* Demo */ = {
 			isa = PBXGroup;
 			children = (
-				9306FB931BFC049400DE7190 /* AppDelegate.swift */,
-				9306FB951BFC049400DE7190 /* DemoViewController.swift */,
-				9306FB971BFC049400DE7190 /* Main.storyboard */,
-				30A291DE1CAC982900F3612E /* Demo.swift */,
-				30A291F81CACB13700F3612E /* Google Sign In */,
-				9306FB9A1BFC049400DE7190 /* Assets.xcassets */,
-				9306FB9C1BFC049400DE7190 /* LaunchScreen.storyboard */,
-				9306FB9F1BFC049400DE7190 /* Info.plist */,
 				30A291FA1CACB1D400F3612E /* Demo-Bridging-Header.h */,
+				9306FB9F1BFC049400DE7190 /* Info.plist */,
+				9306FB931BFC049400DE7190 /* AppDelegate.swift */,
+				9351A47E1CE46B96009CC4F4 /* DatabasesDemo.swift */,
+				30A291DE1CAC982900F3612E /* Demo.swift */,
+				9306FB951BFC049400DE7190 /* DemoViewController.swift */,
+				9306FB9A1BFC049400DE7190 /* Assets.xcassets */,
+				30A291F81CACB13700F3612E /* Google Sign In */,
+				9306FB9C1BFC049400DE7190 /* LaunchScreen.storyboard */,
+				9306FB971BFC049400DE7190 /* Main.storyboard */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -267,6 +270,7 @@
 				30A291E11CAC996F00F3612E /* GoogleSignInDemo.swift in Sources */,
 				9306FB961BFC049400DE7190 /* DemoViewController.swift in Sources */,
 				9306FB941BFC049400DE7190 /* AppDelegate.swift in Sources */,
+				9351A47F1CE46B96009CC4F4 /* DatabasesDemo.swift in Sources */,
 				30A291DF1CAC982900F3612E /* Demo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -399,7 +403,7 @@
 					"$(OTHER_LDFLAGS)",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = v.io.SyncbaseDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = v.io.EmpiricalDemo;
 				PRODUCT_NAME = "Syncbase Demo";
 				SWIFT_OBJC_BRIDGING_HEADER = "Demo/Demo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -420,7 +424,7 @@
 					"$(OTHER_LDFLAGS)",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = v.io.SyncbaseDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = v.io.EmpiricalDemo;
 				PRODUCT_NAME = "Syncbase Demo";
 				SWIFT_OBJC_BRIDGING_HEADER = "Demo/Demo-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 1;

@@ -4,7 +4,7 @@
 
 import Foundation
 
-internal let log = Logger()
+let log = Logger()
 
 public struct Logger {
   public func debug(@autoclosure closure: () -> String, functionName: String = #function, fileName: String = #file, lineNumber: Int = #line) {

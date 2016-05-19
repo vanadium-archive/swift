@@ -6,64 +6,55 @@ import Foundation
 
 //public let instance = Syncbase.instance
 
-public struct Syncbase: Service {
-  // TODO(zinman): Figure out what the local name is supposed to be be
-  private static let kLocalName = ""
-  public let fullName: String
-  private static var _localInstance: Syncbase? = nil
-
-  /// The singleton instance of Syncbase that represents the local store. This is the primary
-  /// Syncbase client you want to work with, unless you explicitly want to connect to a remote
-  /// Syncbase via RPC (then use the constructor with its object name passed)
-  ///
+public class Syncbase: Service {
+  /// The singleton instance of Syncbase that represents the local store.
   /// You won't be able to sync with anybody unless you grant yourself a blessing via the authorize
   /// method.
-  public static var instance: Syncbase {
-    get {
-      if (_localInstance == nil) {
-        do {
-          _localInstance = try Syncbase(fullName: kLocalName)
-        } catch let err {
-          log.warning("Couldn't instantiate an instance of Syncbase: \(err)")
-        }
-      }
-      return _localInstance!
-    }
+  public static var instance: Syncbase = Syncbase()
 
-    set {
-      if (_localInstance != nil) {
-        fatalError("You cannot create another local instance of Syncbase")
-      }
-      _localInstance = newValue
-    }
-  }
-
-  /**
-   Returns a new client handle to a syncbase service running at the given name. The common scenario
-   is to only use Syncbase.instance for the local store -- this constructor is used for connecting
-   to remote Syncbases.
-
-   - Parameter fullName: full (i.e., object) name of the syncbase service
-   */
-  public init(fullName: String) throws {
-    self.fullName = fullName
-    // STUB
+  /// Private constructor -- because this class is a singleton it should only be called once
+  /// and by the static instance method.
+  private init() {
+    v23_syncbase_Init()
   }
 
   /// Create a database using the relative name and user's blessings.
   public func database(name: String) throws -> Database {
-    return database(DatabaseId(name: name, blessing: try Principal.blessingsDebugString()))
+    return try database(Identifier(name: name, blessing: try Principal.appBlessings()))
   }
 
   /// DatabaseForId returns the Database with the given app blessing and name (from the Id struct).
-  public func database(databaseId: DatabaseId) -> Database {
-    preconditionFailure("Implement me")
+  public func database(databaseId: Identifier) throws -> Database {
+    guard let db = Database(databaseId: databaseId, batchHandle: nil) else {
+      throw SyncbaseError.InvalidUTF8(invalidUtf8: "\(databaseId)")
+    }
+    return db
   }
 
   /// ListDatabases returns a list of all Database ids that the caller is allowed to see.
   /// The list is sorted by blessing, then by name.
-  public func listDatabases() throws -> [DatabaseId] {
-    preconditionFailure("Implement me")
+  public func listDatabases() throws -> [Identifier] {
+    var ids = v23_syncbase_Ids()
+    return try VError.maybeThrow({ err in
+      v23_syncbase_ServiceListDatabases(&ids, err)
+      return ids.toIdentifiers()
+    })
+  }
+
+  /// Must return true before any Syncbase operation can work. Authorize using GoogleCredentials
+  /// created from a Google OAuth token (you should use the Google Sign In SDK to get this).
+  public var isAuthorized: Bool {
+    if !Principal.hasValidBlessings() {
+      log.debug("Blessings debug string is \(Principal.blessingsDebugString()) and public key \(try? Principal.publicKey())")
+      return false
+    }
+    return true
+  }
+
+  /// Authorize using GoogleCredentials created from a Google OAuth token (you should use the
+  /// Google Sign In SDK to get this).
+  public func authorize(credentials: GoogleCredentials, callback: ErrorType? -> Void) {
+    credentials.authorize(callback)
   }
 }
 

@@ -4,7 +4,7 @@
 
 import Foundation
 
-internal class BatchHandle {
+class BatchHandle {
 }
 
 public enum Batch {

@@ -7,15 +7,31 @@
 
 import Foundation
 
+extension v23_syncbase_Bool {
+  init(_ bool: Bool) {
+    switch bool {
+    case true: self = 1
+    case false: self = 0
+    }
+  }
+
+  func toBool() -> Bool {
+    switch self {
+    case 0: return false
+    default: return true
+    }
+  }
+}
+
 extension v23_syncbase_String {
-  init?(s: String) {
+  init?(_ string: String) {
     // TODO: If possible, make one copy instead of two, e.g. using s.getCString.
-    guard let data = s.dataUsingEncoding(NSUTF8StringEncoding) else {
+    guard let data = string.dataUsingEncoding(NSUTF8StringEncoding) else {
       return nil
     }
     let p = malloc(data.length)
     if p == nil {
-      return nil
+      fatalError("Unable to allocate \(data.length) bytes")
     }
     let n = data.length
     data.getBytes(p, length: n)
@@ -35,11 +51,71 @@ extension v23_syncbase_String {
   }
 }
 
-extension v23_syncbase_Bytes {
-  init?(data: NSData) {
-    let p = malloc(data.length)
+extension v23_syncbase_Strings {
+  init?(_ strings: [String]) {
+    let arrayBytes = strings.count * sizeof(v23_syncbase_String)
+    let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_String>.self)
+    if p == nil {
+      fatalError("Couldn't allocate \(arrayBytes) bytes")
+    }
+    var i = 0
+    for string in strings {
+      guard let cStr = v23_syncbase_String(string) else {
+        for j in 0 ..< i {
+          free(p.advancedBy(j).memory.p)
+        }
+        free(p)
+        return nil
+      }
+      p.advancedBy(i).memory = cStr
+      i += 1
+    }
+    self.p = p
+    self.n = Int32(strings.count)
+  }
+
+  init(_ strings: [v23_syncbase_String]) {
+    let arrayBytes = strings.count * sizeof(v23_syncbase_String)
+    let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_String>.self)
+    if p == nil {
+      fatalError("Couldn't allocate \(arrayBytes) bytes")
+    }
+    var i = 0
+    for string in strings {
+      p.advancedBy(i).memory = string
+      i += 1
+    }
+    self.p = p
+    self.n = Int32(strings.count)
+  }
+
+  // Return value takes ownership of the memory associated with this object.
+  func toString() -> String? {
     if p == nil {
       return nil
+    }
+    return String(bytesNoCopy: UnsafeMutablePointer<Void>(p),
+      length: Int(n),
+      encoding: NSUTF8StringEncoding,
+      freeWhenDone: true)
+  }
+}
+
+extension String {
+  /// Create a Cgo-passable string struct forceably (will crash if the string cannot be created).
+  func toCgoString() throws -> v23_syncbase_String {
+    guard let cStr = v23_syncbase_String(self) else {
+      throw SyncbaseError.InvalidUTF8(invalidUtf8: self)
+    }
+    return cStr
+  }
+}
+
+extension v23_syncbase_Bytes {
+  init(_ data: NSData) {
+    let p = malloc(data.length)
+    if p == nil {
+      fatalError("Couldn't allocate \(data.length) bytes")
     }
     let n = data.length
     data.getBytes(p, length: n)
@@ -76,12 +152,70 @@ public struct VError: ErrorType {
   public let msg: String
   public let stack: String
 
-  static func maybeThrow<T>(@noescape f: UnsafeMutablePointer<v23_syncbase_VError> -> T) throws -> T {
+  static func maybeThrow<T>(@noescape f: UnsafeMutablePointer<v23_syncbase_VError> throws -> T) throws -> T {
     var e = v23_syncbase_VError()
-    let res = f(&e)
+    let res = try f(&e)
     if let err = e.toVError() {
       throw err
     }
     return res
+  }
+}
+
+extension v23_syncbase_Ids {
+  func toIdentifiers() -> [Identifier] {
+    var ids: [Identifier] = []
+    for i in 0 ..< n {
+      let idStruct = p.advancedBy(Int(i)).memory
+      if let id = idStruct.toIdentifier() {
+        ids.append(id)
+      }
+    }
+    if p != nil {
+      free(p)
+    }
+    return ids
+  }
+}
+
+extension v23_syncbase_Id {
+  init?(_ id: Identifier) {
+    do {
+      self.name = try id.name.toCgoString()
+      self.blessing = try id.blessing.toCgoString()
+    } catch (let e) {
+      log.warning("Unable to UTF8-encode id: \(e)")
+      return nil
+    }
+  }
+
+  func toIdentifier() -> Identifier? {
+    guard let name = name.toString(),
+      let blessing = blessing.toString() else {
+        return nil
+    }
+    return Identifier(name: name, blessing: blessing)
+  }
+}
+
+extension v23_syncbase_Permissions {
+  init?(_ permissions: Permissions?) {
+    guard let p = permissions where !p.isEmpty else {
+      // Zero-value constructor.
+      self.json = v23_syncbase_Bytes()
+      return
+    }
+    var m = [String: AnyObject]()
+    for (key, value) in p {
+      m[key as String] = (value as AccessList).toJsonable()
+    }
+    do {
+      let serialized = try NSJSONSerialization.serialize(m)
+      let bytes = v23_syncbase_Bytes(serialized)
+      self.json = bytes
+    } catch {
+      log.warning("Unable to serialize permissions: \(permissions)")
+      return nil
+    }
   }
 }

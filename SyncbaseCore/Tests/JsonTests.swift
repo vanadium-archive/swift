@@ -1,17 +1,13 @@
-//
-//  JsonTests.swift
-//  Vanadium
-//
-//  Created by zinman on 4/26/16.
-//  Copyright © 2016 Google, Inc. All rights reserved.
-//
+// Copyright 2016 The Vanadium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 import XCTest
 @testable import SyncbaseCore
 
-class JsonTests: XCTestCase {
+class JSONTests: XCTestCase {
   // Emulate syncbase's put
-  func toJson(any: SyncbaseJsonConvertible) -> (NSData, JsonDataType) {
+  func toJSON(any: SyncbaseJsonConvertible) -> (NSData, JsonDataType) {
     return try! any.toSyncbaseJson()
   }
 
@@ -23,7 +19,7 @@ class JsonTests: XCTestCase {
     var (data, type) = try! 5.toSyncbaseJson()
     XCTAssertEqual(toString(data), "5")
     XCTAssertEqual(type, JsonDataType.Int)
-    (data, type) = toJson(5)
+    (data, type) = toJSON(5)
     XCTAssertEqual(toString(data), "5")
     XCTAssertEqual(type, JsonDataType.Int)
     (data, type) = try! true.toSyncbaseJson()
@@ -59,7 +55,7 @@ class JsonTests: XCTestCase {
     (data, type) = try! [1, 2, 3, 4].toSyncbaseJson()
     XCTAssertEqual(toString(data), "[1,2,3,4]")
     XCTAssertEqual(type, JsonDataType.Array)
-    (data, type) = toJson([1, 2, 3, 4])
+    (data, type) = toJSON([1, 2, 3, 4])
     XCTAssertEqual(toString(data), "[1,2,3,4]")
     XCTAssertEqual(type, JsonDataType.Array)
     (data, type) = try! ["a", "b", "c"].toSyncbaseJson()
@@ -74,7 +70,7 @@ class JsonTests: XCTestCase {
     (data, type) = try! ["c": "👠"].toSyncbaseJson()
     XCTAssertEqual(toString(data), "{\"c\":\"👠\"}")
     XCTAssertEqual(type, JsonDataType.Dictionary)
-    (data, type) = toJson(["c": "👠"])
+    (data, type) = toJSON(["c": "👠"])
     XCTAssertEqual(toString(data), "{\"c\":\"👠\"}")
     XCTAssertEqual(type, JsonDataType.Dictionary)
   }

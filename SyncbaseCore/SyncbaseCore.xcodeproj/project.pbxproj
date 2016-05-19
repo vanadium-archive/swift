@@ -7,16 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		30A1F52E1CE68465008FC205 /* BasicDatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A1F52D1CE68465008FC205 /* BasicDatabaseTests.swift */; };
 		30AD2E0A1CDD506700A28A0C /* SyncbaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AD2DFF1CDD506700A28A0C /* SyncbaseCore.framework */; };
 		30AD2E311CDD508700A28A0C /* Batch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E1B1CDD508700A28A0C /* Batch.swift */; };
 		30AD2E321CDD508700A28A0C /* Blob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E1C1CDD508700A28A0C /* Blob.swift */; };
 		30AD2E331CDD508700A28A0C /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E1D1CDD508700A28A0C /* Collection.swift */; };
 		30AD2E341CDD508700A28A0C /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E1E1CDD508700A28A0C /* Database.swift */; };
 		30AD2E351CDD508700A28A0C /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E1F1CDD508700A28A0C /* Errors.swift */; };
-		30AD2E361CDD508700A28A0C /* Id.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E201CDD508700A28A0C /* Id.swift */; };
+		30AD2E361CDD508700A28A0C /* Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E201CDD508700A28A0C /* Identifier.swift */; };
 		30AD2E381CDD508700A28A0C /* Marshal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E221CDD508700A28A0C /* Marshal.swift */; };
 		30AD2E391CDD508700A28A0C /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E231CDD508700A28A0C /* Permissions.swift */; };
-		30AD2E3A1CDD508700A28A0C /* Row.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E241CDD508700A28A0C /* Row.swift */; };
+		30AD2E3A1CDD508700A28A0C /* RowRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E241CDD508700A28A0C /* RowRange.swift */; };
 		30AD2E3B1CDD508700A28A0C /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E251CDD508700A28A0C /* Security.swift */; };
 		30AD2E3C1CDD508700A28A0C /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E261CDD508700A28A0C /* Service.swift */; };
 		30AD2E3D1CDD508700A28A0C /* Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E271CDD508700A28A0C /* Stream.swift */; };
@@ -25,10 +26,9 @@
 		30AD2E401CDD508700A28A0C /* Syncgroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E2A1CDD508700A28A0C /* Syncgroup.swift */; };
 		30AD2E441CDD508700A28A0C /* Vom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E2E1CDD508700A28A0C /* Vom.swift */; };
 		30AD2E451CDD508700A28A0C /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E2F1CDD508700A28A0C /* Watch.swift */; };
-		30AD2E4D1CDD508D00A28A0C /* JsonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E491CDD508D00A28A0C /* JsonTests.swift */; };
+		30AD2E4D1CDD508D00A28A0C /* JSONTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E491CDD508D00A28A0C /* JSONTests.swift */; };
 		30AD2E4E1CDD508D00A28A0C /* NSNumberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E4A1CDD508D00A28A0C /* NSNumberTests.swift */; };
 		30AD2E761CDD55F400A28A0C /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AD2E641CDD547F00A28A0C /* Alamofire.framework */; };
-		30AD2E7F1CDD569200A28A0C /* Locking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E781CDD569200A28A0C /* Locking.swift */; };
 		30AD2E801CDD569200A28A0C /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E791CDD569200A28A0C /* Logging.swift */; };
 		30AD2E811CDD569200A28A0C /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E7A1CDD569200A28A0C /* Strings.swift */; };
 		30AD2E821CDD569200A28A0C /* Threads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E7B1CDD569200A28A0C /* Threads.swift */; };
@@ -114,6 +114,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		30A1F52D1CE68465008FC205 /* BasicDatabaseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicDatabaseTests.swift; sourceTree = "<group>"; };
 		30AD2DFF1CDD506700A28A0C /* SyncbaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SyncbaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30AD2E091CDD506700A28A0C /* SyncbaseCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncbaseCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		30AD2E1B1CDD508700A28A0C /* Batch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Batch.swift; sourceTree = "<group>"; };
@@ -121,11 +122,11 @@
 		30AD2E1D1CDD508700A28A0C /* Collection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		30AD2E1E1CDD508700A28A0C /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		30AD2E1F1CDD508700A28A0C /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
-		30AD2E201CDD508700A28A0C /* Id.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Id.swift; sourceTree = "<group>"; };
+		30AD2E201CDD508700A28A0C /* Identifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Identifier.swift; sourceTree = "<group>"; };
 		30AD2E211CDD508700A28A0C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		30AD2E221CDD508700A28A0C /* Marshal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Marshal.swift; sourceTree = "<group>"; };
 		30AD2E231CDD508700A28A0C /* Permissions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
-		30AD2E241CDD508700A28A0C /* Row.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Row.swift; sourceTree = "<group>"; };
+		30AD2E241CDD508700A28A0C /* RowRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RowRange.swift; sourceTree = "<group>"; };
 		30AD2E251CDD508700A28A0C /* Security.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Security.swift; sourceTree = "<group>"; };
 		30AD2E261CDD508700A28A0C /* Service.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 		30AD2E271CDD508700A28A0C /* Stream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stream.swift; sourceTree = "<group>"; };
@@ -135,10 +136,9 @@
 		30AD2E2E1CDD508700A28A0C /* Vom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vom.swift; sourceTree = "<group>"; };
 		30AD2E2F1CDD508700A28A0C /* Watch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
 		30AD2E481CDD508D00A28A0C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		30AD2E491CDD508D00A28A0C /* JsonTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonTests.swift; sourceTree = "<group>"; };
+		30AD2E491CDD508D00A28A0C /* JSONTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONTests.swift; sourceTree = "<group>"; };
 		30AD2E4A1CDD508D00A28A0C /* NSNumberTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSNumberTests.swift; sourceTree = "<group>"; };
 		30AD2E591CDD547F00A28A0C /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = "../../../../third_party/swift/Alamofire-3.3.0/Alamofire.xcodeproj"; sourceTree = "<group>"; };
-		30AD2E781CDD569200A28A0C /* Locking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Locking.swift; path = util/Locking.swift; sourceTree = "<group>"; };
 		30AD2E791CDD569200A28A0C /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Logging.swift; path = util/Logging.swift; sourceTree = "<group>"; };
 		30AD2E7A1CDD569200A28A0C /* Strings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Strings.swift; path = util/Strings.swift; sourceTree = "<group>"; };
 		30AD2E7B1CDD569200A28A0C /* Threads.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Threads.swift; path = util/Threads.swift; sourceTree = "<group>"; };
@@ -213,11 +213,11 @@
 				30AD2E1D1CDD508700A28A0C /* Collection.swift */,
 				30AD2E1E1CDD508700A28A0C /* Database.swift */,
 				30AD2E1F1CDD508700A28A0C /* Errors.swift */,
-				30AD2E201CDD508700A28A0C /* Id.swift */,
+				30AD2E201CDD508700A28A0C /* Identifier.swift */,
 				30AD2E221CDD508700A28A0C /* Marshal.swift */,
 				30AD2E231CDD508700A28A0C /* Permissions.swift */,
 				30AD2E901CDD593000A28A0C /* Principal.swift */,
-				30AD2E241CDD508700A28A0C /* Row.swift */,
+				30AD2E241CDD508700A28A0C /* RowRange.swift */,
 				30AD2E251CDD508700A28A0C /* Security.swift */,
 				30AD2E261CDD508700A28A0C /* Service.swift */,
 				30AD2E271CDD508700A28A0C /* Stream.swift */,
@@ -234,8 +234,9 @@
 			isa = PBXGroup;
 			children = (
 				30AD2E481CDD508D00A28A0C /* Info.plist */,
-				30AD2E491CDD508D00A28A0C /* JsonTests.swift */,
+				30AD2E491CDD508D00A28A0C /* JSONTests.swift */,
 				30AD2E4A1CDD508D00A28A0C /* NSNumberTests.swift */,
+				30A1F52D1CE68465008FC205 /* BasicDatabaseTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -284,7 +285,6 @@
 				30AD2E861CDD56B700A28A0C /* Exceptions.h */,
 				30AD2E871CDD56B700A28A0C /* Exceptions.m */,
 				30AD2E881CDD56B700A28A0C /* NSNumber.swift */,
-				30AD2E781CDD569200A28A0C /* Locking.swift */,
 				30AD2E791CDD569200A28A0C /* Logging.swift */,
 				30AD2E7A1CDD569200A28A0C /* Strings.swift */,
 				30AD2E7B1CDD569200A28A0C /* Threads.swift */,
@@ -464,7 +464,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				30AD2E391CDD508700A28A0C /* Permissions.swift in Sources */,
-				30AD2E3A1CDD508700A28A0C /* Row.swift in Sources */,
+				30AD2E3A1CDD508700A28A0C /* RowRange.swift in Sources */,
 				30AD2E911CDD593000A28A0C /* Principal.swift in Sources */,
 				30AD2E931CDD60A600A28A0C /* Types.swift in Sources */,
 				30AD2E8A1CDD56B700A28A0C /* Exceptions.m in Sources */,
@@ -478,11 +478,10 @@
 				30AD2E3B1CDD508700A28A0C /* Security.swift in Sources */,
 				30AD2E801CDD569200A28A0C /* Logging.swift in Sources */,
 				30AD2E351CDD508700A28A0C /* Errors.swift in Sources */,
-				30AD2E361CDD508700A28A0C /* Id.swift in Sources */,
+				30AD2E361CDD508700A28A0C /* Identifier.swift in Sources */,
 				30AD2E381CDD508700A28A0C /* Marshal.swift in Sources */,
 				30AD2E3D1CDD508700A28A0C /* Stream.swift in Sources */,
 				30AD2E321CDD508700A28A0C /* Blob.swift in Sources */,
-				30AD2E7F1CDD569200A28A0C /* Locking.swift in Sources */,
 				30AD2E441CDD508700A28A0C /* Vom.swift in Sources */,
 				30AD2E3C1CDD508700A28A0C /* Service.swift in Sources */,
 				30AD2E341CDD508700A28A0C /* Database.swift in Sources */,
@@ -494,7 +493,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30AD2E4D1CDD508D00A28A0C /* JsonTests.swift in Sources */,
+				30A1F52E1CE68465008FC205 /* BasicDatabaseTests.swift in Sources */,
+				30AD2E4D1CDD508D00A28A0C /* JSONTests.swift in Sources */,
 				30AD2E4E1CDD508D00A28A0C /* NSNumberTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
