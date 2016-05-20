@@ -37,6 +37,7 @@
 		30AD2E8B1CDD56B700A28A0C /* NSNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E881CDD56B700A28A0C /* NSNumber.swift */; };
 		30AD2E911CDD593000A28A0C /* Principal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E901CDD593000A28A0C /* Principal.swift */; };
 		30AD2E931CDD60A600A28A0C /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E921CDD60A600A28A0C /* Types.swift */; };
+		30BCD5C71CEFA0FE00C76DA2 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30BCD5C61CEFA0FE00C76DA2 /* CoreBluetooth.framework */; };
 		30D45FC91CE14A8A004A59FA /* cgo_exports.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D45FC41CE14A8A004A59FA /* cgo_exports.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30D45FCA1CE14A8A004A59FA /* go_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 30D45FC51CE14A8A004A59FA /* go_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30D45FCD1CE14A8A004A59FA /* sbcore_arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30D45FC81CE14A8A004A59FA /* sbcore_arm64.a */; };
@@ -147,6 +148,7 @@
 		30AD2E881CDD56B700A28A0C /* NSNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NSNumber.swift; path = util/NSNumber.swift; sourceTree = "<group>"; };
 		30AD2E901CDD593000A28A0C /* Principal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Principal.swift; sourceTree = "<group>"; };
 		30AD2E921CDD60A600A28A0C /* Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Types.swift; path = util/Types.swift; sourceTree = "<group>"; };
+		30BCD5C61CEFA0FE00C76DA2 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		30D45FC41CE14A8A004A59FA /* cgo_exports.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cgo_exports.h; sourceTree = "<group>"; };
 		30D45FC51CE14A8A004A59FA /* go_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = go_types.h; sourceTree = "<group>"; };
 		30D45FC81CE14A8A004A59FA /* sbcore_arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = sbcore_arm64.a; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30BCD5C71CEFA0FE00C76DA2 /* CoreBluetooth.framework in Frameworks */,
 				30D45FCD1CE14A8A004A59FA /* sbcore_arm64.a in Frameworks */,
 				93D3AD5E1CE4392A00A80CDA /* libsnappy_amd64.a in Frameworks */,
 				93D3AD5F1CE4392A00A80CDA /* libsnappy_arm64.a in Frameworks */,
@@ -259,6 +262,7 @@
 		30AD2E581CDD546F00A28A0C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				30BCD5C61CEFA0FE00C76DA2 /* CoreBluetooth.framework */,
 				30AD2E591CDD547F00A28A0C /* Alamofire.xcodeproj */,
 			);
 			name = Frameworks;
