@@ -21,6 +21,7 @@ struct GoogleSignInDemoDescription: DemoDescription {
   @IBOutlet weak var signInButton: GIDSignInButton!
   @IBOutlet weak var statusLabel: UILabel!
   @IBOutlet weak var doneButton: UIBarButtonItem!
+  @IBOutlet weak var logoImage: UIImageView!
   var dismissOnSignIn = false
 
   override func viewDidLoad() {
@@ -76,14 +77,13 @@ struct GoogleSignInDemoDescription: DemoDescription {
       return
     }
     // Get or refresh oauth access token
-    weak var this = self
-    user.authentication.getTokensWithHandler { (auth, error) in
+    user.authentication.getTokensWithHandler { [weak self](auth, error) in
       guard error == nil else {
         debugPrint("Error getting auth token: \(error)")
-        this?.statusLabel.text = "Error getting auth token: \(error)"
+        self?.statusLabel.text = "Error getting auth token: \(error)"
         return
       }
-      this?.didSignIn(user, auth: auth)
+      self?.didSignIn(user, auth: auth)
     }
   }
 
@@ -100,22 +100,33 @@ struct GoogleSignInDemoDescription: DemoDescription {
   }
 
   func getBlessing(oauthToken: String) {
-    weak var this = self
-    let credentials = GoogleCredentials(oauthToken: oauthToken)
-    credentials.authorize({ err in
+    Syncbase.instance.login(GoogleCredentials(token: oauthToken)) { [weak self] err in
       guard err == nil else {
-        debugPrint("Unable to get blessing: \(err!)")
-        this?.statusLabel.text = "Unable to get blessing: \(err!)"
+        self?.animateInResult("Error: \(err!)")
         return
       }
-      let blessings: String = Principal.blessingsDebugString() ?? "<error>"
-      debugPrint("Got blessings \(blessings)")
-      this?.statusLabel.text = "Got blessing: \(blessings)"
-      if this?.dismissOnSignIn ?? false {
-        dispatch_async(dispatch_get_main_queue(), {
-          this?.dismissViewControllerAnimated(true) { }
-        })
+      // Success
+      if self?.dismissOnSignIn ?? false {
+        self?.dismissViewControllerAnimated(true) { }
+      } else {
+        let blessings: String = Syncbase.instance.loggedInBlessingDebugDescription
+        self?.animateInResult(blessings)
       }
+    }
+  }
+
+  func animateInResult(text: String) {
+    debugPrint(text)
+    UIView.animateWithDuration(0.35,
+      animations: { [weak self] in
+        self?.statusLabel.alpha = 0
+        self?.logoImage.alpha = 0
+      },
+      completion: { _ in
+        self.statusLabel.text = text
+        UIView.animateWithDuration(0.35) { [weak self] in
+          self?.statusLabel.alpha = 1
+        }
     })
   }
 }

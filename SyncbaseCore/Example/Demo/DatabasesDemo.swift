@@ -21,7 +21,7 @@ struct DatabasesDemoDescription: DemoDescription {
 @objc class DatabasesDemo: UIViewController, Demo {
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var addBarButton: UIBarButtonItem!
-  var databases = [DatabaseId]()
+  var databases = [Identifier]()
 
   func start() { }
 
@@ -41,7 +41,7 @@ struct DatabasesDemoDescription: DemoDescription {
   }
 
   @IBAction func didPressAdd(sender: UIBarButtonItem) {
-    guard Syncbase.instance.isAuthorized else {
+    guard Syncbase.instance.isLoggedIn else {
       presentAuthAlert()
       return
     }
@@ -67,7 +67,7 @@ struct DatabasesDemoDescription: DemoDescription {
       preferredStyle: .Alert)
     ac.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
     ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: { _ in
-      if !Syncbase.instance.isAuthorized {
+      if !Syncbase.instance.isLoggedIn {
         self.performSegueWithIdentifier("GoogleSignInSegue", sender: self)
       }
       }))

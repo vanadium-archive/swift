@@ -4,46 +4,20 @@
 
 import Foundation
 
-/// Principal houses the basic tools for blessing the principal, which is to say it
-/// contains the functions needed for authentication between devices/users.
-public enum Principal {
-  /// Sets the blessing for the principal. This blessing must be VOM encoded, and is typically
-  /// provided by a Vanadium-service over HTTP (for example exchanging an oauth token for a V23
-  /// blessing).
-  public static func setBlessings(vomEncodedBlessings: NSData) throws {
-    // We can safely force this case because we know that CGO won't actually modify any of the
-    // NSData's bytes.
-    let data = v23_syncbase_Bytes(vomEncodedBlessings)
-    try VError.maybeThrow { errPtr in
-      v23_syncbase_SetVomEncodedBlessings(data, errPtr)
-    }
-  }
-
-  /// Returns a string that encapsulates the current blessing of the principal. It will look
-  /// something like dev.v.io:o:6183738471-jsl8jlsaj.apps.googleusercontent.com:frank@gmail.com
-  public static func blessingsDebugString() -> String? {
+/// Principal gets the default app/user blessings from the default blessings store. This class is
+/// for internal use only. It is used for encoding Identifier and getting the blessing store
+/// debug string.
+enum Principal {
+  /// Returns a debug string that contains the current blessing store. For debug use only.
+  static var blessingsDebugDescription: String {
     var cStr = v23_syncbase_String()
-    v23_syncbase_BlessingsStoreDebugString(&cStr)
-    let str = cStr.toString()
-    log.debug("Got back blessings: \(str)")
-    return str
+    v23_syncbase_BlessingStoreDebugString(&cStr)
+    return cStr.toString() ?? "ERROR"
   }
 
-  /// Returns the user blessings from the main context. This can be used for collection blessings
-  /// in constructing CollectionIds.
-  public static func userBlessings() throws -> String {
-    let cStr: v23_syncbase_String = try VError.maybeThrow { errPtr in
-      var cStr = v23_syncbase_String()
-      v23_syncbase_UserBlessingFromContext(&cStr, errPtr)
-      return cStr
-    }
-    guard let str = cStr.toString() else {
-      throw SyncbaseError.NotAuthorized
-    }
-    return str
-  }
-
-  public static func appBlessings() throws -> String {
+  /// Returns the app blessing from the main context. This is used for encoding database ids.
+  /// If no app blessing has been set, this throws an exception.
+  static func appBlessing() throws -> String {
     let cStr: v23_syncbase_String = try VError.maybeThrow { errPtr in
       var cStr = v23_syncbase_String()
       v23_syncbase_AppBlessingFromContext(&cStr, errPtr)
@@ -55,21 +29,27 @@ public enum Principal {
     return str
   }
 
-  public static func hasValidBlessings() -> Bool {
-    var b = v23_syncbase_Bool(false)
-    v23_syncbase_HasValidBlessings(&b)
-    return b.toBool()
+  /// Returns the user blessing from the main context. This is used for encoding collection ids.
+  /// If no user blessing has been set, this throws an exception.
+  static func userBlessing() throws -> String {
+    let cStr: v23_syncbase_String = try VError.maybeThrow { errPtr in
+      var cStr = v23_syncbase_String()
+      v23_syncbase_UserBlessingFromContext(&cStr, errPtr)
+      return cStr
+    }
+    guard let str = cStr.toString() else {
+      throw SyncbaseError.NotAuthorized
+    }
+    return str
   }
 
-  /// Base64 DER-encoded representation of the auto-generated public-key using Golang's URLEncoding,
-  /// which is not compatible with NSData's base64 encoder/decoder.
-  public static func publicKey() throws -> String {
-    let str: String? = try VError.maybeThrow { errPtr in
-      var cStr = v23_syncbase_String()
-      v23_syncbase_PublicKey(&cStr, errPtr)
-      return cStr.toString()
+  /// True if the blessings have been successfully retrieved via exchanging an oauth token.
+  static func blessingsAreValid() -> Bool {
+    do {
+      try userBlessing()
+      return true
+    } catch {
+      return false
     }
-    // We know this works, and should crash if it doesn't as it's unexpected behavior.
-    return str!
   }
 }

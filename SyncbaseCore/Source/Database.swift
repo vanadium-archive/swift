@@ -157,7 +157,7 @@ public class Database {
 
 extension Database: DatabaseHandle {
   public func collection(name: String) throws -> Collection {
-    return try collection(Identifier(name: name, blessing: try Principal.userBlessings()))
+    return try collection(Identifier(name: name, blessing: try Principal.userBlessing()))
   }
 
   public func collection(collectionId: Identifier) throws -> Collection {

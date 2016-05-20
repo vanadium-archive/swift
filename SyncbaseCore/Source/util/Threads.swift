@@ -38,11 +38,11 @@ func dispatch_after_delay(delay: NSTimeInterval, queue: dispatch_queue_t, block:
   dispatch_after(dispatch_time_t.fromNSTimeInterval(delay), queue, block)
 }
 
-func RunOnMain(block: dispatch_block_t) {
+func RunInMainQueue(block: dispatch_block_t) {
   dispatch_maybe_async(dispatch_get_main_queue(), block: block)
 }
 
-func RunInBackground(block: dispatch_block_t) {
+func RunInBackgroundQueue(block: dispatch_block_t) {
   dispatch_maybe_async(dispatch_get_bg_queue(), block: block)
 }
 

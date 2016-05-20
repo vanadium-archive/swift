@@ -64,6 +64,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="doneButton" destination="FwS-vJ-tEv" id="EiK-7r-CAs"/>
+                        <outlet property="logoImage" destination="OuH-Zv-fPN" id="n0G-Qg-WDR"/>
                         <outlet property="signInButton" destination="ndt-M5-a4a" id="Jyd-ag-upy"/>
                         <outlet property="statusLabel" destination="fpo-3d-9vU" id="AbD-30-7B2"/>
                     </connections>
