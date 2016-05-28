@@ -5,7 +5,7 @@
 import Foundation
 
 public struct ResumeMarker {
-  let data: [UInt8]
+  let data: NSData
 }
 
 public struct WatchChange {

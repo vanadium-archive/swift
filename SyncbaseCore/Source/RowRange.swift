@@ -12,15 +12,27 @@ public protocol RowRange {
   var limit: String { get }
 }
 
-/// StandardRowRange represents all rows with keys in [start, limit).
+/// RowRangeAll represents all rows.
+public struct RowRangeAll: RowRange {
+  public var start: String {
+    return ""
+  }
+
+  public var limit: String {
+    return ""
+  }
+}
+
+/// RowRangeStandard represents all rows with keys in [start, limit).
 /// If limit is "", all rows with keys >= start are included.
-public struct StandardRowRange: RowRange {
+public struct RowRangeStandard: RowRange {
   public let start: String
   /// If limit is "", all rows with keys >= start are included.
   public let limit: String
 }
 
-public struct SingleRow: RowRange {
+/// RowRangeSingleRow represents a single row with an explicit key.
+public struct RowRangeSingleRow: RowRange {
   public let row: String
 
   public var start: String {
@@ -32,8 +44,8 @@ public struct SingleRow: RowRange {
   }
 }
 
-/// PrefixRange represents all rows with keys that have some prefix.
-public struct PrefixRange: RowRange {
+/// RowRangePrefix represents all rows with keys that have some prefix.
+public struct RowRangePrefix: RowRange {
   public let prefix: String
 
   /// Returns the start of the row range for the given prefix.

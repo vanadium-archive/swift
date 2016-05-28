@@ -5,10 +5,10 @@
 import Foundation
 
 /// Base protocol for iterating through elements of unknown length.
-public protocol Stream: GeneratorType {
+public protocol Stream: SequenceType, GeneratorType {
   /// Err returns a non-nil error iff the stream encountered any errors. Err does
   /// not block.
-  func err() -> SyncbaseError?
+  func err() -> ErrorType?
 
   /// Cancel notifies the stream provider that it can stop producing elements.
   /// The client must call Cancel if it does not iterate through all elements
@@ -19,14 +19,14 @@ public protocol Stream: GeneratorType {
 }
 
 /// Typed-stream backed by anonymous callbacks
-public struct AnonymousStream<T>: Stream {
+public class AnonymousStream<T>: Stream {
   public typealias Element = T
-  public typealias FetchNextFunction = Void -> (T?, SyncbaseError?)
+  public typealias FetchNextFunction = Void -> (T?, ErrorType?)
   let fetchNextFunction: FetchNextFunction
   public typealias CancelFunction = Void -> Void
   let cancelFunction: CancelFunction
-  private var lastErr: SyncbaseError?
-  private var isCancelled: Bool = false
+  private var lastErr: ErrorType?
+  private var isDone: Bool = false
   init(fetchNextFunction: FetchNextFunction, cancelFunction: CancelFunction) {
     self.fetchNextFunction = fetchNextFunction
     self.cancelFunction = cancelFunction
@@ -40,8 +40,8 @@ public struct AnonymousStream<T>: Stream {
   /// has returned `nil`.  Specific implementations of this protocol
   /// are encouraged to respond to violations of this requirement by
   /// calling `preconditionFailure("...")`.
-  public mutating func next() -> T? {
-    guard !isCancelled else {
+  public func next() -> T? {
+    guard !isDone else {
       return nil
     }
     let (result, err) = fetchNextFunction()
@@ -49,12 +49,13 @@ public struct AnonymousStream<T>: Stream {
       return ret
     }
     lastErr = err
+    isDone = true
     return nil
   }
 
   /// Err returns a non-nil error iff the stream encountered any errors. Err does
   /// not block.
-  public func err() -> SyncbaseError? {
+  public func err() -> ErrorType? {
     return lastErr
   }
 
@@ -63,10 +64,10 @@ public struct AnonymousStream<T>: Stream {
   /// (i.e. until Advance returns false). Cancel is idempotent and can be called
   /// concurrently with a goroutine that is iterating via Advance.
   /// Cancel causes Advance to subsequently return false. Cancel does not block.
-  public mutating func cancel() {
-    if !isCancelled {
+  public func cancel() {
+    if !isDone {
       cancelFunction()
-      isCancelled = true
+      isDone = true
     }
   }
 }

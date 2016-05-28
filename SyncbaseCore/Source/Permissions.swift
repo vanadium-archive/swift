@@ -55,14 +55,23 @@ public struct AccessList {
   func toJsonable() -> [String: AnyObject] {
     return ["In": allowed, "NotIn": notAllowed]
   }
+
+  static func fromJsonable(jsonable: [String: AnyObject]) -> AccessList? {
+    guard let castIn = jsonable["In"] as? [String],
+      castNotIn = jsonable["NotIn"] as? [String] else {
+        return nil
+    }
+    return AccessList(
+      allowed: castIn as [BlessingPattern],
+      notAllowed: castNotIn as [BlessingPattern])
+  }
 }
 
 /// AccessController provides access control for various syncbase objects.
 public protocol AccessController {
+  /// getPermissions returns the current Permissions for an object.
+  func getPermissions() throws -> (Permissions, PermissionsVersion)
+
   /// setPermissions replaces the current Permissions for an object.
   func setPermissions(perms: Permissions, version: PermissionsVersion) throws
-
-  /// GetPermissions returns the current Permissions for an object.
-  /// For detailed documentation, see Object.GetPermissions.
-  func getPermissions() throws -> (Permissions, PermissionsVersion)
 }

@@ -32,25 +32,20 @@ public class Database {
   let batchHandle: String?
   let encodedDatabaseName: String
 
-  init?(databaseId: Identifier, batchHandle: String?) {
+  init(databaseId: Identifier, batchHandle: String?) throws {
     self.databaseId = databaseId
     self.batchHandle = batchHandle
-    do {
-      self.encodedDatabaseName = try databaseId.encodeId().toString()!
-    } catch {
-      // UTF8 encoding error.
-      return nil
-    }
+    self.encodedDatabaseName = try databaseId.encodeId().toString()!
   }
 
   /// Create creates this Database.
   /// TODO(sadovsky): Specify what happens if perms is nil.
   public func create(permissions: Permissions?) throws {
     try VError.maybeThrow { errPtr in
-      guard let cPermissions = v23_syncbase_Permissions(permissions) else {
-        throw SyncbaseError.PermissionsSerializationError(permissions: permissions)
-      }
-      v23_syncbase_DbCreate(try encodedDatabaseName.toCgoString(), cPermissions, errPtr)
+      v23_syncbase_DbCreate(
+        try encodedDatabaseName.toCgoString(),
+        try v23_syncbase_Permissions(permissions),
+        errPtr)
     }
   }
 
@@ -96,7 +91,18 @@ public class Database {
    TODO(sadovsky): Use varargs for options.
    */
   public func beginBatch(options: BatchOptions?) throws -> BatchDatabase {
-    preconditionFailure("stub")
+    var cHandle = v23_syncbase_String()
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_DbBeginBatch(
+        try encodedDatabaseName.toCgoString(),
+        try v23_syncbase_BatchOptions(options),
+        &cHandle,
+        errPtr)
+    }
+    guard let handle = cHandle.toString() else {
+      throw SyncbaseError.InvalidUTF8(invalidUtf8: "\(cHandle)")
+    }
+    return try BatchDatabase(databaseId: databaseId, batchHandle: handle)
   }
 
   /// Watch allows a client to watch for updates to the database. For each watch
@@ -161,19 +167,17 @@ extension Database: DatabaseHandle {
   }
 
   public func collection(collectionId: Identifier) throws -> Collection {
-    guard let collection = Collection(
+    return try Collection(
       databaseId: databaseId,
       collectionId: collectionId,
-      batchHandle: batchHandle) else {
-        throw SyncbaseError.InvalidUTF8(invalidUtf8: "\(collectionId)")
-    }
-    return collection
+      batchHandle: batchHandle)
   }
 
   public func listCollections() throws -> [Identifier] {
     return try VError.maybeThrow { errPtr in
       var ids = v23_syncbase_Ids()
-      v23_syncbase_DbListCollections(try encodedDatabaseName.toCgoString(),
+      v23_syncbase_DbListCollections(
+        try encodedDatabaseName.toCgoString(),
         try batchHandle?.toCgoString() ?? v23_syncbase_String(),
         &ids,
         errPtr)
@@ -182,16 +186,41 @@ extension Database: DatabaseHandle {
   }
 
   public func getResumeMarker() throws -> ResumeMarker {
-    preconditionFailure("stub")
+    var cMarker = v23_syncbase_Bytes()
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_DbGetResumeMarker(
+        try encodedDatabaseName.toCgoString(),
+        try batchHandle?.toCgoString() ?? v23_syncbase_String(),
+        &cMarker,
+        errPtr)
+    }
+    return ResumeMarker(data: cMarker.toNSData() ?? NSData())
   }
 }
 
 extension Database: AccessController {
-  public func setPermissions(perms: Permissions, version: PermissionsVersion) throws {
-    preconditionFailure("stub")
+  public func getPermissions() throws -> (Permissions, PermissionsVersion) {
+    var cPermissions = v23_syncbase_Permissions()
+    var cVersion = v23_syncbase_String()
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_DbGetPermissions(
+        try encodedDatabaseName.toCgoString(),
+        &cPermissions,
+        &cVersion,
+        errPtr)
+    }
+    // TODO(zinman): Verify that permissions defaulting to zero-value is correct for Permissions.
+    // We force cast of cVersion because we know it can be UTF8 converted.
+    return (try cPermissions.toPermissions() ?? Permissions(), cVersion.toString()!)
   }
 
-  public func getPermissions() throws -> (Permissions, PermissionsVersion) {
-    preconditionFailure("stub")
+  public func setPermissions(permissions: Permissions, version: PermissionsVersion) throws {
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_DbSetPermissions(
+        try encodedDatabaseName.toCgoString(),
+        try v23_syncbase_Permissions(permissions),
+        try version.toCgoString(),
+        errPtr)
+    }
   }
 }

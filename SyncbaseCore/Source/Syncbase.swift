@@ -15,7 +15,7 @@ public class Syncbase: Service {
   /// Private constructor -- because this class is a singleton it should only be called once
   /// and by the static instance method.
   private init() {
-    v23_syncbase_Init()
+    v23_syncbase_Init(v23_syncbase_Bool(false))
   }
 
   /// Create a database using the relative name and user's blessings.
@@ -25,20 +25,17 @@ public class Syncbase: Service {
 
   /// DatabaseForId returns the Database with the given app blessing and name (from the Id struct).
   public func database(databaseId: Identifier) throws -> Database {
-    guard let db = Database(databaseId: databaseId, batchHandle: nil) else {
-      throw SyncbaseError.InvalidUTF8(invalidUtf8: "\(databaseId)")
-    }
-    return db
+    return try Database(databaseId: databaseId, batchHandle: nil)
   }
 
   /// ListDatabases returns a list of all Database ids that the caller is allowed to see.
   /// The list is sorted by blessing, then by name.
   public func listDatabases() throws -> [Identifier] {
     var ids = v23_syncbase_Ids()
-    return try VError.maybeThrow({ err in
+    return try VError.maybeThrow { err in
       v23_syncbase_ServiceListDatabases(&ids, err)
       return ids.toIdentifiers()
-    })
+    }
   }
 
   /// Must return true before any Syncbase operation can work. Authorize using GoogleCredentials
@@ -81,14 +78,26 @@ public class Syncbase: Service {
 }
 
 extension Syncbase: AccessController {
-  /// setPermissions replaces the current Permissions for an object.
-  public func setPermissions(perms: Permissions, version: PermissionsVersion) throws {
-    preconditionFailure("Implement me")
+  public func getPermissions() throws -> (Permissions, PermissionsVersion) {
+    var cPermissions = v23_syncbase_Permissions()
+    var cVersion = v23_syncbase_String()
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_ServiceGetPermissions(
+        &cPermissions,
+        &cVersion,
+        errPtr)
+    }
+    // TODO(zinman): Verify that permissions defaulting to zero-value is correct for Permissions.
+    // We force cast of cVersion because we know it can be UTF8 converted.
+    return (try cPermissions.toPermissions() ?? Permissions(), cVersion.toString()!)
   }
 
-  /// getPermissions returns the current Permissions for an object.
-  /// For detailed documentation, see Object.GetPermissions.
-  public func getPermissions() throws -> (Permissions, PermissionsVersion) {
-    preconditionFailure("Implement me")
+  public func setPermissions(permissions: Permissions, version: PermissionsVersion) throws {
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_ServiceSetPermissions(
+        try v23_syncbase_Permissions(permissions),
+        try version.toCgoString(),
+        errPtr)
+    }
   }
 }
