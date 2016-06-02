@@ -15,9 +15,7 @@ public struct Identifier {
 
   func encodeId() throws -> v23_syncbase_String {
     var cStr = v23_syncbase_String()
-    guard let id = v23_syncbase_Id(self) else {
-      throw SyncbaseError.InvalidUTF8(invalidUtf8: "\(self)")
-    }
+    let id = try v23_syncbase_Id(self)
     v23_syncbase_EncodeId(id, &cStr)
     return cStr
   }

@@ -57,14 +57,9 @@ extension v23_syncbase_Bytes {
 }
 
 extension v23_syncbase_Id {
-  init?(_ id: Identifier) {
-    do {
-      self.name = try id.name.toCgoString()
-      self.blessing = try id.blessing.toCgoString()
-    } catch (let e) {
-      log.warning("Unable to UTF8-encode id: \(e)")
-      return nil
-    }
+  init(_ id: Identifier) throws {
+    self.name = try id.name.toCgoString()
+    self.blessing = try id.blessing.toCgoString()
   }
 
   func toIdentifier() -> Identifier? {
@@ -77,6 +72,28 @@ extension v23_syncbase_Id {
 }
 
 extension v23_syncbase_Ids {
+  init(_ ids: [Identifier]) throws {
+    let arrayBytes = ids.count * sizeof(v23_syncbase_Id)
+    let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_Id>.self)
+    if p == nil {
+      fatalError("Couldn't allocate \(arrayBytes) bytes")
+    }
+    for i in 0 ..< ids.count {
+      do {
+        p.advancedBy(i).memory = try v23_syncbase_Id(ids[i])
+      } catch (let e) {
+        for j in 0 ..< i {
+          free(p.advancedBy(j).memory.blessing.p)
+          free(p.advancedBy(j).memory.name.p)
+        }
+        free(p)
+        throw e
+      }
+    }
+    self.p = p
+    self.n = Int32(ids.count)
+  }
+
   func toIdentifiers() -> [Identifier] {
     var ids: [Identifier] = []
     for i in 0 ..< n {
@@ -127,10 +144,10 @@ extension v23_syncbase_Permissions {
 }
 
 extension v23_syncbase_String {
-  init?(_ string: String) {
+  init(_ string: String) throws {
     // TODO: If possible, make one copy instead of two, e.g. using s.getCString.
     guard let data = string.dataUsingEncoding(NSUTF8StringEncoding) else {
-      return nil
+      throw SyncbaseError.InvalidUTF8(invalidUtf8: string)
     }
     let p = malloc(data.length)
     if p == nil {
@@ -155,23 +172,22 @@ extension v23_syncbase_String {
 }
 
 extension v23_syncbase_Strings {
-  init?(_ strings: [String]) {
+  init(_ strings: [String]) throws {
     let arrayBytes = strings.count * sizeof(v23_syncbase_String)
     let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_String>.self)
     if p == nil {
       fatalError("Couldn't allocate \(arrayBytes) bytes")
     }
-    var i = 0
-    for string in strings {
-      guard let cStr = v23_syncbase_String(string) else {
+    for i in 0 ..< strings.count {
+      do {
+        p.advancedBy(i).memory = try v23_syncbase_String(strings[i])
+      } catch (let e) {
         for j in 0 ..< i {
           free(p.advancedBy(j).memory.p)
         }
         free(p)
-        return nil
+        throw e
       }
-      p.advancedBy(i).memory = cStr
-      i += 1
     }
     self.p = p
     self.n = Int32(strings.count)
@@ -193,28 +209,26 @@ extension v23_syncbase_Strings {
   }
 
   // Return value takes ownership of the memory associated with this object.
-  func toString() -> String? {
+  func toStrings() -> [String] {
     if p == nil {
-      return nil
+      return []
     }
-    return String(bytesNoCopy: UnsafeMutablePointer<Void>(p),
-      length: Int(n),
-      encoding: NSUTF8StringEncoding,
-      freeWhenDone: true)
+    var ret = [String]()
+    for i in 0 ..< n {
+      ret.append(p.advancedBy(Int(i)).memory.toString() ?? "")
+    }
+    return ret
   }
 }
 
 extension String {
   /// Create a Cgo-passable string struct forceably (will crash if the string cannot be created).
   func toCgoString() throws -> v23_syncbase_String {
-    guard let cStr = v23_syncbase_String(self) else {
-      throw SyncbaseError.InvalidUTF8(invalidUtf8: self)
-    }
-    return cStr
+    return try v23_syncbase_String(self)
   }
 }
 
-// Note, we don't define init?(VError) since we never pass Swift VError objects to Go.
+// Note, we don't define init(VError) since we never pass Swift VError objects to Go.
 extension v23_syncbase_VError {
   // Return value takes ownership of the memory associated with this object.
   func toVError() -> VError? {
