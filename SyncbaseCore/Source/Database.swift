@@ -105,19 +105,25 @@ public class Database {
     return try BatchDatabase(databaseId: databaseId, batchHandle: handle)
   }
 
-  /// Watch allows a client to watch for updates to the database. For each watch
-  /// request, the client will receive a reliable stream of watch events without
-  /// reordering. See watch.GlobWatcher for a detailed explanation of the
-  /// behavior.
+  /// Watch allows a client to watch for updates to the database. At least one
+  /// pattern must be specified. For each watch request, the client will receive
+  /// a reliable stream of watch events without reordering. Only rows matching at
+  /// least one of the patterns are returned. Rows in collections with no Read
+  /// access are also filtered out.
   ///
   /// If a nil ResumeMarker is provided, the WatchStream will begin with a Change
   /// batch containing the initial state. Otherwise, the WatchStream will contain
   /// only changes since the provided ResumeMarker.
   ///
-  /// TODO(sadovsky): Watch should return just a WatchStream, similar to how Scan
-  /// returns just a ScanStream.
-  public func watch(collectionId: Identifier, prefix: String, resumeMarker: ResumeMarker?) throws -> WatchStream {
-    preconditionFailure("stub")
+  /// The response stream consists of a sequence of Change messages. Each
+  /// Change message contains an optional continued bit
+  /// (default=false). A sub-sequence of Change messages with
+  /// continued=true followed by a Change message with continued=false
+  /// forms an "atomic group". We expect that most callers will ignore the
+  /// notion of atomic delivery and the continued bit, i.e., they will just process
+  /// each Change message as it is received.
+  public func watch(patterns: [CollectionRowPattern], resumeMarker: ResumeMarker? = nil) throws -> WatchStream {
+    return try Watch.watch(encodedDatabaseName: encodedDatabaseName, patterns: patterns, resumeMarker: resumeMarker)
   }
 
   /// Syncgroup returns a handle to the syncgroup with the given name.

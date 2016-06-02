@@ -226,10 +226,17 @@ public class Collection {
 
     // The anonymous function that gets called from the Swift. It blocks until there's an update
     // available from Go.
-    let fetchNext = { () -> ((String, GetValueFromScanStream)?, ErrorType?) in
+    let fetchNext = { (timeout: NSTimeInterval?) -> ((String, GetValueFromScanStream)?, ErrorType?) in
       condition.lock()
       while !updateAvailable {
-        condition.wait()
+        if let timeout = timeout {
+          if !condition.waitUntilDate(NSDate(timeIntervalSinceNow: timeout)) {
+            condition.unlock()
+            return (nil, nil)
+          }
+        } else {
+          condition.wait()
+        }
       }
       // Grab the data from this update and reset for the next update.
       let fetchedData = data
@@ -305,7 +312,9 @@ public class Collection {
         errPtr)
     }
 
-    return AnonymousStream(fetchNextFunction: fetchNext, cancelFunction: { })
+    return AnonymousStream(
+      fetchNextFunction: fetchNext,
+      cancelFunction: { preconditionFailure("stub") })
   }
 
   // Reference maps between closured functions and handles passed back/forth with Go.
@@ -318,18 +327,18 @@ public class Collection {
     guard let key = kv.key.toString(),
       valueBytes = kv.value.toNSData(),
       callback = onScanKVClosures.get(handle) else {
-        log.warning("Could not fully unpact scan kv callback; dropping")
-        return
+        fatalError("Could not fully unpact scan kv callback or find handle")
     }
     callback(key, valueBytes)
   }
 
   private static func onScanDone(kvHandle: AsyncId, doneHandle: AsyncId, err: v23_syncbase_VError) {
     let e = err.toVError()
-    onScanKVClosures.unref(kvHandle)
+    if onScanKVClosures.unref(kvHandle) == nil {
+      fatalError("Could not find closure for scan onKV handle (via onDone callback)")
+    }
     guard let callback = onScanDoneClosures.unref(doneHandle) else {
-      log.warning("Could not find closure for onDone handle; dropping")
-      return
+      fatalError("Could not find closure for scan onDone handle")
     }
     callback(e)
   }

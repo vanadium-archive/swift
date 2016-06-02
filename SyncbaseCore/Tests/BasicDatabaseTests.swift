@@ -19,7 +19,7 @@ class BasicDatabaseTests: XCTestCase {
 
   func withTestDbAsync(runBlock: (db: Database, cleanup: Void -> Void) throws -> Void) {
     do {
-      // Randomize the name to prevent conflicts between tests
+      // Randomize the name to prevent conflicts between tests.
       let dbName = "test\(NSUUID().UUIDString)".stringByReplacingOccurrencesOfString("-", withString: "")
       let db = try Syncbase.instance.database(dbName)
       let cleanup = {
@@ -37,7 +37,7 @@ class BasicDatabaseTests: XCTestCase {
         print("Creating db \(db)")
         try db.create(nil)
         XCTAssertTrue(try db.exists(), "Database should exist after being created")
-        // Always delete the db at the end to prevent conflicts between tests
+        // Always delete the db at the end to prevent conflicts between tests.
         try runBlock(db: db, cleanup: cleanup)
       } catch let e {
         XCTFail("Got unexpected exception: \(e)")
@@ -48,8 +48,8 @@ class BasicDatabaseTests: XCTestCase {
     }
   }
 
-  func withTestCollection(runBlock: (Database, Collection) throws -> Void) {
-    withTestDb { db in
+  func withTestCollection(db: Database? = nil, runBlock: (Database, Collection) throws -> Void) {
+    let testBlock: Database throws -> Void = { db in
       let collection = try db.collection("collection1")
       XCTAssertFalse(try collection.exists())
       try collection.create(nil)
@@ -59,6 +59,16 @@ class BasicDatabaseTests: XCTestCase {
 
       try collection.destroy()
       XCTAssertFalse(try collection.exists())
+    }
+
+    if let db = db {
+      do {
+        try testBlock(db)
+      } catch (let e) {
+        XCTFail("Got unexpected exception: \(e)")
+      }
+    } else {
+      withTestDb(testBlock)
     }
   }
 
@@ -123,7 +133,7 @@ class BasicDatabaseTests: XCTestCase {
 
   func testDeleteRange() {
     withTestCollection { db, collection in
-      // Generate some test data (1 to 4096 in hex)
+      // Generate some test data (1 to 4096 in hex).
       var data = [String: NSData]()
       for i in 1...4096 {
         let key = NSString(format: "%x", i) as String
@@ -132,23 +142,23 @@ class BasicDatabaseTests: XCTestCase {
         try collection.put(key, value: value)
       }
 
-      // Delete single row
+      // Delete single row.
       try collection.deleteRange(RowRangeSingleRow(row: "9"))
       let value: NSData? = try collection.get("9")
       XCTAssertNil(value)
 
-      // Delete a*
+      // Delete a*.
       try collection.deleteRange(RowRangePrefix(prefix: "a"))
       var stream = try collection.scan(RowRangePrefix(prefix: "a"))
       XCTAssertNil(stream.next())
 
-      // Delete b-bc
+      // Delete b-bc.
       try collection.deleteRange(RowRangeStandard(start: "b", limit: "bc"))
-      // Get all the keys including bc and after
+      // Get all the keys including bc and after.
       var keys = Array(data.keys.filter { $0.hasPrefix("b") }).sort()
       let bcIdx = keys.indexOf("bc")!
       keys = Array(keys.dropFirst(bcIdx))
-      // Verify that's what's in the db
+      // Verify that's what's in the db.
       stream = try collection.scan(RowRangePrefix(prefix: "b"))
       for (key, _) in stream {
         let targetKey = keys[0]
@@ -162,7 +172,7 @@ class BasicDatabaseTests: XCTestCase {
 
   func testScan() {
     withTestCollection { db, collection in
-      // Generate some test data (1 to 200 in hex)
+      // Generate some test data (1 to 200 in hex).
       var data = [String: NSData]()
       for i in 1...200 {
         let key = NSString(format: "%x", i) as String
@@ -171,9 +181,9 @@ class BasicDatabaseTests: XCTestCase {
         try collection.put(key, value: value)
       }
 
-      // All rows
+      // Test all rows scan.
       var stream = try collection.scan(RowRangeAll())
-      var keys = Array(data.keys).sort() // lexographic sort
+      var keys = Array(data.keys).sort() // Lexographic sort
       for (key, getValue) in stream {
         let value = try getValue() as! NSData
         let valueStr = NSString(data: value, encoding: NSUTF8StringEncoding)!
@@ -186,7 +196,7 @@ class BasicDatabaseTests: XCTestCase {
       XCTAssertTrue(keys.isEmpty)
       XCTAssertNil(stream.next())
 
-      // Single Row
+      // Test single row scan.
       stream = try collection.scan(RowRangeSingleRow(row: "a"))
       guard let (key, getValue) = stream.next() else {
         XCTFail()
@@ -197,10 +207,10 @@ class BasicDatabaseTests: XCTestCase {
       let valueStr = NSString(data: value, encoding: NSUTF8StringEncoding)!
       XCTAssertEqual(key, valueStr)
       XCTAssertNil(stream.next())
-      // Doing it again should be ok
+      // Doing it again should be ok.
       XCTAssertNil(stream.next())
 
-      // Prefix
+      // Test prefix scan.
       stream = try collection.scan(RowRangePrefix(prefix: "8"))
       keys = Array(data.keys.filter { $0.hasPrefix("8") }).sort() // lexographic sort
       for (key, _) in stream {
@@ -319,5 +329,161 @@ class BasicDatabaseTests: XCTestCase {
       })
     }
     waitForExpectationsWithTimeout(2) { XCTAssertNil($0) }
+  }
+
+  // MARK: Test watch
+
+  func testWatchTimeout() {
+    let completed = expectationWithDescription("Completed watch timeout")
+    withTestDbAsync { (db, cleanup) in
+      self.withTestCollection(db) { db, collection in
+        try collection.put("a", value: NSData())
+        let stream = try db.watch([CollectionRowPattern(
+          collectionName: collection.collectionId.name,
+          collectionBlessing: collection.collectionId.blessing,
+          rowKey: nil)])
+        RunInBackgroundQueue {
+          XCTAssertNil(stream.next(timeout: 0.1))
+          XCTAssertNil(stream.err())
+          cleanup()
+          completed.fulfill()
+        }
+      }
+    }
+    waitForExpectationsWithTimeout(2) { XCTAssertNil($0) }
+  }
+
+  func testWatchPut() {
+    let completed = expectationWithDescription("Completed watch put")
+    // Test zero-value and non-zero-valued data. Base64 is just an easy way to pass raw bytes.
+    let data = [("a", NSData()),
+      ("b", NSData(base64EncodedString: "YXNka2psa2FzamQgZmxrYXNqIGRmbGthag==", options: [])!)]
+
+    withTestDbAsync { (db, cleanup) in
+      let collection = try db.collection("collectionWatchPut")
+      try collection.create(nil)
+      let stream = try db.watch([CollectionRowPattern(
+        collectionName: collection.collectionId.name,
+        collectionBlessing: collection.collectionId.blessing,
+        rowKey: nil)])
+      let semaphore = dispatch_semaphore_create(0)
+      RunInBackgroundQueue {
+        dispatch_semaphore_signal(semaphore)
+        // Watch for changes in bg thread.
+        for tup in data {
+          let (key, value) = tup
+          guard let change = stream.next(timeout: 1) else {
+            cleanup()
+            XCTFail("Missing put change")
+            completed.fulfill()
+            return
+          }
+          XCTAssertNotNil(change)
+          XCTAssertNil(stream.err())
+          XCTAssertEqual(change.changeType, WatchChange.ChangeType.Put)
+          XCTAssertEqual(change.collectionId.blessing, collection.collectionId.blessing)
+          XCTAssertEqual(change.collectionId.name, collection.collectionId.name)
+          XCTAssertFalse(change.isContinued)
+          XCTAssertFalse(change.isFromSync)
+          XCTAssertGreaterThan(change.resumeMarker.data.length, 0)
+          XCTAssertEqual(change.row, key)
+          XCTAssertEqual(change.value, value)
+        }
+        cleanup()
+        completed.fulfill()
+      }
+
+      // Wait for background thread to start.
+      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+
+      // Add data.
+      do {
+        NSThread.sleepForTimeInterval(0.05) // Wait until the stream.next is called and blocking
+        for tup in data {
+          try collection.put(tup.0, value: tup.1)
+        }
+      } catch let e {
+        XCTFail("Unexpected error: \(e)")
+      }
+    }
+    waitForExpectationsWithTimeout(2) { XCTAssertNil($0) }
+  }
+
+  func testWatchDelete() {
+    let completed = expectationWithDescription("Completed watch delete")
+    // Test zero-value and non-zero-valued data. Base64 is just an easy way to pass raw bytes.
+    let data = [("a", NSData()),
+      ("b", NSData(base64EncodedString: "YXNka2psa2FzamQgZmxrYXNqIGRmbGthag==", options: [])!)]
+
+    withTestDbAsync { (db, cleanup) in
+      let collection = try db.collection("collectionWatchDelete")
+      try collection.create(nil)
+      for tup in data {
+        try collection.put(tup.0, value: tup.1)
+      }
+      let stream = try db.watch([CollectionRowPattern(
+        collectionName: collection.collectionId.name,
+        collectionBlessing: collection.collectionId.blessing,
+        rowKey: nil)])
+      let semaphore = dispatch_semaphore_create(0)
+      RunInBackgroundQueue {
+        dispatch_semaphore_signal(semaphore)
+        // Watch for changes in bg thread.
+        for tup in data {
+          let (key, _) = tup
+          guard let change = stream.next(timeout: 1) else {
+            cleanup()
+            XCTFail("Missing delete change")
+            completed.fulfill()
+            return
+          }
+          XCTAssertNil(stream.err())
+          XCTAssertEqual(change.changeType, WatchChange.ChangeType.Delete)
+          XCTAssertEqual(change.collectionId.blessing, collection.collectionId.blessing)
+          XCTAssertEqual(change.collectionId.name, collection.collectionId.name)
+          XCTAssertFalse(change.isContinued)
+          XCTAssertFalse(change.isFromSync)
+          XCTAssertGreaterThan(change.resumeMarker.data.length, 0)
+          XCTAssertEqual(change.row, key)
+          XCTAssertNil(change.value)
+        }
+        cleanup()
+        completed.fulfill()
+      }
+
+      // Wait for background thread to start.
+      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+
+      do {
+        NSThread.sleepForTimeInterval(0.05) // Wait until the stream.next is called and blocking
+        // Delete rows.
+        for tup in data {
+          try collection.delete(tup.0)
+        }
+      } catch let e {
+        XCTFail("Unexpected error: \(e)")
+      }
+    }
+    waitForExpectationsWithTimeout(2) { XCTAssertNil($0) }
+  }
+
+  func testWatchError() {
+    var stream: WatchStream? = nil
+    withTestDb { db in
+      let collection = try db.collection("collectionWatchError")
+      XCTAssertFalse(try collection.exists())
+      try collection.create(nil)
+      stream = try db.watch([CollectionRowPattern(
+        collectionName: collection.collectionId.name,
+        collectionBlessing: collection.collectionId.blessing,
+        rowKey: nil)])
+      try collection.destroy()
+    }
+    let change = stream!.next(timeout: 1)
+    print("Got watch change: \(stream!.err())")
+    XCTAssertNil(change)
+    XCTAssertNotNil(stream!.err())
+    let verr = stream!.err() as! VError
+    XCTAssertTrue(verr.id.hasPrefix("v.io/v23/verror"))
   }
 }

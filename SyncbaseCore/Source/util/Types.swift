@@ -36,7 +36,12 @@ extension v23_syncbase_Bool {
 }
 
 extension v23_syncbase_Bytes {
-  init(_ data: NSData) {
+  init(_ data: NSData?) {
+    guard let data = data else {
+      self.n = 0
+      self.p = nil
+      return
+    }
     let p = malloc(data.length)
     if p == nil {
       fatalError("Couldn't allocate \(data.length) bytes")
@@ -53,6 +58,48 @@ extension v23_syncbase_Bytes {
       return nil
     }
     return NSData(bytesNoCopy: UnsafeMutablePointer<Void>(p), length: Int(n), freeWhenDone: true)
+  }
+}
+
+extension v23_syncbase_ChangeType {
+  func toChangeType() -> WatchChange.ChangeType? {
+    return WatchChange.ChangeType(rawValue: Int(self.rawValue))
+  }
+}
+
+extension v23_syncbase_CollectionRowPattern {
+  init(_ pattern: CollectionRowPattern) throws {
+    self.collectionBlessing = try pattern.collectionBlessing.toCgoString()
+    self.collectionName = try pattern.collectionName.toCgoString()
+    self.rowKey = try (pattern.rowKey ?? "").toCgoString()
+  }
+}
+
+extension v23_syncbase_CollectionRowPatterns {
+  init(_ patterns: [CollectionRowPattern]) throws {
+    if (patterns.isEmpty) {
+      self.n = 0
+      self.p = nil
+      return
+    }
+    let numBytes = patterns.count * sizeof(v23_syncbase_CollectionRowPattern)
+    self.p = unsafeBitCast(malloc(numBytes), UnsafeMutablePointer<v23_syncbase_CollectionRowPattern>.self)
+    if self.p == nil {
+      fatalError("Couldn't allocate \(numBytes) bytes")
+    }
+    self.n = Int32(patterns.count)
+    var i = 0
+    do {
+      for pattern in patterns {
+        self.p.advancedBy(i).memory = try v23_syncbase_CollectionRowPattern(pattern)
+        i += 1
+      }
+    } catch let e {
+      free(self.p)
+      self.p = nil
+      self.n = 0
+      throw e
+    }
   }
 }
 
@@ -225,6 +272,22 @@ extension String {
   /// Create a Cgo-passable string struct forceably (will crash if the string cannot be created).
   func toCgoString() throws -> v23_syncbase_String {
     return try v23_syncbase_String(self)
+  }
+}
+
+extension v23_syncbase_WatchChange {
+  func toWatchChange() -> WatchChange {
+    let resumeMarkerData = v23_syncbase_Bytes(
+      p: unsafeBitCast(self.resumeMarker.p, UnsafeMutablePointer<UInt8>.self),
+      n: self.resumeMarker.n).toNSData()!
+    return WatchChange(
+      collectionId: self.collection.toIdentifier()!,
+      row: self.row.toString()!,
+      changeType: self.changeType.toChangeType()!,
+      value: self.value.toNSData(),
+      resumeMarker: ResumeMarker(data: resumeMarkerData),
+      isFromSync: self.fromSync,
+      isContinued: self.continued)
   }
 }
 

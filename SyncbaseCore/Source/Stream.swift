@@ -21,7 +21,7 @@ public protocol Stream: SequenceType, GeneratorType {
 /// Typed-stream backed by anonymous callbacks
 public class AnonymousStream<T>: Stream {
   public typealias Element = T
-  public typealias FetchNextFunction = Void -> (T?, ErrorType?)
+  public typealias FetchNextFunction = NSTimeInterval? -> (T?, ErrorType?)
   let fetchNextFunction: FetchNextFunction
   public typealias CancelFunction = Void -> Void
   let cancelFunction: CancelFunction
@@ -33,18 +33,26 @@ public class AnonymousStream<T>: Stream {
   }
 
   /// Advance to the next element and return it, or `nil` if no next
-  /// element exists.
-  ///
-  /// - Requires: `next()` has not been applied to a copy of `self`
-  /// since the copy was made, and no preceding call to `self.next()`
-  /// has returned `nil`.  Specific implementations of this protocol
-  /// are encouraged to respond to violations of this requirement by
-  /// calling `preconditionFailure("...")`.
+  /// element exists. If the stream has not been canceled, this call
+  /// will block until data is available or an error has occured.
   public func next() -> T? {
+    return next(nil)
+  }
+
+  /// Advance to the next element and return it, or `nil` if no next
+  /// element exists. If the stream has not been canceled, this call
+  /// will block until data is available, an error has occured, or
+  /// `timeout` seconds have elapsed. If a timeout occurs then the
+  /// return value will be nil.
+  public func next(timeout timeout: NSTimeInterval) -> T? {
+    return next(timeout)
+  }
+
+  private func next(timeout: NSTimeInterval?) -> T? {
     guard !isDone else {
       return nil
     }
-    let (result, err) = fetchNextFunction()
+    let (result, err) = fetchNextFunction(timeout)
     if let ret = result {
       return ret
     }
