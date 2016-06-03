@@ -40,6 +40,7 @@
 		930DFCEB1CEED8BD00738DB8 /* Refs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930DFCEA1CEED8BD00738DB8 /* Refs.swift */; };
 		930DFCF51CEED96B00738DB8 /* Locking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930DFCF41CEED96B00738DB8 /* Locking.swift */; };
 		9351A4941CE46DB9009CC4F4 /* sbcore_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9351A4931CE46DB9009CC4F4 /* sbcore_amd64.a */; };
+		9374F6681D00FFE5004ECE59 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6661D00FF68004ECE59 /* TestHelpers.swift */; };
 		93D3AD5C1CE4392A00A80CDA /* libleveldb_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D3AD581CE4392A00A80CDA /* libleveldb_amd64.a */; };
 		93D3AD5D1CE4392A00A80CDA /* libleveldb_arm64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D3AD591CE4392A00A80CDA /* libleveldb_arm64.a */; };
 		93D3AD5E1CE4392A00A80CDA /* libsnappy_amd64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D3AD5A1CE4392A00A80CDA /* libsnappy_amd64.a */; };
@@ -93,6 +94,7 @@
 		930DFCEA1CEED8BD00738DB8 /* Refs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Refs.swift; sourceTree = "<group>"; };
 		930DFCF41CEED96B00738DB8 /* Locking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Locking.swift; sourceTree = "<group>"; };
 		9351A4931CE46DB9009CC4F4 /* sbcore_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = sbcore_amd64.a; sourceTree = "<group>"; };
+		9374F6661D00FF68004ECE59 /* TestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		93D3AD581CE4392A00A80CDA /* libleveldb_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libleveldb_amd64.a; sourceTree = "<group>"; };
 		93D3AD591CE4392A00A80CDA /* libleveldb_arm64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libleveldb_arm64.a; sourceTree = "<group>"; };
 		93D3AD5A1CE4392A00A80CDA /* libsnappy_amd64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsnappy_amd64.a; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 			children = (
 				30AD2E481CDD508D00A28A0C /* Info.plist */,
 				30A1F52D1CE68465008FC205 /* BasicDatabaseTests.swift */,
+				9374F6661D00FF68004ECE59 /* TestHelpers.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -362,6 +365,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				30A1F52E1CE68465008FC205 /* BasicDatabaseTests.swift in Sources */,
+				9374F6681D00FFE5004ECE59 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
