@@ -4,18 +4,6 @@
 
 import Foundation
 
-/// CollectionRow encapsulates a collection id and row key or row prefix.
-public struct CollectionRow {
-  let collectionId: Identifier
-  let row: String
-}
-
-/// SyncgroupMemberInfo contains per-member metadata.
-public struct SyncgroupMemberInfo {
-  let syncPriority: UInt8
-  let blobDevType: BlobDevType /// See BlobDevType* constants.
-}
-
 /// Collection represents a set of Rows.
 ///
 /// TODO(sadovsky): Currently we provide Get/Put/Delete methods on both
@@ -210,7 +198,6 @@ public class Collection {
   /// time of the RPC (or at the time of BeginBatch, if in a batch), and will not
   /// reflect subsequent writes to keys not yet reached by the stream.
   /// See helpers Prefix(), Range(), SingleRow().
-  private static let scanQueue = dispatch_queue_create("ScanQueue", DISPATCH_QUEUE_CONCURRENT)
   public func scan(r: RowRange) throws -> ScanStream {
     // Scan works by having Go call Swift as encounters each row. This is a bit of a mismatch
     // for the Swift GeneratorType which is pull instead of push-based. We create a push-pull

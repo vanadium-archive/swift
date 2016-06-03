@@ -264,6 +264,7 @@ extension v23_syncbase_Strings {
     for i in 0 ..< n {
       ret.append(p.advancedBy(Int(i)).memory.toString() ?? "")
     }
+    free(p)
     return ret
   }
 }
@@ -272,6 +273,54 @@ extension String {
   /// Create a Cgo-passable string struct forceably (will crash if the string cannot be created).
   func toCgoString() throws -> v23_syncbase_String {
     return try v23_syncbase_String(self)
+  }
+}
+
+extension v23_syncbase_SyncgroupMemberInfo {
+  init(_ info: SyncgroupMemberInfo) {
+    self.syncPriority = info.syncPriority
+    self.blobDevType = UInt8(info.blobDevType.rawValue)
+  }
+
+  func toSyncgroupMemberInfo() -> SyncgroupMemberInfo {
+    return SyncgroupMemberInfo(
+      syncPriority: syncPriority,
+      blobDevType: BlobDevType(rawValue: Int(blobDevType))!)
+  }
+}
+
+extension v23_syncbase_SyncgroupMemberInfoMap {
+  func toSyncgroupMemberInfoMap() -> [String: SyncgroupMemberInfo] {
+    var ret = [String: SyncgroupMemberInfo]()
+    for i in 0 ..< Int(n) {
+      let key = keys.advancedBy(i).memory.toString() ?? ""
+      let value = values.advancedBy(i).memory.toSyncgroupMemberInfo()
+      ret[key] = value
+    }
+    free(keys)
+    free(values)
+    return ret
+  }
+}
+
+extension v23_syncbase_SyncgroupSpec {
+  init(_ spec: SyncgroupSpec) throws {
+    self.collections = try v23_syncbase_Ids(spec.collections)
+    self.description = try spec.description.toCgoString()
+    self.isPrivate = spec.isPrivate
+    self.mountTables = try v23_syncbase_Strings(spec.mountTables)
+    self.perms = try v23_syncbase_Permissions(spec.permissions)
+    self.publishSyncbaseName = try spec.publishSyncbaseName?.toCgoString() ?? v23_syncbase_String()
+  }
+
+  func toSyncgroupSpec() throws -> SyncgroupSpec {
+    return SyncgroupSpec(
+      description: self.description.toString() ?? "",
+      collections: self.collections.toIdentifiers(),
+      permissions: try self.perms.toPermissions() ?? [:],
+      publishSyncbaseName: self.publishSyncbaseName.toString(),
+      mountTables: self.mountTables.toStrings(),
+      isPrivate: self.isPrivate)
   }
 }
 
