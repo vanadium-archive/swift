@@ -67,88 +67,91 @@ public typealias WatchStream = AnonymousStream<WatchChange>
 /// Internal namespace for the watch API -- end-users will access this through Database.watch
 /// instead. This is simply here to allow all watch-related code to be located in Watch.swift.
 enum Watch {
+  private class Handle {
+    // Watch works by having Go call Swift as encounters each watch change.
+    // This is a bit of a mismatch for the Swift GeneratorType which is pull instead of push-based.
+    // Similar to collection.Scan, we create a push-pull adapter by blocking on either side using
+    // condition variables until both are ready for the next data handoff. See collection.Scan
+    // for more information.
+    let condition = NSCondition()
+    var data: WatchChange? = nil
+    var streamErr: ErrorType? = nil
+    var updateAvailable = false
+
+    // The anonymous function that gets called from the Swift. It blocks until there's an update
+    // available from Go.
+    func fetchNext(timeout: NSTimeInterval?) -> (WatchChange?, ErrorType?) {
+      condition.lock()
+      while !updateAvailable {
+        if let timeout = timeout {
+          if !condition.waitUntilDate(NSDate(timeIntervalSinceNow: timeout)) {
+            condition.unlock()
+            return (nil, nil)
+          }
+        } else {
+          condition.wait()
+        }
+      }
+      // Grab the data from this update and reset for the next update.
+      let fetchedData = data
+      data = nil
+      // We don't need to locally capture doneErr because, unlike data, errors can only come in
+      // once at the very end of the stream (after which no more callbacks will get called).
+      updateAvailable = false
+      // Signal that we've fetched the data to Go.
+      condition.signal()
+      condition.unlock()
+      return (fetchedData, streamErr)
+    }
+
+    // The callback from Go when there's a new Row (key-value) scanned.
+    func onChange(change: WatchChange) {
+      condition.lock()
+      // Wait until any existing update has been received by the fetch so we don't just blow
+      // past it.
+      while updateAvailable {
+        condition.wait()
+      }
+      // Set the new data.
+      data = change
+      updateAvailable = true
+      // Wake up any blocked fetch.
+      condition.signal()
+      condition.unlock()
+    }
+
+    // The callback from Go when there's been an error in the watch stream. The stream will then
+    // be closed and no new changes will ever come in from this request.
+    func onError(err: ErrorType) {
+      condition.lock()
+      // Wait until any existing update has been received by the fetch so we don't just blow
+      // past it.
+      while updateAvailable {
+        condition.wait()
+      }
+      // Marks the end of data by clearing it and saving the error from Syncbase.
+      data = nil
+      streamErr = err
+      updateAvailable = true
+      // Wake up any blocked fetch.
+      condition.signal()
+      condition.unlock()
+    }
+  }
+
   static func watch(
     encodedDatabaseName encodedDatabaseName: String,
     patterns: [CollectionRowPattern],
     resumeMarker: ResumeMarker? = nil) throws -> WatchStream {
-      // Watch works by having Go call Swift as encounters each watch change.
-      // This is a bit of a mismatch for the Swift GeneratorType which is pull instead of push-based.
-      // Similar to collection.Scan, we create a push-pull adapter by blocking on either side using
-      // condition variables until both are ready for the next data handoff. See collection.Scan
-      // for more information.
-      let condition = NSCondition()
-      var data: WatchChange? = nil
-      var streamErr: ErrorType? = nil
-      var updateAvailable = false
-
-      // The anonymous function that gets called from the Swift. It blocks until there's an update
-      // available from Go.
-      let fetchNext = { (timeout: NSTimeInterval?) -> (WatchChange?, ErrorType?) in
-        condition.lock()
-        while !updateAvailable {
-          if let timeout = timeout {
-            if !condition.waitUntilDate(NSDate(timeIntervalSinceNow: timeout)) {
-              condition.unlock()
-              return (nil, nil)
-            }
-          } else {
-            condition.wait()
-          }
-        }
-        // Grab the data from this update and reset for the next update.
-        let fetchedData = data
-        data = nil
-        // We don't need to locally capture doneErr because, unlike data, errors can only come in
-        // once at the very end of the stream (after which no more callbacks will get called).
-        updateAvailable = false
-        // Signal that we've fetched the data to Go.
-        condition.signal()
-        condition.unlock()
-        return (fetchedData, streamErr)
-      }
-
-      // The callback from Go when there's a new Row (key-value) scanned.
-      let onChange = { (change: WatchChange) in
-        condition.lock()
-        // Wait until any existing update has been received by the fetch so we don't just blow
-        // past it.
-        while updateAvailable {
-          condition.wait()
-        }
-        // Set the new data.
-        data = change
-        updateAvailable = true
-        // Wake up any blocked fetch.
-        condition.signal()
-        condition.unlock()
-      }
-
-      // The callback from Go when there's been an error in the watch stream. The stream will then
-      // be closed and no new changes will ever come in from this request.
-      let onError = { (err: ErrorType) in
-        condition.lock()
-        // Wait until any existing update has been received by the fetch so we don't just blow
-        // past it.
-        while updateAvailable {
-          condition.wait()
-        }
-        // Marks the end of data by clearing it and saving the error from Syncbase.
-        data = nil
-        streamErr = err
-        updateAvailable = true
-        // Wake up any blocked fetch.
-        condition.signal()
-        condition.unlock()
-      }
-
+      let handle = Watch.Handle()
       try VError.maybeThrow { errPtr in
+        let oHandle = UnsafeMutablePointer<Void>(Unmanaged.passRetained(handle).toOpaque())
         let cPatterns = try v23_syncbase_CollectionRowPatterns(patterns)
         let cResumeMarker = v23_syncbase_Bytes(resumeMarker?.data)
         let callbacks = v23_syncbase_DbWatchPatternsCallbacks(
-          hOnChange: onWatchChangeClosures.ref(onChange),
-          hOnError: onWatchErrorClosures.ref(onError),
-          onChange: { Watch.onWatchChange(AsyncId($0), change: $1) },
-          onError: { Watch.onWatchError(AsyncId($0), errorHandle: AsyncId($1), err: $2) })
+          handle: v23_syncbase_Handle(oHandle),
+          onChange: { Watch.onWatchChange($0, change: $1) },
+          onError: { Watch.onWatchError($0, err: $1) })
         v23_syncbase_DbWatchPatterns(
           try encodedDatabaseName.toCgoString(),
           cResumeMarker,
@@ -158,32 +161,21 @@ enum Watch {
       }
 
       return AnonymousStream(
-        fetchNextFunction: fetchNext,
+        fetchNextFunction: handle.fetchNext,
         cancelFunction: { preconditionFailure("stub") })
   }
 
-  // Reference maps between closured functions and handles passed back/forth with Go.
-  private static var onWatchChangeClosures = RefMap < WatchChange -> Void > ()
-  private static var onWatchErrorClosures = RefMap < ErrorType -> Void > ()
-
   // Callback handlers that convert the Cgo bridge types to native Swift types and pass them to
-  // the closured functions reference by the passed handle.
-  private static func onWatchChange(changeHandle: AsyncId, change: v23_syncbase_WatchChange) {
+  // the functions inside the passed handle.
+  private static func onWatchChange(handle: v23_syncbase_Handle, change: v23_syncbase_WatchChange) {
     let change = change.toWatchChange()
-    guard let callback = onWatchChangeClosures.get(changeHandle) else {
-      fatalError("Could not find closure for watch onChange handle")
-    }
-    callback(change)
+    let handle = Unmanaged<Watch.Handle>.fromOpaque(COpaquePointer(handle)).takeUnretainedValue()
+    handle.onChange(change)
   }
 
-  private static func onWatchError(changeHandle: AsyncId, errorHandle: AsyncId, err: v23_syncbase_VError) {
+  private static func onWatchError(handle: v23_syncbase_Handle, err: v23_syncbase_VError) {
     let e: ErrorType = err.toVError() ?? SyncbaseError.InvalidOperation(reason: "A watch error occurred")
-    if onWatchChangeClosures.unref(changeHandle) == nil {
-      fatalError("Could not find closure for watch onChange handle (via onWatchError callback)")
-    }
-    guard let callback = onWatchErrorClosures.unref(errorHandle) else {
-      fatalError("Could not find closure for watch onError handle")
-    }
-    callback(e)
+    let handle = Unmanaged<Watch.Handle>.fromOpaque(COpaquePointer(handle)).takeRetainedValue()
+    handle.onError(e)
   }
 }

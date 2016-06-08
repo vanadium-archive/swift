@@ -191,14 +191,7 @@ public class Collection {
     }
   }
 
-  /// Scan returns all rows in the given half-open range [start, limit). If limit
-  /// is "", all rows with keys >= start are included.
-  /// Concurrency semantics: It is legal to perform writes concurrently with
-  /// Scan. The returned stream reads from a consistent snapshot taken at the
-  /// time of the RPC (or at the time of BeginBatch, if in a batch), and will not
-  /// reflect subsequent writes to keys not yet reached by the stream.
-  /// See helpers Prefix(), Range(), SingleRow().
-  public func scan(r: RowRange) throws -> ScanStream {
+  private class ScanHandle {
     // Scan works by having Go call Swift as encounters each row. This is a bit of a mismatch
     // for the Swift GeneratorType which is pull instead of push-based. We create a push-pull
     // adapter by blocking on either side using condition variables until both are ready for the
@@ -213,7 +206,7 @@ public class Collection {
 
     // The anonymous function that gets called from the Swift. It blocks until there's an update
     // available from Go.
-    let fetchNext = { (timeout: NSTimeInterval?) -> ((String, GetValueFromScanStream)?, ErrorType?) in
+    func fetchNext(timeout: NSTimeInterval?) -> ((String, GetValueFromScanStream)?, ErrorType?) {
       condition.lock()
       while !updateAvailable {
         if let timeout = timeout {
@@ -247,7 +240,7 @@ public class Collection {
     }
 
     // The callback from Go when there's a new Row (key-value) scanned.
-    let onKV = { (key: String, valueBytes: NSData) in
+    func onKeyValue(key: String, valueBytes: NSData) {
       condition.lock()
       // Wait until any existing update has been received by the fetch so we don't just blow
       // past it.
@@ -262,7 +255,7 @@ public class Collection {
       condition.unlock()
     }
 
-    let onDone = { (err: ErrorType?) in
+    func onDone(err: ErrorType?) {
       condition.lock()
       // Wait until any existing update has been received by the fetch so we don't just blow
       // past it.
@@ -277,8 +270,19 @@ public class Collection {
       condition.signal()
       condition.unlock()
     }
+  }
 
+  /// Scan returns all rows in the given half-open range [start, limit). If limit
+  /// is "", all rows with keys >= start are included.
+  /// Concurrency semantics: It is legal to perform writes concurrently with
+  /// Scan. The returned stream reads from a consistent snapshot taken at the
+  /// time of the RPC (or at the time of BeginBatch, if in a batch), and will not
+  /// reflect subsequent writes to keys not yet reached by the stream.
+  /// See helpers Prefix(), Range(), SingleRow().
+  public func scan(r: RowRange) throws -> ScanStream {
+    let handle = ScanHandle()
     try VError.maybeThrow { errPtr in
+      let oHandle = UnsafeMutablePointer<Void>(Unmanaged.passRetained(handle).toOpaque())
       let cStartStr = try r.start.toCgoString()
       let cLimitStr = try r.limit.toCgoString()
       let cStartBytes = v23_syncbase_Bytes(
@@ -286,10 +290,9 @@ public class Collection {
       let cLimitBytes = v23_syncbase_Bytes(
         p: unsafeBitCast(cLimitStr.p, UnsafeMutablePointer<UInt8>.self), n: cLimitStr.n)
       let callbacks = v23_syncbase_CollectionScanCallbacks(
-        hOnKeyValue: Collection.onScanKVClosures.ref(onKV),
-        hOnDone: Collection.onScanDoneClosures.ref(onDone),
-        onKeyValue: { Collection.onScanKV(AsyncId($0), kv: $1) },
-        onDone: { Collection.onScanDone(AsyncId($0), doneHandle: AsyncId($1), err: $2) })
+        handle: v23_syncbase_Handle(oHandle),
+        onKeyValue: { Collection.onScanKeyValue($0, kv: $1) },
+        onDone: { Collection.onScanDone($0, err: $1) })
       v23_syncbase_CollectionScan(
         try encodedCollectionName.toCgoString(),
         try cBatchHandle(),
@@ -298,36 +301,24 @@ public class Collection {
         callbacks,
         errPtr)
     }
-
     return AnonymousStream(
-      fetchNextFunction: fetchNext,
+      fetchNextFunction: handle.fetchNext,
       cancelFunction: { preconditionFailure("stub") })
   }
 
-  // Reference maps between closured functions and handles passed back/forth with Go.
-  private static var onScanKVClosures = RefMap < (String, NSData) -> Void > ()
-  private static var onScanDoneClosures = RefMap < ErrorType? -> Void > ()
-
   // Callback handlers that convert the Cgo bridge types to native Swift types and pass them to
-  // the closured functions reference by the passed handle.
-  private static func onScanKV(handle: AsyncId, kv: v23_syncbase_KeyValue) {
-    guard let key = kv.key.toString(),
-      valueBytes = kv.value.toNSData(),
-      callback = onScanKVClosures.get(handle) else {
-        fatalError("Could not fully unpact scan kv callback or find handle")
-    }
-    callback(key, valueBytes)
+  // the functions inside the passed handle.
+  private static func onScanKeyValue(handle: v23_syncbase_Handle, kv: v23_syncbase_KeyValue) {
+    let key = kv.key.toString()!
+    let valueBytes = kv.value.toNSData()!
+    let handle = Unmanaged<ScanHandle>.fromOpaque(COpaquePointer(handle)).takeUnretainedValue()
+    handle.onKeyValue(key, valueBytes: valueBytes)
   }
 
-  private static func onScanDone(kvHandle: AsyncId, doneHandle: AsyncId, err: v23_syncbase_VError) {
+  private static func onScanDone(handle: v23_syncbase_Handle, err: v23_syncbase_VError) {
     let e = err.toVError()
-    if onScanKVClosures.unref(kvHandle) == nil {
-      fatalError("Could not find closure for scan onKV handle (via onDone callback)")
-    }
-    guard let callback = onScanDoneClosures.unref(doneHandle) else {
-      fatalError("Could not find closure for scan onDone handle")
-    }
-    callback(e)
+    let handle = Unmanaged<ScanHandle>.fromOpaque(COpaquePointer(handle)).takeRetainedValue()
+    handle.onDone(e)
   }
 
   // MARK: Internal helpers
