@@ -8,10 +8,10 @@ especially since the open source release Linux is very early as of this writing
 Currently the following are included in the iOS demo:
 
 - "Hello world" RPC with a hard coded endpoint (discovery coming soon)
-	 
+
 - Google Sign-In OAuth used to obtain a default blessing via
 	   dev.v.io. Currently broken until we update the security APIs for Syncbase.
-	   
+
 - Bluetooth discovery/advertisement tests (not using Vanadium itself, but a test hardness to validate BLE compatibility across hardware)
 
 Requires Swift 2.2 which is available in Xcode 7.3. Any earlier versions won't
@@ -34,7 +34,7 @@ The repo does not include any of the built CGO libraries or header files.
 These must be built before the demo may be compiled and run using the following instructions:
 
 ### Build the cross-compile iOS Go
-In order to compile the CGO library for the iOS platform, we need to install a cross-compiling version of go first. It's important to do this for all supported platforms even if you're only planning on compiling for the simulator, because our Xcode project expects to see files for all architectures (they can be kept out of sync while developing, however). 
+In order to compile the CGO library for the iOS platform, we need to install a cross-compiling version of go first. It's important to do this for all supported platforms even if you're only planning on compiling for the simulator, because our Xcode project expects to see files for all architectures (they can be kept out of sync while developing, however).
 
 Install the 64-bit simulator Go profile:
 
@@ -48,17 +48,17 @@ Install the 64-bit device Go profile:
 ### To compile the CGO static libraries
 For simulator only (these are equivalent)
 
-	jiri-swift build -project SyncbaseCore build-cgo	
+	jiri swift build -project SyncbaseCore cgo
 	# or
-	jiri-swift build -project SyncbaseCore -target amd64 build-cgo
+	jiri swift build -project SyncbaseCore -target amd64 cgo
 
-For device: 
+For device:
 
-	jiri-swift build -project SyncbaseCore -target arm64 build-cgo
+	jiri swift build -project SyncbaseCore -target arm64 cgo
 
 For both:
 
-	jiri-swift build -project SyncbaseCore -target all build-cgo
+	jiri swift build -project SyncbaseCore -target all cgo
 
 You may specify SyncbaseCore or VanadiumCore with the -project flags. Each are required to run their respective demos.
 
