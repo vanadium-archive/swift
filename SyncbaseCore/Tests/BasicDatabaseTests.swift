@@ -7,7 +7,8 @@ import XCTest
 @testable import SyncbaseCore
 
 class BasicDatabaseTests: XCTestCase {
-  // MARK: Database & cllection creation / destroying / listing
+
+  // MARK: Database & collection creation / destroying / listing
 
   func testDbCreateExistsDestroy() {
     withTestDb { db in }
@@ -165,8 +166,8 @@ class BasicDatabaseTests: XCTestCase {
   func testBatchCommit() {
     withTestDb { db in
       let batchDb = try db.beginBatch(nil)
-      let collection = try batchDb.collection("collection2")
-      try collection.create(nil)
+      let collection = try batchDb.collection(Identifier(name: "collection2", blessing: anyPermissions))
+      try collection.create(anyCollectionPermissions)
       try collection.put("a", value: NSData())
       try collection.put("1", value: NSData())
       try collection.put("2", value: NSData())
@@ -180,9 +181,9 @@ class BasicDatabaseTests: XCTestCase {
       } catch {
         XCTFail("Should have thrown an UnknownBatch exception")
       }
-      let valueA: NSData? = try db.collection("collection2").get("a")
-      let value1: NSData? = try db.collection("collection2").get("1")
-      let value2: NSData? = try db.collection("collection2").get("2")
+      let valueA: NSData? = try db.collection(Identifier(name: "collection2", blessing: anyPermissions)).get("a")
+      let value1: NSData? = try db.collection(Identifier(name: "collection2", blessing: anyPermissions)).get("1")
+      let value2: NSData? = try db.collection(Identifier(name: "collection2", blessing: anyPermissions)).get("2")
       XCTAssertNotNil(valueA)
       XCTAssertNotNil(value1)
       XCTAssertNotNil(value2)
@@ -192,8 +193,8 @@ class BasicDatabaseTests: XCTestCase {
   func testBatchAbort() {
     withTestDb { db in
       let batchDb = try db.beginBatch(nil)
-      let collection = try batchDb.collection("collection2")
-      try collection.create(nil)
+      let collection = try batchDb.collection(Identifier(name: "collection2", blessing: anyPermissions))
+      try collection.create(anyCollectionPermissions)
       try collection.put("b", value: NSData())
       try collection.put("c", value: NSData())
       try batchDb.abort()
@@ -206,8 +207,8 @@ class BasicDatabaseTests: XCTestCase {
       } catch {
         XCTFail("Should have thrown an UnknownBatch exception")
       }
-      let valueB: NSData? = try db.collection("collection2").get("b")
-      let valueC: NSData? = try db.collection("collection2").get("c")
+      let valueB: NSData? = try db.collection(Identifier(name: "collection2", blessing: anyPermissions)).get("b")
+      let valueC: NSData? = try db.collection(Identifier(name: "collection2", blessing: anyPermissions)).get("c")
       XCTAssertNil(valueB)
       XCTAssertNil(valueC)
     }
@@ -220,14 +221,14 @@ class BasicDatabaseTests: XCTestCase {
         db: db,
         opts: nil,
         op: { batchDb in
-          let collection = try batchDb.collection("collection3")
-          try collection.create(nil)
+          let collection = try batchDb.collection(Identifier(name: "collection3", blessing: anyPermissions))
+          try collection.create(anyCollectionPermissions)
           try collection.put("a", value: NSData())
         },
         completionHandler: { err in
           XCTAssertNil(err)
           do {
-            let collection = try db.collection("collection3")
+            let collection = try db.collection(Identifier(name: "collection3", blessing: anyPermissions))
             let value: NSData? = try collection.get("a")
             XCTAssertNotNil(value)
           } catch let e {
@@ -247,15 +248,15 @@ class BasicDatabaseTests: XCTestCase {
         db: db,
         opts: nil,
         op: { batchDb in
-          let collection = try batchDb.collection("collection4")
-          try collection.create(nil)
+          let collection = try batchDb.collection(Identifier(name: "collection4", blessing: anyPermissions))
+          try collection.create(anyCollectionPermissions)
           try collection.put("a", value: NSData())
           try batchDb.abort()
         },
         completionHandler: { err in
           XCTAssertNil(err)
           do {
-            let collection = try db.collection("collection4")
+            let collection = try db.collection(Identifier(name: "collection4", blessing: anyPermissions))
             let value: NSData? = try collection.get("a")
             XCTAssertNil(value)
           } catch let e {
@@ -297,8 +298,8 @@ class BasicDatabaseTests: XCTestCase {
       ("b", NSData(base64EncodedString: "YXNka2psa2FzamQgZmxrYXNqIGRmbGthag==", options: [])!)]
 
     withTestDbAsync { (db, cleanup) in
-      let collection = try db.collection("collectionWatchPut")
-      try collection.create(nil)
+      let collection = try db.collection(Identifier(name: "collectionWatchPut", blessing: anyPermissions))
+      try collection.create(anyCollectionPermissions)
       let stream = try db.watch([CollectionRowPattern(
         collectionName: collection.collectionId.name,
         collectionBlessing: collection.collectionId.blessing,
@@ -353,8 +354,8 @@ class BasicDatabaseTests: XCTestCase {
       ("b", NSData(base64EncodedString: "YXNka2psa2FzamQgZmxrYXNqIGRmbGthag==", options: [])!)]
 
     withTestDbAsync { (db, cleanup) in
-      let collection = try db.collection("collectionWatchDelete")
-      try collection.create(nil)
+      let collection = try db.collection(Identifier(name: "collectionWatchDelete", blessing: anyPermissions))
+      try collection.create(anyCollectionPermissions)
       for tup in data {
         try collection.put(tup.0, value: tup.1)
       }
@@ -407,9 +408,9 @@ class BasicDatabaseTests: XCTestCase {
   func testWatchError() {
     var stream: WatchStream? = nil
     withTestDb { db in
-      let collection = try db.collection("collectionWatchError")
+      let collection = try db.collection(Identifier(name: "collectionWatchError", blessing: anyPermissions))
       XCTAssertFalse(try collection.exists())
-      try collection.create(nil)
+      try collection.create(anyCollectionPermissions)
       stream = try db.watch([CollectionRowPattern(
         collectionName: collection.collectionId.name,
         collectionBlessing: collection.collectionId.blessing,
