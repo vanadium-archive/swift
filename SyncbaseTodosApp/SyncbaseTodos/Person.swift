@@ -8,6 +8,7 @@ import Foundation
 class Person {
   var name: String = ""
   var imageName: String = ""
+  var email: String = ""
 
   convenience init(name: String, imageName: String) {
     self.init()

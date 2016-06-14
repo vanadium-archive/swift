@@ -359,50 +359,100 @@
         <!--Invite-->
         <scene sceneID="KB2-7v-cHC">
             <objects>
-                <tableViewController id="TEb-eN-UhB" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="59" sectionHeaderHeight="28" sectionFooterHeight="28" id="p4P-W4-gFc">
+                <tableViewController id="TEb-eN-UhB" customClass="InviteViewController" customModule="SyncbaseTodos" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="74" sectionHeaderHeight="28" sectionFooterHeight="28" id="p4P-W4-gFc">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" placeholder="Type a name or email" id="Rtg-Zz-0OI">
-                            <rect key="frame" x="0.0" y="64" width="600" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <textInputTraits key="textInputTraits"/>
-                            <connections>
-                                <outlet property="delegate" destination="TEb-eN-UhB" id="I6F-p8-ewS"/>
-                            </connections>
-                        </searchBar>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="InviteCell" rowHeight="59" id="SrI-gO-iqH">
-                                <rect key="frame" x="0.0" y="136" width="600" height="59"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="personCellId" id="SrI-gO-iqH" userLabel="PersonCell" customClass="PersonCell" customModule="SyncbaseTodos" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="92" width="600" height="74"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SrI-gO-iqH" id="07a-cu-tgk">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="58.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="74"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="profilePhoto" translatesAutoresizingMaskIntoConstraints="NO" id="ZNe-Xc-Gii" customClass="CircularImageView" customModule="SyncbaseTodos" customModuleProvider="target">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="profilePhoto" translatesAutoresizingMaskIntoConstraints="NO" id="ZNe-Xc-Gii" customClass="CircularImageView" customModule="SyncbaseTodos" customModuleProvider="target">
                                             <rect key="frame" x="18" y="8" width="42.5" height="42.5"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" secondItem="ZNe-Xc-Gii" secondAttribute="height" multiplier="1:1" id="X6H-qC-G5F"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A person" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xw3-gj-ST1">
-                                            <rect key="frame" x="70.5" y="8" width="521.5" height="42.5"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="A person" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xw3-gj-ST1">
+                                            <rect key="frame" x="75.5" y="8" width="516.5" height="42.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="Xw3-gj-ST1" firstAttribute="leading" secondItem="ZNe-Xc-Gii" secondAttribute="trailing" constant="10" id="5sy-T3-58g"/>
-                                        <constraint firstItem="ZNe-Xc-Gii" firstAttribute="top" secondItem="07a-cu-tgk" secondAttribute="topMargin" id="60n-Wl-qqy"/>
+                                        <constraint firstItem="Xw3-gj-ST1" firstAttribute="leading" secondItem="ZNe-Xc-Gii" secondAttribute="trailing" constant="15" id="5sy-T3-58g"/>
+                                        <constraint firstItem="ZNe-Xc-Gii" firstAttribute="top" secondItem="07a-cu-tgk" secondAttribute="topMargin" constant="10" id="60n-Wl-qqy"/>
                                         <constraint firstItem="Xw3-gj-ST1" firstAttribute="top" secondItem="07a-cu-tgk" secondAttribute="topMargin" id="Gn4-CV-9rE"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="ZNe-Xc-Gii" secondAttribute="bottom" id="TT7-Ae-akW"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="ZNe-Xc-Gii" secondAttribute="bottom" constant="10" id="TT7-Ae-akW"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="Xw3-gj-ST1" secondAttribute="bottom" id="X3K-9W-Xr0"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="Xw3-gj-ST1" secondAttribute="trailing" id="bQu-ls-rnE"/>
                                         <constraint firstItem="ZNe-Xc-Gii" firstAttribute="leading" secondItem="07a-cu-tgk" secondAttribute="leadingMargin" constant="10" id="z5g-zm-qTP"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="nameLabel" destination="Xw3-gj-ST1" id="lvu-cq-AQB"/>
+                                    <outlet property="photoImageView" destination="ZNe-Xc-Gii" id="Pxf-OI-ks4"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="sendEmailCellId" id="fBZ-PZ-K1C" userLabel="SendEmailCell" customClass="SendEmailCell" customModule="SyncbaseTodos" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="166" width="600" height="74"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fBZ-PZ-K1C" id="II9-ei-hFs">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="74"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="sendEmail" translatesAutoresizingMaskIntoConstraints="NO" id="BFR-NP-pD9">
+                                            <rect key="frame" x="18" y="8" width="47.5" height="47.5"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="BFR-NP-pD9" secondAttribute="height" multiplier="1:1" id="1ME-gL-jxR"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Send email invitation to" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZMm-bM-zdu">
+                                            <rect key="frame" x="80.5" y="8" width="511.5" height="22"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="22" id="mjG-vJ-7jI"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="someone@google.com" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hgn-fS-fh7">
+                                            <rect key="frame" x="80" y="35" width="511.5" height="20.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" red="0.18431372549019609" green="0.32156862745098036" blue="0.4823529411764706" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="bottomMargin" secondItem="BFR-NP-pD9" secondAttribute="bottom" id="8l2-z3-2ep"/>
+                                        <constraint firstItem="Hgn-fS-fh7" firstAttribute="top" secondItem="II9-ei-hFs" secondAttribute="topMargin" id="8pg-8e-Wzn"/>
+                                        <constraint firstItem="BFR-NP-pD9" firstAttribute="top" secondItem="II9-ei-hFs" secondAttribute="topMargin" id="C5F-qL-lwO"/>
+                                        <constraint firstItem="ZMm-bM-zdu" firstAttribute="top" secondItem="II9-ei-hFs" secondAttribute="topMargin" id="HfQ-Bn-9dU"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="ZMm-bM-zdu" secondAttribute="trailing" id="TXf-fy-6Uk"/>
+                                        <constraint firstItem="BFR-NP-pD9" firstAttribute="leading" secondItem="II9-ei-hFs" secondAttribute="leadingMargin" constant="10" id="mC0-e0-7O1"/>
+                                        <constraint firstItem="ZMm-bM-zdu" firstAttribute="leading" secondItem="BFR-NP-pD9" secondAttribute="trailing" constant="15" id="qgg-nx-aMF"/>
+                                        <constraint firstItem="Hgn-fS-fh7" firstAttribute="top" secondItem="ZMm-bM-zdu" secondAttribute="bottom" constant="5" id="qoA-Xt-O4L"/>
+                                        <constraint firstItem="Hgn-fS-fh7" firstAttribute="leading" secondItem="ZMm-bM-zdu" secondAttribute="leading" id="r4L-N9-Tnn"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="Hgn-fS-fh7" secondAttribute="bottom" id="r6S-CY-Zva"/>
+                                        <constraint firstItem="Hgn-fS-fh7" firstAttribute="leading" secondItem="BFR-NP-pD9" secondAttribute="trailing" constant="10" id="u3a-e0-kz4"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="Hgn-fS-fh7" secondAttribute="trailing" id="yJ3-u7-ejd"/>
+                                    </constraints>
+                                    <variation key="default">
+                                        <mask key="constraints">
+                                            <exclude reference="8pg-8e-Wzn"/>
+                                            <exclude reference="u3a-e0-kz4"/>
+                                        </mask>
+                                    </variation>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="emailLabel" destination="Hgn-fS-fh7" id="Hnq-uR-dii"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -411,20 +461,8 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Invite" id="NZy-bp-bmE"/>
-                    <connections>
-                        <outlet property="searchDisplayController" destination="ebz-LZ-GvJ" id="0pO-1l-HSg"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zpc-eh-b9l" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="ebz-LZ-GvJ">
-                    <connections>
-                        <outlet property="delegate" destination="TEb-eN-UhB" id="xqO-82-EL1"/>
-                        <outlet property="searchBar" destination="Rtg-Zz-0OI" id="7RO-9h-ful"/>
-                        <outlet property="searchContentsController" destination="TEb-eN-UhB" id="7jw-J1-3At"/>
-                        <outlet property="searchResultsDataSource" destination="TEb-eN-UhB" id="zcQ-HT-i4f"/>
-                        <outlet property="searchResultsDelegate" destination="TEb-eN-UhB" id="Aex-vt-QTN"/>
-                    </connections>
-                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="1646" y="356"/>
         </scene>
@@ -432,5 +470,6 @@
     <resources>
         <image name="checkmarkOff" width="24" height="24"/>
         <image name="profilePhoto" width="88" height="88"/>
+        <image name="sendEmail" width="176" height="176"/>
     </resources>
 </document>
