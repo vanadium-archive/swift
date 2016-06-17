@@ -15,7 +15,7 @@ public class Syncbase: Service {
   /// Private constructor -- because this class is a singleton it should only be called once
   /// and by the static instance method.
   private init() {
-    v23_syncbase_Init(v23_syncbase_Bool(false))
+    v23_syncbase_Init(v23_syncbase_Bool(false), try! "root-dir".toCgoString())
   }
 
   /// Create a database using the relative name and user's blessings.
