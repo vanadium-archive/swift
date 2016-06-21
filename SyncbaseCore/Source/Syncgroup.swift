@@ -5,8 +5,13 @@
 import Foundation
 
 public struct VersionedSpec {
-  let spec: SyncgroupSpec
-  let version: String
+  public let spec: SyncgroupSpec
+  public let version: String
+
+  public init(spec: SyncgroupSpec, version: String) {
+    self.spec = spec
+    self.version = version
+  }
 }
 
 public class Syncgroup {
@@ -23,7 +28,7 @@ public class Syncgroup {
   /// Requires: Client must have at least Read access on the Database; all
   /// Collections specified in prefixes must exist; Client must have at least
   /// Read access on each of the Collection ACLs.
-  func create(spec: SyncgroupSpec, myInfo: SyncgroupMemberInfo) throws {
+  public func create(spec: SyncgroupSpec, myInfo: SyncgroupMemberInfo) throws {
     try VError.maybeThrow { errPtr in
       v23_syncbase_DbCreateSyncgroup(
         try encodedDatabaseName.toCgoString(),
@@ -47,7 +52,7 @@ public class Syncgroup {
   ///
   /// Requires: Client must have at least Read access on the Database and on the
   /// syncgroup ACL.
-  func join(remoteSyncbaseName: String, expectedSyncbaseBlessings: [String], myInfo: SyncgroupMemberInfo) throws -> SyncgroupSpec {
+  public func join(remoteSyncbaseName: String, expectedSyncbaseBlessings: [String], myInfo: SyncgroupMemberInfo) throws -> SyncgroupSpec {
     var spec = v23_syncbase_SyncgroupSpec()
     try VError.maybeThrow { errPtr in
       v23_syncbase_DbJoinSyncgroup(
@@ -66,7 +71,7 @@ public class Syncgroup {
   /// to be available.
   ///
   /// Requires: Client must have at least Read access on the Database.
-  func leave() throws {
+  public func leave() throws {
     try VError.maybeThrow { errPtr in
       v23_syncbase_DbLeaveSyncgroup(
         try encodedDatabaseName.toCgoString(),
@@ -80,7 +85,7 @@ public class Syncgroup {
   ///
   /// Requires: Client must have at least Read access on the Database, and must
   /// have Admin access on the syncgroup ACL.
-  func destroy() throws {
+  public func destroy() throws {
     try VError.maybeThrow { errPtr in
       v23_syncbase_DbDestroySyncgroup(
         try encodedDatabaseName.toCgoString(),
@@ -95,7 +100,7 @@ public class Syncgroup {
   ///
   /// Requires: Client must have at least Read access on the Database, and must
   /// have Admin access on the syncgroup ACL.
-  func eject(member: String) throws {
+  public func eject(member: String) throws {
     try VError.maybeThrow { errPtr in
       v23_syncbase_DbEjectFromSyncgroup(
         try encodedDatabaseName.toCgoString(),
@@ -110,7 +115,7 @@ public class Syncgroup {
   ///
   /// Requires: Client must have at least Read access on the Database and on the
   /// syncgroup ACL.
-  func getSpec() throws -> VersionedSpec {
+  public func getSpec() throws -> VersionedSpec {
     var spec = v23_syncbase_SyncgroupSpec()
     var version = v23_syncbase_String()
     try VError.maybeThrow { errPtr in
@@ -132,7 +137,7 @@ public class Syncgroup {
   ///
   /// Requires: Client must have at least Read access on the Database, and must
   /// have Admin access on the syncgroup ACL.
-  func setSpec(versionedSpec: VersionedSpec) throws {
+  public func setSpec(versionedSpec: VersionedSpec) throws {
     try VError.maybeThrow { errPtr in
       v23_syncbase_DbSetSyncgroupSpec(
         try encodedDatabaseName.toCgoString(),
@@ -147,7 +152,7 @@ public class Syncgroup {
   ///
   /// Requires: Client must have at least Read access on the Database and on the
   /// syncgroup ACL.
-  func getMembers() throws -> [String: SyncgroupMemberInfo] {
+  public func getMembers() throws -> [String: SyncgroupMemberInfo] {
     var members = v23_syncbase_SyncgroupMemberInfoMap()
     try VError.maybeThrow { errPtr in
       v23_syncbase_DbGetSyncgroupMembers(
@@ -162,23 +167,28 @@ public class Syncgroup {
 
 /// SyncgroupMemberInfo contains per-member metadata.
 public struct SyncgroupMemberInfo {
-  let syncPriority: UInt8
-  let blobDevType: BlobDevType /// See BlobDevType* constants.
+  public let syncPriority: UInt8
+  public let blobDevType: BlobDevType /// See BlobDevType* constants.
+
+  public init(syncPriority: UInt8, blobDevType: BlobDevType) {
+    self.syncPriority = syncPriority
+    self.blobDevType = blobDevType
+  }
 }
 
 public struct SyncgroupSpec {
   /// Human-readable description of this syncgroup.
-  let description: String
+  public let description: String
 
   // Data (set of collectionIds) covered by this syncgroup.
-  let collections: [Identifier]
+  public let collections: [Identifier]
 
   /// Permissions governing access to this syncgroup.
-  let permissions: Permissions
+  public let permissions: Permissions
 
   // Optional. If present then any syncbase that is the admin of this syncgroup
   // is responsible for ensuring that the syncgroup is published to this syncbase instance.
-  let publishSyncbaseName: String?
+  public let publishSyncbaseName: String?
 
   /// Mount tables at which to advertise this syncgroup, for rendezvous purposes.
   /// (Note that in addition to these mount tables, Syncbase also uses
@@ -186,10 +196,25 @@ public struct SyncgroupSpec {
   /// We expect most clients to specify a single mount table, but we accept an
   /// array of mount tables to permit the mount table to be changed over time
   /// without disruption.
-  let mountTables: [String]
+  public let mountTables: [String]
 
   /// Specifies the privacy of this syncgroup. More specifically, specifies
   /// whether blobs in this syncgroup can be served to clients presenting
   /// blobrefs obtained from other syncgroups.
-  let isPrivate: Bool
+  public let isPrivate: Bool
+
+  public init(
+    description: String,
+    collections: [Identifier],
+    permissions: Permissions,
+    publishSyncbaseName: String?,
+    mountTables: [String],
+    isPrivate: Bool) {
+      self.description = description
+      self.collections = collections
+      self.permissions = permissions
+      self.publishSyncbaseName = publishSyncbaseName
+      self.mountTables = mountTables
+      self.isPrivate = isPrivate
+  }
 }

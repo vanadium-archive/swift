@@ -24,8 +24,8 @@ public enum Batch {
     opts: BatchOptions?,
     op: Operation,
     completionHandler: BatchCompletionHandler) {
-      RunInBackgroundQueue {
-        for _ in 0...retries {
+      dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+        for _ in 0 ... retries {
           // TODO(sadovsky): Commit() can fail for a number of reasons, e.g. RPC
           // failure or ErrConcurrentTransaction. Depending on the cause of failure,
           // it may be desirable to retry the Commit() and/or to call Abort().
@@ -39,12 +39,49 @@ public enum Batch {
             log.warning("Unable to complete batch operation: \(e)")
             err = e
           }
-          RunInMainQueue { completionHandler(err) }
+          dispatch_async(Syncbase.queue) {
+            completionHandler(err)
+          }
           return
         }
         // We never were able to do it without error
-        RunInMainQueue { completionHandler(SyncbaseError.ConcurrentBatch) }
+        dispatch_async(Syncbase.queue) {
+          completionHandler(SyncbaseError.ConcurrentBatch)
+        }
       }
+  }
+
+  /**
+   Runs the given batch operation, managing retries and BatchDatabase's commit() and abort()s.
+
+   This is run in a background thread and calls back on main.
+
+   - Parameter retries:      number of retries attempted before giving up. defaults to 3
+   - Parameter db:           database on which the batch operation is to be performed
+   - Parameter opts:         batch configuration
+   - Parameter op:           batch operation
+   - Parameter completionHandler:      future result called when runInBatch finishes
+   */
+  public static func runInBatchSync(retries: Int = 3,
+    db: Database,
+    opts: BatchOptions?,
+    op: Operation) throws {
+      for _ in 0 ... retries {
+        // TODO(sadovsky): Commit() can fail for a number of reasons, e.g. RPC
+        // failure or ErrConcurrentTransaction. Depending on the cause of failure,
+        // it may be desirable to retry the Commit() and/or to call Abort().
+        do {
+          try attemptBatch(db, opts: opts, op: op)
+          return
+        } catch SyncbaseError.ConcurrentBatch {
+          continue
+        } catch let e {
+          log.warning("Unable to complete batch operation: \(e)")
+          throw e
+        }
+      }
+      // We never were able to do it without error.
+      throw SyncbaseError.ConcurrentBatch
   }
 
   private static func attemptBatch(db: Database, opts: BatchOptions?, op: Operation) throws {
@@ -81,13 +118,18 @@ public struct BatchOptions {
   /// Arbitrary string, typically used to describe the intent behind a batch.
   /// Hints are surfaced to clients during conflict resolution.
   /// TODO(sadovsky): Use "any" here?
-  public let hint: String? = nil
+  public let hint: String?
 
   /// ReadOnly specifies whether the batch should allow writes.
   /// If ReadOnly is set to true, Abort() should be used to release any resources
   /// associated with this batch (though it is not strictly required), and
   /// Commit() will always fail.
-  public let readOnly: Bool = false
+  public let readOnly: Bool
+
+  public init(hint: String? = nil, readOnly: Bool = false) {
+    self.hint = hint
+    self.readOnly = readOnly
+  }
 }
 
 public class BatchDatabase: Database {

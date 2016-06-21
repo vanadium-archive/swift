@@ -16,7 +16,7 @@ public protocol DatabaseHandle {
   func collection(name: String) throws -> Collection
 
   /// CollectionForId returns the Collection with the given user blessing and name.
-  /// Throws if the id cannot be encoded into UTF8.
+  /// Throws if the id cannot be encoded into UTF-8.
   func collection(collectionId: Identifier) throws -> Collection
 
   /// ListCollections returns a list of all Collection ids that the caller is
@@ -67,7 +67,8 @@ public class Database {
     }
   }
 
-  /** BeginBatch creates a new batch. Instead of calling this function directly,
+  /**
+   BeginBatch creates a new batch. Instead of calling this function directly,
    clients are encouraged to use the RunInBatch() helper function, which
    detects "concurrent batch" errors and handles retries internally.
 
@@ -127,15 +128,27 @@ public class Database {
   }
 
   /// Syncgroup returns a handle to the syncgroup with the given name.
-  public func syncgroup(sgName: String) -> Syncgroup {
-    preconditionFailure("stub")
+  public func syncgroup(name: String) throws -> Syncgroup {
+    return Syncgroup(
+      encodedDatabaseName: encodedDatabaseName,
+      syncgroupId: Identifier(name: name, blessing: try Principal.userBlessing()))
   }
 
-  /// GetSyncgroupNames returns the names of all syncgroups attached to this
-  /// database.
-  /// TODO(sadovsky): Rename to ListSyncgroups, for parity with ListDatabases.
-  public func getSyncgroupNames() throws -> [String] {
-    preconditionFailure("stub")
+  /// Syncgroup returns a handle to the syncgroup with the given identifier.
+  public func syncgroup(syncgroupId: Identifier) -> Syncgroup {
+    return Syncgroup(encodedDatabaseName: encodedDatabaseName, syncgroupId: syncgroupId)
+  }
+
+  /// ListSyncgroups returns the identifiers of all syncgroups attached to this database.
+  public func listSyncgroups() throws -> [Identifier] {
+    var ids = v23_syncbase_Ids()
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_DbListSyncgroups(
+        try encodedDatabaseName.toCgoString(),
+        &ids,
+        errPtr)
+    }
+    return ids.toIdentifiers()
   }
 
   /// CreateBlob creates a new blob and returns a handle to it.
@@ -216,7 +229,7 @@ extension Database: AccessController {
         errPtr)
     }
     // TODO(zinman): Verify that permissions defaulting to zero-value is correct for Permissions.
-    // We force cast of cVersion because we know it can be UTF8 converted.
+    // We force cast of cVersion because we know it can be UTF-8 converted.
     return (try cPermissions.toPermissions() ?? Permissions(), cVersion.toString()!)
   }
 

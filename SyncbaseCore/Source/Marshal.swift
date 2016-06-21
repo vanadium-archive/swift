@@ -32,7 +32,7 @@ extension NSJSONSerialization {
   /// Apple's limitation of requiring top
   static func hackSerializeAnyObject(obj: AnyObject) throws -> NSData {
     let data = try serialize([obj])
-    // Hack of first and last runes, which also happen to be single byte UTF8s
+    // Hack of first and last runes, which also happen to be single byte UTF-8s
     return data.subdataWithRange(NSMakeRange(1, data.length - 2))
   }
 

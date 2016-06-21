@@ -52,6 +52,11 @@ public struct AccessList {
   /// "alice:friend:bob" or "alice:friend:bob:spouse" etc.
   public let notAllowed: [BlessingPattern]
 
+  public init(allowed: [BlessingPattern] = [], notAllowed: [BlessingPattern] = []) {
+    self.allowed = allowed
+    self.notAllowed = notAllowed
+  }
+
   func toJsonable() -> [String: AnyObject] {
     return ["In": allowed, "NotIn": notAllowed]
   }

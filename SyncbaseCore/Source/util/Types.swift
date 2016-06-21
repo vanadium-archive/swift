@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension v23_syncbase_BatchOptions {
+public extension v23_syncbase_BatchOptions {
   init (_ opts: BatchOptions?) throws {
     guard let o = opts else {
       self.hint = v23_syncbase_String()
@@ -19,7 +19,7 @@ extension v23_syncbase_BatchOptions {
   }
 }
 
-extension v23_syncbase_Bool {
+public extension v23_syncbase_Bool {
   init(_ bool: Bool) {
     switch bool {
     case true: self = 1
@@ -35,7 +35,7 @@ extension v23_syncbase_Bool {
   }
 }
 
-extension v23_syncbase_Bytes {
+public extension v23_syncbase_Bytes {
   init(_ data: NSData?) {
     guard let data = data else {
       self.n = 0
@@ -61,13 +61,13 @@ extension v23_syncbase_Bytes {
   }
 }
 
-extension v23_syncbase_ChangeType {
+public extension v23_syncbase_ChangeType {
   func toChangeType() -> WatchChange.ChangeType? {
     return WatchChange.ChangeType(rawValue: Int(self.rawValue))
   }
 }
 
-extension v23_syncbase_CollectionRowPattern {
+public extension v23_syncbase_CollectionRowPattern {
   init(_ pattern: CollectionRowPattern) throws {
     self.collectionBlessing = try pattern.collectionBlessing.toCgoString()
     self.collectionName = try pattern.collectionName.toCgoString()
@@ -75,7 +75,7 @@ extension v23_syncbase_CollectionRowPattern {
   }
 }
 
-extension v23_syncbase_CollectionRowPatterns {
+public extension v23_syncbase_CollectionRowPatterns {
   init(_ patterns: [CollectionRowPattern]) throws {
     if (patterns.isEmpty) {
       self.n = 0
@@ -103,7 +103,7 @@ extension v23_syncbase_CollectionRowPatterns {
   }
 }
 
-extension v23_syncbase_Id {
+public extension v23_syncbase_Id {
   init(_ id: Identifier) throws {
     self.name = try id.name.toCgoString()
     self.blessing = try id.blessing.toCgoString()
@@ -118,7 +118,7 @@ extension v23_syncbase_Id {
   }
 }
 
-extension v23_syncbase_Ids {
+public extension v23_syncbase_Ids {
   init(_ ids: [Identifier]) throws {
     let arrayBytes = ids.count * sizeof(v23_syncbase_Id)
     let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_Id>.self)
@@ -156,7 +156,7 @@ extension v23_syncbase_Ids {
   }
 }
 
-extension v23_syncbase_Permissions {
+public extension v23_syncbase_Permissions {
   init(_ permissions: Permissions?) throws {
     guard let p = permissions where !p.isEmpty else {
       // Zero-value constructor.
@@ -190,7 +190,7 @@ extension v23_syncbase_Permissions {
   }
 }
 
-extension v23_syncbase_String {
+public extension v23_syncbase_String {
   init(_ string: String) throws {
     // TODO: If possible, make one copy instead of two, e.g. using s.getCString.
     guard let data = string.dataUsingEncoding(NSUTF8StringEncoding) else {
@@ -218,7 +218,7 @@ extension v23_syncbase_String {
   }
 }
 
-extension v23_syncbase_Strings {
+public extension v23_syncbase_Strings {
   init(_ strings: [String]) throws {
     let arrayBytes = strings.count * sizeof(v23_syncbase_String)
     let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_String>.self)
@@ -269,14 +269,14 @@ extension v23_syncbase_Strings {
   }
 }
 
-extension String {
+public extension String {
   /// Create a Cgo-passable string struct forceably (will crash if the string cannot be created).
   func toCgoString() throws -> v23_syncbase_String {
     return try v23_syncbase_String(self)
   }
 }
 
-extension v23_syncbase_SyncgroupMemberInfo {
+public extension v23_syncbase_SyncgroupMemberInfo {
   init(_ info: SyncgroupMemberInfo) {
     self.syncPriority = info.syncPriority
     self.blobDevType = UInt8(info.blobDevType.rawValue)
@@ -289,7 +289,7 @@ extension v23_syncbase_SyncgroupMemberInfo {
   }
 }
 
-extension v23_syncbase_SyncgroupMemberInfoMap {
+public extension v23_syncbase_SyncgroupMemberInfoMap {
   func toSyncgroupMemberInfoMap() -> [String: SyncgroupMemberInfo] {
     var ret = [String: SyncgroupMemberInfo]()
     for i in 0 ..< Int(n) {
@@ -303,7 +303,7 @@ extension v23_syncbase_SyncgroupMemberInfoMap {
   }
 }
 
-extension v23_syncbase_SyncgroupSpec {
+public extension v23_syncbase_SyncgroupSpec {
   init(_ spec: SyncgroupSpec) throws {
     self.collections = try v23_syncbase_Ids(spec.collections)
     self.description = try spec.description.toCgoString()
@@ -324,7 +324,7 @@ extension v23_syncbase_SyncgroupSpec {
   }
 }
 
-extension v23_syncbase_WatchChange {
+public extension v23_syncbase_WatchChange {
   func toWatchChange() -> WatchChange {
     let resumeMarkerData = v23_syncbase_Bytes(
       p: unsafeBitCast(self.resumeMarker.p, UnsafeMutablePointer<UInt8>.self),
@@ -334,14 +334,14 @@ extension v23_syncbase_WatchChange {
       row: self.row.toString()!,
       changeType: self.changeType.toChangeType()!,
       value: self.value.toNSData(),
-      resumeMarker: ResumeMarker(data: resumeMarkerData),
+      resumeMarker: resumeMarkerData,
       isFromSync: self.fromSync,
       isContinued: self.continued)
   }
 }
 
 // Note, we don't define init(VError) since we never pass Swift VError objects to Go.
-extension v23_syncbase_VError {
+public extension v23_syncbase_VError {
   // Return value takes ownership of the memory associated with this object.
   func toVError() -> VError? {
     if id.p == nil {
@@ -349,7 +349,7 @@ extension v23_syncbase_VError {
     }
     // Take ownership of all memory before checking optionals.
     let vId = id.toString(), vMsg = msg.toString(), vStack = stack.toString()
-    // TODO: Stop requiring id, msg, and stack to be valid UTF8?
+    // TODO: Stop requiring id, msg, and stack to be valid UTF-8?
     return VError(id: vId!, actionCode: actionCode, msg: vMsg ?? "", stack: vStack!)
   }
 }

@@ -5,6 +5,9 @@
 import Foundation
 
 public enum SyncbaseError: ErrorType, CustomStringConvertible {
+  case AlreadyConfigured
+  case NotConfigured
+  case NotLoggedIn
   case NotAuthorized
   case NotInDevMode
   case UnknownBatch
@@ -15,6 +18,8 @@ public enum SyncbaseError: ErrorType, CustomStringConvertible {
   case SyncgroupJoinFailed
   case BadExecStreamHeader
   case InvalidPermissionsChange
+  case Exist
+  case NoExist
   case InvalidName(name: String)
   case CorruptDatabase(path: String)
   case InvalidOperation(reason: String)
@@ -36,12 +41,17 @@ public enum SyncbaseError: ErrorType, CustomStringConvertible {
     case "v.io/v23/services/syncbase.SyncgroupJoinFailed": self = SyncbaseError.SyncgroupJoinFailed
     case "v.io/v23/services/syncbase.BadExecStreamHeader": self = SyncbaseError.BadExecStreamHeader
     case "v.io/v23/services/syncbase.InvalidPermissionsChange": self = SyncbaseError.InvalidPermissionsChange
+    case "v.io/v23/verror.Exist": self = SyncbaseError.Exist
+    case "v.io/v23/verror.NoExist": self = SyncbaseError.NoExist
     default: return nil
     }
   }
 
   public var description: String {
     switch (self) {
+    case .AlreadyConfigured: return "Already configured"
+    case .NotConfigured: return "Not configured (via Syncbase.configure)"
+    case .NotLoggedIn: return "Not logged in (via Syncbase.login)"
     case .NotAuthorized: return "No valid blessings; create new blessings using oauth"
     case .NotInDevMode: return "Not running with --dev=true"
     case .UnknownBatch: return "Unknown batch, perhaps the server restarted"
@@ -52,11 +62,13 @@ public enum SyncbaseError: ErrorType, CustomStringConvertible {
     case .SyncgroupJoinFailed: return "Syncgroup join failed"
     case .BadExecStreamHeader: return "Exec stream header improperly formatted"
     case .InvalidPermissionsChange: return "The sequence of permission changes is invalid"
+    case .NoExist: return "Does not exist"
+    case .Exist: return "Already exists"
     case .InvalidName(let name): return "Invalid name: \(name)"
     case .CorruptDatabase(let path):
       return "Database corrupt, moved to path \(path); client must create a new database"
     case .InvalidOperation(let reason): return "Invalid operation: \(reason)"
-    case .InvalidUTF8(let invalidUtf8): return "Unable to convert to utf8: \(invalidUtf8)"
+    case .InvalidUTF8(let invalidUtf8): return "Unable to convert to UTF-8: \(invalidUtf8)"
     case .CastError(let obj): return "Unable to convert to cast: \(obj)"
     }
   }

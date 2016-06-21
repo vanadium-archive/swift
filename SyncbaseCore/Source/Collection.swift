@@ -89,6 +89,19 @@ public class Collection {
     }
   }
 
+  /// Returns true if there is a value associated with `key`.
+  public func exists(key: String) throws -> Bool {
+    var exists = v23_syncbase_Bool(false)
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_RowExists(
+        try encodedRowName(key),
+        try cBatchHandle(),
+        &exists,
+        errPtr)
+    }
+    return exists.toBool()
+  }
+
   /**
    Get loads the value stored under the given key into inout parameter value.
 
@@ -133,11 +146,8 @@ public class Collection {
           &cBytes,
           errPtr)
       }
-    } catch let e as VError {
-      if e.id == "v.io/v23/verror.NoExist" {
-        return nil
-      }
-      throw e
+    } catch SyncbaseError.NoExist {
+      return nil
     }
     // If we got here then we know that row exists, otherwise we would have gotten the NoExist
     // exception above. However, that row might also just be empty data. Because

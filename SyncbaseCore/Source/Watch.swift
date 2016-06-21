@@ -10,19 +10,23 @@ import Foundation
 public struct CollectionRowPattern {
   /// collectionName is a SQL LIKE-style glob pattern ('%' and '_' wildcards, '\' as escape
   /// character) for matching collections. May not be empty.
-  let collectionName: String
+  public let collectionName: String
 
   /// The blessing for collections.
-  let collectionBlessing: String
+  public let collectionBlessing: String
 
   /// rowKey is a SQL LIKE-style glob pattern ('%' and '_' wildcards, '\' as escape character)
   /// for matching rows. If empty then only the collectionId pattern is matched.
-  let rowKey: String?
+  public let rowKey: String?
+
+  public init(collectionName: String, collectionBlessing: String, rowKey: String?) {
+    self.collectionName = collectionName
+    self.collectionBlessing = collectionBlessing
+    self.rowKey = rowKey
+  }
 }
 
-public struct ResumeMarker {
-  let data: NSData
-}
+public typealias ResumeMarker = NSData
 
 public struct WatchChange {
   public enum ChangeType: Int {
@@ -31,35 +35,35 @@ public struct WatchChange {
   }
 
   /// Collection is the id of the collection that contains the changed row.
-  let collectionId: Identifier
+  public let collectionId: Identifier
 
   /// Row is the key of the changed row.
-  let row: String
+  public let row: String
 
   /// ChangeType describes the type of the change. If ChangeType is PutChange,
   /// then the row exists in the collection, and Value can be called to obtain
   /// the new value for this row. If ChangeType is DeleteChange, then the row was
   /// removed from the collection.
-  let changeType: ChangeType
+  public let changeType: ChangeType
 
   /// value is the new value for the row if the ChangeType is PutChange, or nil
   /// otherwise.
-  let value: NSData?
+  public let value: NSData?
 
   /// ResumeMarker provides a compact representation of all the messages that
   /// have been received by the caller for the given Watch call.
   /// This marker can be provided in the Request message to allow the caller
   /// to resume the stream watching at a specific point without fetching the
   /// initial state.
-  let resumeMarker: ResumeMarker
+  public let resumeMarker: ResumeMarker
 
   /// FromSync indicates whether the change came from sync. If FromSync is false,
   /// then the change originated from the local device.
-  let isFromSync: Bool
+  public let isFromSync: Bool
 
   /// If true, this WatchChange is followed by more WatchChanges that are in the
   /// same batch as this WatchChange.
-  let isContinued: Bool
+  public let isContinued: Bool
 }
 
 public typealias WatchStream = AnonymousStream<WatchChange>
@@ -147,7 +151,7 @@ enum Watch {
       try VError.maybeThrow { errPtr in
         let oHandle = UnsafeMutablePointer<Void>(Unmanaged.passRetained(handle).toOpaque())
         let cPatterns = try v23_syncbase_CollectionRowPatterns(patterns)
-        let cResumeMarker = v23_syncbase_Bytes(resumeMarker?.data)
+        let cResumeMarker = v23_syncbase_Bytes(resumeMarker)
         let callbacks = v23_syncbase_DbWatchPatternsCallbacks(
           handle: v23_syncbase_Handle(oHandle),
           onChange: { Watch.onWatchChange($0, change: $1) },

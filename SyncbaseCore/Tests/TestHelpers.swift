@@ -38,7 +38,7 @@ extension XCTestCase {
     do {
       // Randomize the name to prevent conflicts between tests
       let dbName = "test\(NSUUID().UUIDString)".stringByReplacingOccurrencesOfString("-", withString: "")
-      let db = try Syncbase.instance.database(Identifier(name: dbName, blessing: anyPermissions))
+      let db = try Syncbase.database(Identifier(name: dbName, blessing: anyPermissions))
       let cleanup = {
         do {
           print("Destroying db \(db)")

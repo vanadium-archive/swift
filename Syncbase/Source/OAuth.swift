@@ -20,12 +20,9 @@ public protocol OAuthCredentials {
 
 /// Shortcut for OAuthCredentials provided by Google.
 public struct GoogleOAuthCredentials: OAuthCredentials {
-  /// OAuth token, typically received from the Google Sign-In SDK.
   public let token: String
   public let provider = OAuthProvider.Google
 
-  /// Inits an GoogleOAuthCredentials struct with the oauth token recieved by Google, typically
-  /// from the Google Sign-In SDK.
   public init(token: String) {
     self.token = token
   }

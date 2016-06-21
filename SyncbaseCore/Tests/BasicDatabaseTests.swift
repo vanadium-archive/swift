@@ -7,6 +7,17 @@ import XCTest
 @testable import SyncbaseCore
 
 class BasicDatabaseTests: XCTestCase {
+  override class func setUp() {
+    let rootDir = NSFileManager.defaultManager()
+      .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
+      .URLByAppendingPathComponent("SyncbaseUnitTest")
+      .absoluteString
+    try! Syncbase.configure(rootDir: rootDir)
+  }
+
+  override class func tearDown() {
+    Syncbase.shutdown()
+  }
 
   // MARK: Database & collection creation / destroying / listing
 
@@ -16,7 +27,7 @@ class BasicDatabaseTests: XCTestCase {
 
   func testListDatabases() {
     withTestDb { db in
-      let databases = try Syncbase.instance.listDatabases()
+      let databases = try Syncbase.listDatabases()
       XCTAssertFalse(databases.isEmpty)
       if !databases.isEmpty {
         XCTAssertTrue(databases.first! == db.databaseId)
@@ -48,6 +59,7 @@ class BasicDatabaseTests: XCTestCase {
     } else {
       XCTAssertEqual(value!, targetValue, "Value should be defined and \(targetValue)")
     }
+    XCTAssertTrue(try collection.exists(key))
     try collection.delete(key)
     value = try collection.get(key)
     XCTAssertNil(value, "Deleted row shouldn't exist")
@@ -239,6 +251,22 @@ class BasicDatabaseTests: XCTestCase {
       })
     }
     waitForExpectationsWithTimeout(2) { XCTAssertNil($0) }
+
+    // Test sync version
+    withTestDb { db in
+      try Batch.runInBatchSync(db: db, opts: nil) { batchDb in
+        let collection = try batchDb.collection(Identifier(name: "collection3", blessing: anyPermissions))
+        try collection.create(anyCollectionPermissions)
+        try collection.put("b", value: NSData())
+      }
+      do {
+        let collection = try db.collection(Identifier(name: "collection3", blessing: anyPermissions))
+        let value: NSData? = try collection.get("b")
+        XCTAssertNotNil(value)
+      } catch let e {
+        XCTFail("Unexpected error: \(e)")
+      }
+    }
   }
 
   func testRunInBatchAbort() {
@@ -267,6 +295,23 @@ class BasicDatabaseTests: XCTestCase {
       })
     }
     waitForExpectationsWithTimeout(2) { XCTAssertNil($0) }
+
+    withTestDb { db in
+      try Batch.runInBatchSync(db: db, opts: nil) { batchDb in
+        let collection = try batchDb.collection(Identifier(name: "collection4", blessing: anyPermissions))
+        try collection.create(anyCollectionPermissions)
+        try collection.put("a", value: NSData())
+        try batchDb.abort()
+      }
+
+      do {
+        let collection = try db.collection(Identifier(name: "collection4", blessing: anyPermissions))
+        let value: NSData? = try collection.get("a")
+        XCTAssertNil(value)
+      } catch let e {
+        XCTFail("Unexpected error: \(e)")
+      }
+    }
   }
 
   // MARK: Test watch
@@ -280,7 +325,7 @@ class BasicDatabaseTests: XCTestCase {
           collectionName: collection.collectionId.name,
           collectionBlessing: collection.collectionId.blessing,
           rowKey: nil)])
-        RunInBackgroundQueue {
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
           XCTAssertNil(stream.next(timeout: 0.1))
           XCTAssertNil(stream.err())
           cleanup()
@@ -305,7 +350,7 @@ class BasicDatabaseTests: XCTestCase {
         collectionBlessing: collection.collectionId.blessing,
         rowKey: nil)])
       let semaphore = dispatch_semaphore_create(0)
-      RunInBackgroundQueue {
+      dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
         dispatch_semaphore_signal(semaphore)
         // Watch for changes in bg thread.
         for tup in data {
@@ -323,7 +368,7 @@ class BasicDatabaseTests: XCTestCase {
           XCTAssertEqual(change.collectionId.name, collection.collectionId.name)
           XCTAssertFalse(change.isContinued)
           XCTAssertFalse(change.isFromSync)
-          XCTAssertGreaterThan(change.resumeMarker.data.length, 0)
+          XCTAssertGreaterThan(change.resumeMarker.length, 0)
           XCTAssertEqual(change.row, key)
           XCTAssertEqual(change.value, value)
         }
@@ -364,7 +409,7 @@ class BasicDatabaseTests: XCTestCase {
         collectionBlessing: collection.collectionId.blessing,
         rowKey: nil)])
       let semaphore = dispatch_semaphore_create(0)
-      RunInBackgroundQueue {
+      dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
         dispatch_semaphore_signal(semaphore)
         // Watch for changes in bg thread.
         for tup in data {
@@ -381,7 +426,7 @@ class BasicDatabaseTests: XCTestCase {
           XCTAssertEqual(change.collectionId.name, collection.collectionId.name)
           XCTAssertFalse(change.isContinued)
           XCTAssertFalse(change.isFromSync)
-          XCTAssertGreaterThan(change.resumeMarker.data.length, 0)
+          XCTAssertGreaterThan(change.resumeMarker.length, 0)
           XCTAssertEqual(change.row, key)
           XCTAssertNil(change.value)
         }
