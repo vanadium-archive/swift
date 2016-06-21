@@ -8,6 +8,7 @@ import XCTest
 
 class BasicDatabaseTests: XCTestCase {
   override class func setUp() {
+    Syncbase.isUnitTest = true
     let rootDir = NSFileManager.defaultManager()
       .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
       .URLByAppendingPathComponent("SyncbaseUnitTest")

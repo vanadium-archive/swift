@@ -11,6 +11,8 @@ public enum Syncbase {
 
   static var didInit = false
 
+  static var isUnitTest = false
+
   public static func configure(
     // Default to Application Support/Syncbase.
     rootDir rootDir: String = NSFileManager.defaultManager()
@@ -21,7 +23,10 @@ public enum Syncbase {
       if didInit {
         throw SyncbaseError.AlreadyConfigured
       }
-      v23_syncbase_Init(v23_syncbase_Bool(false), try rootDir.toCgoString())
+      v23_syncbase_Init(
+        v23_syncbase_Bool(false),
+        try rootDir.toCgoString(),
+        v23_syncbase_Bool(isUnitTest))
       Syncbase.didInit = true
   }
 

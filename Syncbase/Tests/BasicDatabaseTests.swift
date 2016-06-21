@@ -4,10 +4,11 @@
 
 import XCTest
 @testable import Syncbase
-import SyncbaseCore
+@testable import SyncbaseCore
 
 class BasicDatabaseTests: XCTestCase {
   override class func setUp() {
+    SyncbaseCore.Syncbase.isUnitTest = true
     try! Syncbase.configure(adminUserId: "unittest@google.com")
   }
 
