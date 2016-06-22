@@ -17,7 +17,7 @@ public enum Syncbase {
     rootDir rootDir: String = NSFileManager.defaultManager()
       .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
       .URLByAppendingPathComponent("Syncbase")
-      .absoluteString,
+      .path!,
     queue: dispatch_queue_t = dispatch_get_main_queue()) throws {
       if didInit {
         throw SyncbaseError.AlreadyConfigured

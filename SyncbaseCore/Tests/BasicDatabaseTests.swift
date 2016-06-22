@@ -19,7 +19,7 @@ class BasicDatabaseTests: XCTestCase {
     let rootDir = NSFileManager.defaultManager()
       .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
       .URLByAppendingPathComponent("SyncbaseUnitTest")
-      .absoluteString
+      .path!
     try! Syncbase.configure(rootDir: rootDir, queue: testQueue)
     let semaphore = dispatch_semaphore_create(0)
     Syncbase.login(EmptyCredentials(), callback: { err in

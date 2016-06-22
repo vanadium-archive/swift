@@ -75,7 +75,7 @@ public enum Syncbase {
     rootDir: String = NSFileManager.defaultManager()
       .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
       .URLByAppendingPathComponent("Syncbase")
-      .absoluteString,
+      .path!,
     mountPoints: [String] = ["/ns.dev.v.io:8101/tmp/todos/users/"],
     defaultBlessingStringPrefix: String = "dev.v.io:o:608941808256-43vtfndets79kf5hac8ieujto8837660.apps.googleusercontent.com:",
     disableSyncgroupPublishing: Bool = false,

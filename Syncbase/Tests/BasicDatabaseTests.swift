@@ -15,7 +15,7 @@ class BasicDatabaseTests: XCTestCase {
     let rootDir = NSFileManager.defaultManager()
       .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
       .URLByAppendingPathComponent("SyncbaseUnitTest")
-      .absoluteString
+      .path!
     // TODO(zinman): Once we have create-and-join implemented don't always set
     // disableUserdataSyncgroup to true.
     try! Syncbase.configure(
