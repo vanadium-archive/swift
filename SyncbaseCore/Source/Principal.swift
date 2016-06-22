@@ -41,14 +41,4 @@ public enum Principal {
     v23_syncbase_BlessingStoreDebugString(&cStr)
     return cStr.toString() ?? "ERROR"
   }
-
-  /// True if the blessings have been successfully retrieved via exchanging an oauth token.
-  static func blessingsAreValid() -> Bool {
-    do {
-      try userBlessing()
-      return true
-    } catch {
-      return false
-    }
-  }
 }

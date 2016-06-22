@@ -14,8 +14,8 @@ public enum Syncbase {
     DB_NAME = "db",
     USERDATA_SYNCGROUP_NAME = "userdata__"
   // Initialization state
-  static var didCreateOrJoin = false
   static var didInit = false
+  static var didPostLogin = false
   // Main database.
   static var db: Database?
   // Options for opening a database.
@@ -26,7 +26,15 @@ public enum Syncbase {
   static var mountPoints = ["/ns.dev.v.io:8101/tmp/todos/users/"]
   static var rootDir = Syncbase.defaultRootDir
   /// Queue used to dispatch all asynchronous callbacks. Defaults to main.
-  public static var queue: dispatch_queue_t = dispatch_get_main_queue()
+  public static var queue: dispatch_queue_t {
+    // Map directly to SyncbaseCore.
+    get {
+      return SyncbaseCore.Syncbase.queue
+    }
+    set(queue) {
+      SyncbaseCore.Syncbase.queue = queue
+    }
+  }
 
   static public var defaultRootDir: String {
     return NSFileManager.defaultManager()
@@ -73,7 +81,7 @@ public enum Syncbase {
     disableSyncgroupPublishing: Bool = false,
     disableUserdataSyncgroup: Bool = false,
     queue: dispatch_queue_t = dispatch_get_main_queue()) throws {
-      if didInit {
+      if Syncbase.didInit {
         throw SyncbaseError.AlreadyConfigured
       }
       Syncbase.adminUserId = adminUserId
@@ -82,56 +90,50 @@ public enum Syncbase {
       Syncbase.defaultBlessingStringPrefix = defaultBlessingStringPrefix
       Syncbase.disableSyncgroupPublishing = disableSyncgroupPublishing
       Syncbase.disableUserdataSyncgroup = disableUserdataSyncgroup
-
-      // TODO(zinman): Reconfigure this logic once we have CL #23295 merged.
-      let database = try Syncbase.startSyncbaseAndInitDatabase()
-      if (Syncbase.disableUserdataSyncgroup) {
-        try database.collection(Syncbase.USERDATA_SYNCGROUP_NAME, withoutSyncgroup: true)
-      } else {
-        // This gets deferred to login as it's blocking. Once we've logged in we don't need it
-        // anyway.
-        didCreateOrJoin = false
-        // FIXME(zinman): Implement create-or-join (and watch) of userdata syncgroup.
-        throw SyncbaseError.IllegalArgument(detail: "Synced userdata collection is not yet supported")
+      Syncbase.didPostLogin = false
+      // We don't need to set Syncbase.queue as it is a proxy for SyncbaseCore's queue, which is
+      // set in the configure below.
+      try SyncbaseError.wrap {
+        try SyncbaseCore.Syncbase.configure(rootDir: Syncbase.rootDir, queue: queue)
       }
-      Syncbase.db = database
+      // We use SyncbaseCore's isLoggedIn because this frameworks would fail as didInit hasn't
+      // been set to true yet.
+      if (SyncbaseCore.Syncbase.isLoggedIn) {
+        do {
+          try Syncbase.postLoginCreateDefaults()
+        } catch let e {
+          // If we get an exception after configuring the low-level API, make sure we shutdown
+          // Syncbase so that any subsequent call to this configure method doesn't get a
+          // SyncbaseError.AlreadyConfigured exception from SyncbaseCore.Syncbase.configure.
+          SyncbaseCore.Syncbase.shutdown()
+          throw e
+        }
+      }
       Syncbase.didInit = true
   }
 
-  private static func startSyncbaseAndInitDatabase() throws -> Database {
-    if Syncbase.rootDir == "" {
-      throw SyncbaseError.IllegalArgument(detail: "Missing rootDir")
+  private static func postLoginCreateDefaults() throws {
+    let coreDb = try SyncbaseCore.Syncbase.database(Syncbase.DB_NAME)
+    let database = Database(coreDatabase: coreDb)
+    try database.createIfMissing()
+    if (Syncbase.disableUserdataSyncgroup) {
+      try database.collection(Syncbase.USERDATA_SYNCGROUP_NAME, withoutSyncgroup: true)
+    } else {
+      // FIXME(zinman): Implement create-or-join (and watch) of userdata syncgroup.
+      throw SyncbaseError.IllegalArgument(detail: "Synced userdata collection is not yet supported")
     }
-    if !NSFileManager.defaultManager().fileExistsAtPath(Syncbase.rootDir) {
-      try NSFileManager.defaultManager().createDirectoryAtPath(
-        Syncbase.rootDir,
-        withIntermediateDirectories: true,
-        attributes: [NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication])
-    }
-    return try SyncbaseError.wrap {
-      // TODO(zinman): Verify we should be using the user's blessing (by not explicitly passing
-      // the blessings in an Identifier).
-      try SyncbaseCore.Syncbase.configure(rootDir: Syncbase.rootDir, queue: Syncbase.queue)
-      let coreDb = try SyncbaseCore.Syncbase.database(Syncbase.DB_NAME)
-      let res = Database(coreDatabase: coreDb)
-      try res.createIfMissing()
-      return res
-    }
+    Syncbase.db = database
+    Syncbase.didPostLogin = true
   }
 
   /// Returns the shared database handle. Must have already called `configure` and be logged in,
   /// otherwise this will throw a `SyncbaseError.NotConfigured` or `SyncbaseError.NotLoggedIn`
   /// error.
   public static func database() throws -> Database {
-    guard let db = Syncbase.db where Syncbase.didInit else {
+    if !Syncbase.didInit {
       throw SyncbaseError.NotConfigured
     }
-    if !SyncbaseCore.Syncbase.isLoggedIn {
-      throw SyncbaseError.NotLoggedIn
-    }
-    if !Syncbase.disableUserdataSyncgroup && !Syncbase.didCreateOrJoin {
-      // Create-or-join of userdata syncgroup occurs in login. We must have failed between
-      // login() and the create-or-join call.
+    guard let db = Syncbase.db where Syncbase.didPostLogin else {
       throw SyncbaseError.NotLoggedIn
     }
     return db
@@ -150,7 +152,7 @@ public enum Syncbase {
     SyncbaseCore.Syncbase.login(
       SyncbaseCore.GoogleOAuthCredentials(token: credentials.token),
       callback: { err in
-        guard err != nil else {
+        guard err == nil else {
           if let e = err as? SyncbaseCore.SyncbaseError {
             callback(err: SyncbaseError(coreError: e))
           } else {
@@ -158,21 +160,17 @@ public enum Syncbase {
           }
           return
         }
-        if Syncbase.disableUserdataSyncgroup {
-          // Success
-          dispatch_async(Syncbase.queue) {
-            callback(err: nil)
+        // postLoginCreateDefaults can be blocking when performing create-or-join. Run on
+        // a background queue to prevent blocking from the Go callback.
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+          var callbackErr: ErrorType?
+          do {
+            try postLoginCreateDefaults()
+          } catch let e {
+            callbackErr = e
           }
-        } else {
-          dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-            callback(err: SyncbaseError.IllegalArgument(detail:
-                "Synced userdata collection is not yet supported"))
-            return
-            // FIXME(zinman): Implement create-or-join (and watch) of userdata syncgroup.
-            // Syncbase.didCreateOrJoin = true
-            // dispatch_async(Syncbase.queue) {
-            // callback(nil)
-            // }
+          dispatch_async(Syncbase.queue) {
+            callback(err: callbackErr)
           }
         }
     })
@@ -181,11 +179,6 @@ public enum Syncbase {
   public static func isLoggedIn() throws -> Bool {
     if !Syncbase.didInit {
       throw SyncbaseError.NotConfigured
-    }
-    if !Syncbase.disableUserdataSyncgroup && !Syncbase.didCreateOrJoin {
-      // Create-or-join of userdata syncgroup occurs in login. We must have failed between
-      // login() and the create-or-join call.
-      throw SyncbaseError.NotLoggedIn
     }
     return SyncbaseCore.Syncbase.isLoggedIn
   }

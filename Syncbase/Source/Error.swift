@@ -9,7 +9,6 @@ public enum SyncbaseError: ErrorType {
   case AlreadyConfigured
   case NotConfigured
   case NotLoggedIn
-  case IllegalArgument(detail: String)
   case BatchError(detail: String)
   case BlessingError(detail: String)
   case UnknownError(err: ErrorType)
@@ -31,6 +30,7 @@ public enum SyncbaseError: ErrorType {
   case InvalidOperation(reason: String)
   case InvalidUTF8(invalidUtf8: String)
   case CastError(obj: Any)
+  case IllegalArgument(detail: String)
 
   init?(coreError: SyncbaseCore.SyncbaseError) {
     switch coreError {
@@ -54,6 +54,7 @@ public enum SyncbaseError: ErrorType {
     case .InvalidOperation(let reason): self = .InvalidOperation(reason: reason)
     case .InvalidUTF8(let invalidUtf8): self = .InvalidUTF8(invalidUtf8: invalidUtf8)
     case .CastError(let obj): self = .CastError(obj: obj)
+    case .IllegalArgument(let detail): self = .IllegalArgument(detail: detail)
     }
   }
 
@@ -71,7 +72,6 @@ public enum SyncbaseError: ErrorType {
 extension SyncbaseError: CustomStringConvertible {
   public var description: String {
     switch self {
-    case .IllegalArgument(let detail): return "Illegal argument: \(detail)"
     case .BatchError(let detail): return "Batch error: \(detail)"
     case .BlessingError(let detail): return "Blessing error: \(detail)"
     case .UnknownError(let err): return "Unknown error: \(err)"
@@ -97,6 +97,7 @@ extension SyncbaseError: CustomStringConvertible {
     case .InvalidOperation(let reason): return "Invalid operation: \(reason)"
     case .InvalidUTF8(let invalidUtf8): return "Unable to convert to utf8: \(invalidUtf8)"
     case .CastError(let obj): return "Unable to convert to cast: \(obj)"
+    case .IllegalArgument(let detail): return "Illegal argument: \(detail)"
     }
   }
 }

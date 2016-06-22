@@ -4,12 +4,31 @@
 
 import XCTest
 @testable import Syncbase
+import enum Syncbase.Syncbase
 @testable import SyncbaseCore
+
+let testQueue = dispatch_queue_create("SyncbaseQueue", DISPATCH_QUEUE_SERIAL)
 
 class BasicDatabaseTests: XCTestCase {
   override class func setUp() {
     SyncbaseCore.Syncbase.isUnitTest = true
-    try! Syncbase.configure(adminUserId: "unittest@google.com")
+    let rootDir = NSFileManager.defaultManager()
+      .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
+      .URLByAppendingPathComponent("SyncbaseUnitTest")
+      .absoluteString
+    // TODO(zinman): Once we have create-and-join implemented don't always set
+    // disableUserdataSyncgroup to true.
+    try! Syncbase.configure(
+      adminUserId: "unittest@google.com",
+      rootDir: rootDir,
+      disableUserdataSyncgroup: true,
+      queue: testQueue)
+    let semaphore = dispatch_semaphore_create(0)
+    Syncbase.login(GoogleOAuthCredentials(token: ""), callback: { err in
+      XCTAssertNil(err)
+      dispatch_semaphore_signal(semaphore)
+    })
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
   }
 
   override class func tearDown() {

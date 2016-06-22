@@ -25,6 +25,7 @@ public enum SyncbaseError: ErrorType, CustomStringConvertible {
   case InvalidOperation(reason: String)
   case InvalidUTF8(invalidUtf8: String)
   case CastError(obj: Any)
+  case IllegalArgument(detail: String)
 
   init?(_ err: VError) {
     // TODO(zinman): Make VError better by having the proper arguments transmitted across
@@ -70,6 +71,7 @@ public enum SyncbaseError: ErrorType, CustomStringConvertible {
     case .InvalidOperation(let reason): return "Invalid operation: \(reason)"
     case .InvalidUTF8(let invalidUtf8): return "Unable to convert to UTF-8: \(invalidUtf8)"
     case .CastError(let obj): return "Unable to convert to cast: \(obj)"
+    case .IllegalArgument(let detail): return "Illegal argument: \(detail)"
     }
   }
 }

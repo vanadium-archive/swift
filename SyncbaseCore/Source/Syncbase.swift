@@ -8,9 +8,8 @@ import Foundation
 public enum Syncbase {
   /// The dispatch queue to run callbacks on. Defaults to main.
   public static var queue: dispatch_queue_t = dispatch_get_main_queue()
-
+  // Internal variables
   static var didInit = false
-
   static var isUnitTest = false
 
   public static func configure(
@@ -23,11 +22,31 @@ public enum Syncbase {
       if didInit {
         throw SyncbaseError.AlreadyConfigured
       }
+      if rootDir == "" {
+        throw SyncbaseError.IllegalArgument(detail: "Missing rootDir")
+      }
+      if !NSFileManager.defaultManager().fileExistsAtPath(rootDir) {
+        try NSFileManager.defaultManager().createDirectoryAtPath(
+          rootDir,
+          withIntermediateDirectories: true,
+          attributes: [NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication])
+      }
       v23_syncbase_Init(
         v23_syncbase_Bool(false),
         try rootDir.toCgoString(),
         v23_syncbase_Bool(isUnitTest))
+      if isLoggedIn {
+        try serve()
+      }
+      Syncbase.queue = queue
       Syncbase.didInit = true
+  }
+
+  /// Starts serving Syncbase post-initialization and login. Internal use only.
+  static func serve() throws {
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_Serve(errPtr)
+    }
   }
 
   /// Shuts down the Syncbase service. You must call configure again before any calls will work.
@@ -68,8 +87,9 @@ public enum Syncbase {
   /// Must return true before any Syncbase operation can work. Authorize using GoogleCredentials
   /// created from a Google OAuth token (you should use the Google Sign In SDK to get this).
   public static var isLoggedIn: Bool {
-    log.debug("Blessings debug string is \(Principal.blessingsDebugDescription)")
-    return Principal.blessingsAreValid()
+    var ret = v23_syncbase_Bool(false)
+    v23_syncbase_IsLoggedIn(&ret)
+    return ret.toBool()
   }
 
   /// For debugging the current Syncbase user blessings.

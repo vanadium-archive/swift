@@ -6,6 +6,13 @@ import Foundation
 import XCTest
 @testable import SyncbaseCore
 
+struct EmptyCredentials: OAuthCredentials {
+  let provider: OAuthProvider = OAuthProvider.Google
+  let token: String = ""
+}
+
+let testQueue = dispatch_queue_create("SyncbaseQueue", DISPATCH_QUEUE_SERIAL)
+
 class BasicDatabaseTests: XCTestCase {
   override class func setUp() {
     Syncbase.isUnitTest = true
@@ -13,7 +20,13 @@ class BasicDatabaseTests: XCTestCase {
       .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
       .URLByAppendingPathComponent("SyncbaseUnitTest")
       .absoluteString
-    try! Syncbase.configure(rootDir: rootDir)
+    try! Syncbase.configure(rootDir: rootDir, queue: testQueue)
+    let semaphore = dispatch_semaphore_create(0)
+    Syncbase.login(EmptyCredentials(), callback: { err in
+      XCTAssertNil(err)
+      dispatch_semaphore_signal(semaphore)
+    })
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
   }
 
   override class func tearDown() {

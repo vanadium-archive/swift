@@ -79,7 +79,7 @@ struct HandlerOperation {
 
 /// A set of collections and syncgroups.
 /// To get a Database handle, call `Syncbase.database`.
-public class Database: DatabaseHandle {
+public class Database: DatabaseHandle, CustomStringConvertible {
   let coreDatabase: SyncbaseCore.Database
 
   // These are all static because we might have active handlers to a database while it goes
@@ -135,9 +135,11 @@ public class Database: DatabaseHandle {
   /// Returns all collections in the database.
   public func collections() throws -> [Collection] {
     return try SyncbaseError.wrap {
-      let coreIds = try self.coreDatabase.listCollections()
+      let coreIds = try self.coreDatabase.listCollections().filter({ return $0.name != Syncbase.USERDATA_SYNCGROUP_NAME })
       return try coreIds.map { coreId in
-        return Collection(coreCollection: try self.coreDatabase.collection(coreId), databaseHandle: self)
+        return Collection(
+          coreCollection: try self.coreDatabase.collection(coreId),
+          databaseHandle: self)
       }
     }
   }
@@ -403,5 +405,9 @@ public class Database: DatabaseHandle {
         op.cancel()
       }
     }
+  }
+
+  public var description: String {
+    return "[Syncbase.Database id=\(databaseId)]"
   }
 }

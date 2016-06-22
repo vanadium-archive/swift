@@ -7,7 +7,7 @@ import SyncbaseCore
 
 /// Represents a set of collections, synced amongst a set of users.
 /// To get a Syncgroup handle, call `Database.syncgroup`.
-public class Syncgroup {
+public class Syncgroup: CustomStringConvertible {
   let database: Database
   let coreSyncgroup: SyncbaseCore.Syncgroup
 
@@ -42,7 +42,7 @@ public class Syncgroup {
   }
 
   /// Returns the id of this syncgroup.
-  public var syncbaseId: Identifier {
+  public var syncgroupId: Identifier {
     return Identifier(coreId: coreSyncgroup.syncgroupId)
   }
 
@@ -124,5 +124,9 @@ public class Syncgroup {
         }
       }
     }
+  }
+
+  public var description: String {
+    return "[Syncbase.Syncgroup id=\(syncgroupId)]"
   }
 }

@@ -7,7 +7,7 @@ import SyncbaseCore
 
 /// Represents an ordered set of key-value pairs.
 /// To get a Collection handle, call `Database.collection`.
-public class Collection {
+public class Collection: CustomStringConvertible {
   let coreCollection: SyncbaseCore.Collection
   let databaseHandle: DatabaseHandle
 
@@ -97,5 +97,9 @@ public class Collection {
     } else {
       try (databaseHandle as! Database).runInBatch(op: op)
     }
+  }
+
+  public var description: String {
+    return "[Syncbase.Collection id=\(collectionId)]"
   }
 }
