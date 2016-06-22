@@ -52,13 +52,14 @@ class BasicDatabaseTests: XCTestCase {
       // Must be idempotent.
       try collection.createIfMissing()
       try collection.createIfMissing()
+      collections = try db.collections()
+      XCTAssertEqual(collections.count, 1)
       // Should be empty.
       XCTAssertFalse(try collection.exists("a"))
 
+      try collection.destroy()
       collections = try db.collections()
-      XCTAssertEqual(collections.count, 1)
-
-      // TODO(zinman): Delete collection.
+      XCTAssertEqual(collections.count, 0)
     }
   }
 

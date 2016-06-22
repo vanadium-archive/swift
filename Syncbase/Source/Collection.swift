@@ -31,6 +31,11 @@ public class Collection: CustomStringConvertible {
     return Identifier(coreId: coreCollection.collectionId)
   }
 
+  /// Deletes the collection locally and anywhere else the collection is synced to.
+  public func destroy() throws {
+    try coreCollection.destroy()
+  }
+
   /// Shortcut for `Database.getSyncgroup(collection.collectionId)`, helpful for the common case
   /// of one syncgroup per collection.
   public func syncgroup() throws -> Syncgroup {
