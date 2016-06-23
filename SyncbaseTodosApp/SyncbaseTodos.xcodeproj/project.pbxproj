@@ -19,7 +19,61 @@
 		37B018D21CFF7A9D004B0A15 /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C61CFF7A9D004B0A15 /* TasksViewController.swift */; };
 		37B018D31CFF7A9D004B0A15 /* TodoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C71CFF7A9D004B0A15 /* TodoList.swift */; };
 		37B018D41CFF7A9D004B0A15 /* TodosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C81CFF7A9D004B0A15 /* TodosViewController.swift */; };
+		931F8BBD1D19254300B97CF3 /* GoogleSignIn.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 931F8BB61D19254300B97CF3 /* GoogleSignIn.bundle */; };
+		931F8BCF1D19257600B97CF3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BCE1D19257600B97CF3 /* libz.tbd */; };
+		931F8BD11D19258300B97CF3 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BD01D19258300B97CF3 /* AddressBook.framework */; };
+		931F8BD31D19258800B97CF3 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BD21D19258800B97CF3 /* StoreKit.framework */; };
+		931F8BD51D19258F00B97CF3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BD41D19258F00B97CF3 /* SystemConfiguration.framework */; };
+		931F8BD71D19290B00B97CF3 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931F8BD61D19290B00B97CF3 /* LoginViewController.swift */; };
+		932AD4E91D1A74A8000EA038 /* GoogleAppUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BB31D19254300B97CF3 /* GoogleAppUtilities.framework */; };
+		932AD4EA1D1A74A8000EA038 /* GoogleAuthUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BB41D19254300B97CF3 /* GoogleAuthUtilities.framework */; };
+		932AD4EB1D1A74A8000EA038 /* GoogleNetworkingUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BB51D19254300B97CF3 /* GoogleNetworkingUtilities.framework */; };
+		932AD4EC1D1A74A8000EA038 /* GoogleSymbolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BB81D19254300B97CF3 /* GoogleSymbolUtilities.framework */; };
+		932AD4ED1D1A74A8000EA038 /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BB91D19254300B97CF3 /* GoogleUtilities.framework */; };
+		932AD4EE1D1A74C5000EA038 /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 931F8BB71D19254300B97CF3 /* GoogleSignIn.framework */; };
+		932AD4F21D1B1050000EA038 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 932AD4F11D1B1050000EA038 /* GoogleService-Info.plist */; };
+		932AD4FE1D1B202B000EA038 /* Syncbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 938DEA941D10DA4A003C9734 /* Syncbase.framework */; };
+		932AD4FF1D1B202B000EA038 /* Syncbase.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 938DEA941D10DA4A003C9734 /* Syncbase.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		932AD5041D1B20C5000EA038 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 932AD5031D1B20C5000EA038 /* SafariServices.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		932AD5001D1B202B000EA038 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 938DEA8D1D10DA4A003C9734 /* Syncbase.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9374F6731D010711004ECE59;
+			remoteInfo = Syncbase;
+		};
+		938DEA931D10DA4A003C9734 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 938DEA8D1D10DA4A003C9734 /* Syncbase.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9374F6741D010711004ECE59;
+			remoteInfo = Syncbase;
+		};
+		938DEA951D10DA4A003C9734 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 938DEA8D1D10DA4A003C9734 /* Syncbase.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9374F67E1D010711004ECE59;
+			remoteInfo = SyncbaseTests;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		932AD5021D1B202B000EA038 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				932AD4FF1D1B202B000EA038 /* Syncbase.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		378398671CF3ADB000C35566 /* SyncbaseTodos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SyncbaseTodos.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -36,6 +90,21 @@
 		37B018C61CFF7A9D004B0A15 /* TasksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
 		37B018C71CFF7A9D004B0A15 /* TodoList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodoList.swift; sourceTree = "<group>"; };
 		37B018C81CFF7A9D004B0A15 /* TodosViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodosViewController.swift; sourceTree = "<group>"; };
+		931F8BB31D19254300B97CF3 /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppUtilities.framework; path = ../../../third_party/swift/google_signin_sdk_4_0_0/GoogleAppUtilities.framework; sourceTree = "<group>"; };
+		931F8BB41D19254300B97CF3 /* GoogleAuthUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAuthUtilities.framework; path = ../../../third_party/swift/google_signin_sdk_4_0_0/GoogleAuthUtilities.framework; sourceTree = "<group>"; };
+		931F8BB51D19254300B97CF3 /* GoogleNetworkingUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleNetworkingUtilities.framework; path = ../../../third_party/swift/google_signin_sdk_4_0_0/GoogleNetworkingUtilities.framework; sourceTree = "<group>"; };
+		931F8BB61D19254300B97CF3 /* GoogleSignIn.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GoogleSignIn.bundle; path = ../../../third_party/swift/google_signin_sdk_4_0_0/GoogleSignIn.bundle; sourceTree = "<group>"; };
+		931F8BB71D19254300B97CF3 /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = ../../../third_party/swift/google_signin_sdk_4_0_0/GoogleSignIn.framework; sourceTree = "<group>"; };
+		931F8BB81D19254300B97CF3 /* GoogleSymbolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSymbolUtilities.framework; path = ../../../third_party/swift/google_signin_sdk_4_0_0/GoogleSymbolUtilities.framework; sourceTree = "<group>"; };
+		931F8BB91D19254300B97CF3 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = ../../../third_party/swift/google_signin_sdk_4_0_0/GoogleUtilities.framework; sourceTree = "<group>"; };
+		931F8BCE1D19257600B97CF3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		931F8BD01D19258300B97CF3 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		931F8BD21D19258800B97CF3 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		931F8BD41D19258F00B97CF3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		931F8BD61D19290B00B97CF3 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		932AD4F11D1B1050000EA038 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "SyncbaseTodos/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		932AD5031D1B20C5000EA038 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
+		938DEA8D1D10DA4A003C9734 /* Syncbase.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Syncbase.xcodeproj; path = ../Syncbase/Syncbase.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +112,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				932AD5041D1B20C5000EA038 /* SafariServices.framework in Frameworks */,
+				932AD4E91D1A74A8000EA038 /* GoogleAppUtilities.framework in Frameworks */,
+				932AD4FE1D1B202B000EA038 /* Syncbase.framework in Frameworks */,
+				932AD4EA1D1A74A8000EA038 /* GoogleAuthUtilities.framework in Frameworks */,
+				932AD4EB1D1A74A8000EA038 /* GoogleNetworkingUtilities.framework in Frameworks */,
+				932AD4EE1D1A74C5000EA038 /* GoogleSignIn.framework in Frameworks */,
+				932AD4EC1D1A74A8000EA038 /* GoogleSymbolUtilities.framework in Frameworks */,
+				932AD4ED1D1A74A8000EA038 /* GoogleUtilities.framework in Frameworks */,
+				931F8BD51D19258F00B97CF3 /* SystemConfiguration.framework in Frameworks */,
+				931F8BD31D19258800B97CF3 /* StoreKit.framework in Frameworks */,
+				931F8BD11D19258300B97CF3 /* AddressBook.framework in Frameworks */,
+				931F8BCF1D19257600B97CF3 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,7 +133,9 @@
 		3783985E1CF3ADB000C35566 = {
 			isa = PBXGroup;
 			children = (
+				938DEA8D1D10DA4A003C9734 /* Syncbase.xcodeproj */,
 				37B018BA1CFF7A9D004B0A15 /* SyncbaseTodos */,
+				931F8BC11D19254700B97CF3 /* Google Sign-In */,
 				378398681CF3ADB000C35566 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,11 +185,41 @@
 		37B018D71CFF7B5A004B0A15 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				37B018C81CFF7A9D004B0A15 /* TodosViewController.swift */,
-				37B018C61CFF7A9D004B0A15 /* TasksViewController.swift */,
 				379604B41D0F655B004CA8CC /* InviteViewController.swift */,
+				931F8BD61D19290B00B97CF3 /* LoginViewController.swift */,
+				37B018C61CFF7A9D004B0A15 /* TasksViewController.swift */,
+				37B018C81CFF7A9D004B0A15 /* TodosViewController.swift */,
 			);
 			name = Views;
+			sourceTree = "<group>";
+		};
+		931F8BC11D19254700B97CF3 /* Google Sign-In */ = {
+			isa = PBXGroup;
+			children = (
+				931F8BB61D19254300B97CF3 /* GoogleSignIn.bundle */,
+				931F8BD01D19258300B97CF3 /* AddressBook.framework */,
+				931F8BB31D19254300B97CF3 /* GoogleAppUtilities.framework */,
+				931F8BB41D19254300B97CF3 /* GoogleAuthUtilities.framework */,
+				931F8BB51D19254300B97CF3 /* GoogleNetworkingUtilities.framework */,
+				931F8BB71D19254300B97CF3 /* GoogleSignIn.framework */,
+				931F8BB81D19254300B97CF3 /* GoogleSymbolUtilities.framework */,
+				931F8BB91D19254300B97CF3 /* GoogleUtilities.framework */,
+				932AD5031D1B20C5000EA038 /* SafariServices.framework */,
+				931F8BD21D19258800B97CF3 /* StoreKit.framework */,
+				931F8BD41D19258F00B97CF3 /* SystemConfiguration.framework */,
+				932AD4F11D1B1050000EA038 /* GoogleService-Info.plist */,
+				931F8BCE1D19257600B97CF3 /* libz.tbd */,
+			);
+			name = "Google Sign-In";
+			sourceTree = "<group>";
+		};
+		938DEA8E1D10DA4A003C9734 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				938DEA941D10DA4A003C9734 /* Syncbase.framework */,
+				938DEA961D10DA4A003C9734 /* SyncbaseTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,10 +232,12 @@
 				378398631CF3ADB000C35566 /* Sources */,
 				378398641CF3ADB000C35566 /* Frameworks */,
 				378398651CF3ADB000C35566 /* Resources */,
+				932AD5021D1B202B000EA038 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				932AD5011D1B202B000EA038 /* PBXTargetDependency */,
 			);
 			name = SyncbaseTodos;
 			productName = VanadiumTodos;
@@ -155,6 +270,12 @@
 			mainGroup = 3783985E1CF3ADB000C35566;
 			productRefGroup = 378398681CF3ADB000C35566 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 938DEA8E1D10DA4A003C9734 /* Products */;
+					ProjectRef = 938DEA8D1D10DA4A003C9734 /* Syncbase.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				378398661CF3ADB000C35566 /* SyncbaseTodos */,
@@ -162,12 +283,31 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		938DEA941D10DA4A003C9734 /* Syncbase.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Syncbase.framework;
+			remoteRef = 938DEA931D10DA4A003C9734 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		938DEA961D10DA4A003C9734 /* SyncbaseTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SyncbaseTests.xctest;
+			remoteRef = 938DEA951D10DA4A003C9734 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		378398651CF3ADB000C35566 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				931F8BBD1D19254300B97CF3 /* GoogleSignIn.bundle in Resources */,
 				37B018CC1CFF7A9D004B0A15 /* Main.storyboard in Resources */,
+				932AD4F21D1B1050000EA038 /* GoogleService-Info.plist in Resources */,
 				37B018CA1CFF7A9D004B0A15 /* Assets.xcassets in Resources */,
 				37B018CB1CFF7A9D004B0A15 /* LaunchScreen.storyboard in Resources */,
 			);
@@ -188,11 +328,20 @@
 				37B018D41CFF7A9D004B0A15 /* TodosViewController.swift in Sources */,
 				37B018D01CFF7A9D004B0A15 /* Person.swift in Sources */,
 				37B018CD1CFF7A9D004B0A15 /* CircularImageView.swift in Sources */,
+				931F8BD71D19290B00B97CF3 /* LoginViewController.swift in Sources */,
 				37B018D21CFF7A9D004B0A15 /* TasksViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		932AD5011D1B202B000EA038 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Syncbase;
+			targetProxy = 932AD5001D1B202B000EA038 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		37B018BD1CFF7A9D004B0A15 /* LaunchScreen.storyboard */ = {
@@ -237,6 +386,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = $SRCROOT/../../../third_party/swift/google_signin_sdk_4_0_0;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -254,6 +404,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -282,6 +433,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = $SRCROOT/../../../third_party/swift/google_signin_sdk_4_0_0;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -292,6 +444,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -301,9 +454,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = SyncbaseTodos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = io.v.SyncbaseTodos;
+				PRODUCT_BUNDLE_IDENTIFIER = io.v.zinman.SyncbaseTodos;
 				PRODUCT_NAME = SyncbaseTodos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -313,9 +471,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = SyncbaseTodos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = io.v.SyncbaseTodos;
+				PRODUCT_BUNDLE_IDENTIFIER = io.v.zinman.SyncbaseTodos;
 				PRODUCT_NAME = SyncbaseTodos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

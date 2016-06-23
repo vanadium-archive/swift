@@ -2,15 +2,36 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+import GoogleSignIn
 import UIKit
+import Syncbase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-    // Override point for customization after application launch.
+    // Configure Google Sign-In
+    let infoPath = NSBundle.mainBundle().pathForResource("GoogleService-Info", ofType: "plist")!
+    let info = NSDictionary(contentsOfFile: infoPath)!
+    let clientID = info["CLIENT_ID"] as! String
+    GIDSignIn.sharedInstance().clientID = clientID
+
+    // Configure Syncbase
+    try! Syncbase.configure(adminUserId: "zinman@google.com",
+      // Craft a blessing prefix using google sign-in and the dev.v.io blessings provider.
+      defaultBlessingStringPrefix: "dev.v.io:o:\(clientID):",
+      // Cloud mount-point.
+      mountPoints: ["/ns.dev.v.io:8101/tmp/todos/users/"],
+      // TODO(zinman): Remove this once we have create-or-join implemented.
+      disableUserdataSyncgroup: true)
     return true
+  }
+
+  func application(app: UIApplication, openURL url: NSURL, options: [String: AnyObject]) -> Bool {
+    return GIDSignIn.sharedInstance().handleURL(url,
+      sourceApplication: options[UIApplicationOpenURLOptionsSourceApplicationKey] as! String,
+      annotation: options[UIApplicationOpenURLOptionsAnnotationKey])
   }
 
   func applicationWillResignActive(application: UIApplication) {
@@ -34,6 +55,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationWillTerminate(application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
   }
-
 }
 
