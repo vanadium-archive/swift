@@ -103,6 +103,12 @@ public extension v23_syncbase_CollectionRowPatterns {
   }
 }
 
+public extension v23_syncbase_EntityType {
+  func toEntityType() -> WatchChange.EntityType? {
+    return WatchChange.EntityType(rawValue: Int(self.rawValue))
+  }
+}
+
 public extension v23_syncbase_Id {
   init(_ id: Identifier) throws {
     self.name = try id.name.toCgoString()
@@ -328,12 +334,29 @@ public extension v23_syncbase_WatchChange {
   func toWatchChange() -> WatchChange {
     let resumeMarkerData = v23_syncbase_Bytes(
       p: unsafeBitCast(self.resumeMarker.p, UnsafeMutablePointer<UInt8>.self),
-      n: self.resumeMarker.n).toNSData()!
+      n: self.resumeMarker.n).toNSData()
+    // Turn row & collectionId zero-values into nil.
+    var row = self.row.toString()
+    if row == "" {
+      row = nil
+    }
+    var collectionId = self.collection.toIdentifier()
+    if collectionId?.name == "" && collectionId?.blessing == "" {
+      collectionId = nil
+    }
+    // Zero-valued Value does not get turned into a nil on put -- if it's a put then we know
+    // it cannot be nil. This allows us to store empty arrays (an esoteric use case but one that
+    // is supported nevertheless).
+    var value = self.value.toNSData()
+    if value == nil && self.changeType == v23_syncbase_ChangeTypePut {
+      value = NSData()
+    }
     return WatchChange(
-      collectionId: self.collection.toIdentifier()!,
-      row: self.row.toString()!,
+      entityType: self.entityType.toEntityType()!,
+      collectionId: collectionId,
+      row: row,
       changeType: self.changeType.toChangeType()!,
-      value: self.value.toNSData(),
+      value: value,
       resumeMarker: resumeMarkerData,
       isFromSync: self.fromSync,
       isContinued: self.continued)
@@ -364,11 +387,7 @@ public struct VError: ErrorType {
     var e = v23_syncbase_VError()
     let res = try f(&e)
     if let err = e.toVError() {
-      // We might be able to convert this VError into a SyncbaseError depending on the ID.
-      if let syncbaseError = SyncbaseError(err) {
-        throw syncbaseError
-      }
-      throw err
+      throw SyncbaseError(err)
     }
     return res
   }

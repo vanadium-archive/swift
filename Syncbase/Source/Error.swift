@@ -31,8 +31,9 @@ public enum SyncbaseError: ErrorType {
   case InvalidUTF8(invalidUtf8: String)
   case CastError(obj: Any)
   case IllegalArgument(detail: String)
+  case UnknownVError(err: VError)
 
-  init?(coreError: SyncbaseCore.SyncbaseError) {
+  init(coreError: SyncbaseCore.SyncbaseError) {
     switch coreError {
     case .AlreadyConfigured: self = .AlreadyConfigured
     case .NotConfigured: self = .NotConfigured
@@ -55,6 +56,7 @@ public enum SyncbaseError: ErrorType {
     case .InvalidUTF8(let invalidUtf8): self = .InvalidUTF8(invalidUtf8: invalidUtf8)
     case .CastError(let obj): self = .CastError(obj: obj)
     case .IllegalArgument(let detail): self = .IllegalArgument(detail: detail)
+    case .UnknownVError(let err): self = .UnknownVError(err: err)
     }
   }
 
@@ -62,7 +64,9 @@ public enum SyncbaseError: ErrorType {
     do {
       return try block()
     } catch let e as SyncbaseCore.SyncbaseError {
-      throw SyncbaseError(coreError: e)!
+      throw SyncbaseError(coreError: e)
+    } catch let e as VError {
+      throw SyncbaseError.UnknownVError(err: e)
     } catch let e {
       throw SyncbaseError.UnknownError(err: e)
     }
@@ -98,6 +102,7 @@ extension SyncbaseError: CustomStringConvertible {
     case .InvalidUTF8(let invalidUtf8): return "Unable to convert to utf8: \(invalidUtf8)"
     case .CastError(let obj): return "Unable to convert to cast: \(obj)"
     case .IllegalArgument(let detail): return "Illegal argument: \(detail)"
+    case .UnknownVError(let err): return "Unknown error: \(err)"
     }
   }
 }

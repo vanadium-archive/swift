@@ -211,12 +211,12 @@ public class Collection {
     // Go with similar condition-variable logic.
     let condition = NSCondition()
     var data: (String, NSData)? = nil
-    var doneErr: ErrorType? = nil
+    var doneErr: SyncbaseError? = nil
     var updateAvailable = false
 
     // The anonymous function that gets called from the Swift. It blocks until there's an update
     // available from Go.
-    func fetchNext(timeout: NSTimeInterval?) -> ((String, GetValueFromScanStream)?, ErrorType?) {
+    func fetchNext(timeout: NSTimeInterval?) -> ((String, GetValueFromScanStream)?, SyncbaseError?) {
       condition.lock()
       while !updateAvailable {
         if let timeout = timeout {
@@ -265,7 +265,7 @@ public class Collection {
       condition.unlock()
     }
 
-    func onDone(err: ErrorType?) {
+    func onDone(err: SyncbaseError?) {
       condition.lock()
       // Wait until any existing update has been received by the fetch so we don't just blow
       // past it.
@@ -326,9 +326,12 @@ public class Collection {
   }
 
   private static func onScanDone(handle: v23_syncbase_Handle, err: v23_syncbase_VError) {
-    let e = err.toVError()
+    var serr: SyncbaseError?
+    if let e = err.toVError() {
+      serr = SyncbaseError(e)
+    }
     let handle = Unmanaged<ScanHandle>.fromOpaque(COpaquePointer(handle)).takeRetainedValue()
-    handle.onDone(e)
+    handle.onDone(serr)
   }
 
   // MARK: Internal helpers

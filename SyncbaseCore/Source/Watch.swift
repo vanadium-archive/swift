@@ -16,7 +16,8 @@ public struct CollectionRowPattern {
   public let collectionBlessing: String
 
   /// rowKey is a SQL LIKE-style glob pattern ('%' and '_' wildcards, '\' as escape character)
-  /// for matching rows. If empty then only the collectionId pattern is matched.
+  /// for matching rows. If empty then only the collectionId pattern is matched and NO row events
+  /// are returned.
   public let rowKey: String?
 
   public init(collectionName: String, collectionBlessing: String, rowKey: String?) {
@@ -29,24 +30,52 @@ public struct CollectionRowPattern {
 public typealias ResumeMarker = NSData
 
 public struct WatchChange {
+  public enum EntityType: Int {
+    case Root
+    case Collection
+    case Row
+  }
+
   public enum ChangeType: Int {
     case Put
     case Delete
   }
 
-  /// Collection is the id of the collection that contains the changed row.
-  public let collectionId: Identifier
+  /// EntityType is the type of the entity - Root, Collection, or Row.
+  public let entityType: EntityType
 
-  /// Row is the key of the changed row.
-  public let row: String
+  /// Collection is the id of the collection that was changed or contains the
+  /// changed row. Is nil if EntityType is not Collection or Row.
+  public let collectionId: Identifier?
 
-  /// ChangeType describes the type of the change. If ChangeType is PutChange,
-  /// then the row exists in the collection, and Value can be called to obtain
-  /// the new value for this row. If ChangeType is DeleteChange, then the row was
-  /// removed from the collection.
+  /// Row is the key of the changed row. Nil if EntityType is not Row.
+  public let row: String?
+
+  /// ChangeType describes the type of the change, depending on the EntityType:
+  ///
+  /// **EntityRow:**
+  ///
+  /// - PutChange: the row exists in the collection, and Value can be called to
+  /// obtain the new value for this row.
+  ///
+  /// - DeleteChange: the row was removed from the collection.
+  ///
+  /// **EntityCollection:**
+  ///
+  /// - PutChange: the collection exists, and CollectionInfo can be called to
+  /// obtain the collection info.
+  ///
+  /// - DeleteChange: the collection was destroyed.
+  ///
+  /// **EntityRoot:**
+  ///
+  /// - PutChange: appears as the first (possibly only) change in the initial
+  /// state batch, only if watching from an empty ResumeMarker. This is the
+  /// only situation where an EntityRoot appears.
   public let changeType: ChangeType
 
-  /// value is the new value for the row if the ChangeType is PutChange, or nil
+  /// value is the new value for the row for EntityRow PutChanges, an encoded
+  /// StoreChangeCollectionInfo value for EntityCollection PutChanges, or nil
   /// otherwise.
   public let value: NSData?
 
@@ -55,7 +84,7 @@ public struct WatchChange {
   /// This marker can be provided in the Request message to allow the caller
   /// to resume the stream watching at a specific point without fetching the
   /// initial state.
-  public let resumeMarker: ResumeMarker
+  public let resumeMarker: ResumeMarker?
 
   /// FromSync indicates whether the change came from sync. If FromSync is false,
   /// then the change originated from the local device.
@@ -79,12 +108,12 @@ enum Watch {
     // for more information.
     let condition = NSCondition()
     var data: WatchChange? = nil
-    var streamErr: ErrorType? = nil
+    var streamErr: SyncbaseError? = nil
     var updateAvailable = false
 
     // The anonymous function that gets called from the Swift. It blocks until there's an update
     // available from Go.
-    func fetchNext(timeout: NSTimeInterval?) -> (WatchChange?, ErrorType?) {
+    func fetchNext(timeout: NSTimeInterval?) -> (WatchChange?, SyncbaseError?) {
       condition.lock()
       while !updateAvailable {
         if let timeout = timeout {
@@ -126,7 +155,7 @@ enum Watch {
 
     // The callback from Go when there's been an error in the watch stream. The stream will then
     // be closed and no new changes will ever come in from this request.
-    func onError(err: ErrorType) {
+    func onError(err: SyncbaseError) {
       condition.lock()
       // Wait until any existing update has been received by the fetch so we don't just blow
       // past it.
@@ -178,7 +207,10 @@ enum Watch {
   }
 
   private static func onWatchError(handle: v23_syncbase_Handle, err: v23_syncbase_VError) {
-    let e: ErrorType = err.toVError() ?? SyncbaseError.InvalidOperation(reason: "A watch error occurred")
+    var e = SyncbaseError.InvalidOperation(reason: "A watch error occurred")
+    if let verr: VError = err.toVError() {
+      e = SyncbaseError(verr)
+    }
     let handle = Unmanaged<Watch.Handle>.fromOpaque(COpaquePointer(handle)).takeRetainedValue()
     handle.onError(e)
   }

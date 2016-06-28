@@ -83,6 +83,7 @@ class BasicDatabaseTests: XCTestCase {
     withTestCollection { db, collection in
       let key = "testrow"
       try collection.delete(key)
+      XCTAssertFalse(try collection.exists(key))
       try BasicDatabaseTests.testGetPutRow(collection, key: key, targetValue: NSData())
       try BasicDatabaseTests.testGetPutRow(collection, key: key, targetValue: NSJSONSerialization.hackSerializeAnyObject(false))
       try BasicDatabaseTests.testGetPutRow(collection, key: key, targetValue: NSJSONSerialization.hackSerializeAnyObject(M_PI))
@@ -331,23 +332,19 @@ class BasicDatabaseTests: XCTestCase {
   // MARK: Test watch
 
   func testWatchTimeout() {
-    let completed = expectationWithDescription("Completed watch timeout")
-    withTestDbAsync { (db, cleanup) in
-      self.withTestCollection(db) { db, collection in
-        try collection.put("a", value: NSData())
-        let stream = try db.watch([CollectionRowPattern(
-          collectionName: collection.collectionId.name,
-          collectionBlessing: collection.collectionId.blessing,
-          rowKey: nil)])
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-          XCTAssertNil(stream.next(timeout: 0.1))
-          XCTAssertNil(stream.err())
-          cleanup()
-          completed.fulfill()
-        }
+    withTestCollection { (db, collection) in
+      try collection.put("a", value: NSData())
+      let stream = try db.watch([CollectionRowPattern(
+        collectionName: collection.collectionId.name,
+        collectionBlessing: collection.collectionId.blessing,
+        rowKey: nil)])
+      if !self.consumeInitialState(stream) {
+        XCTFail("Initial stream died")
+      } else {
+        XCTAssertNil(stream.next(timeout: 0.1))
+        XCTAssertNil(stream.err())
       }
     }
-    waitForExpectationsWithTimeout(2) { XCTAssertNil($0) }
   }
 
   func testWatchPut() {
@@ -362,42 +359,41 @@ class BasicDatabaseTests: XCTestCase {
       let stream = try db.watch([CollectionRowPattern(
         collectionName: collection.collectionId.name,
         collectionBlessing: collection.collectionId.blessing,
-        rowKey: nil)])
-      let semaphore = dispatch_semaphore_create(0)
+        rowKey: "%")])
+      // Skip all the initial changes
+      if !self.consumeInitialState(stream) {
+        cleanup()
+        XCTFail("Initial stream died")
+        completed.fulfill()
+        return
+      }
       dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-        dispatch_semaphore_signal(semaphore)
         // Watch for changes in bg thread.
-        for tup in data {
-          let (key, value) = tup
+        for (key, value) in data {
           guard let change = stream.next(timeout: 1) else {
             cleanup()
             XCTFail("Missing put change")
             completed.fulfill()
             return
           }
-          XCTAssertNotNil(change)
           XCTAssertNil(stream.err())
           XCTAssertEqual(change.changeType, WatchChange.ChangeType.Put)
-          XCTAssertEqual(change.collectionId.blessing, collection.collectionId.blessing)
-          XCTAssertEqual(change.collectionId.name, collection.collectionId.name)
+          XCTAssertEqual(change.collectionId!.blessing, collection.collectionId.blessing)
+          XCTAssertEqual(change.collectionId!.name, collection.collectionId.name)
           XCTAssertFalse(change.isContinued)
           XCTAssertFalse(change.isFromSync)
-          XCTAssertGreaterThan(change.resumeMarker.length, 0)
+          XCTAssertGreaterThan(change.resumeMarker!.length, 0)
           XCTAssertEqual(change.row, key)
-          XCTAssertEqual(change.value, value)
+          XCTAssertEqual(change.value!, value)
         }
         cleanup()
         completed.fulfill()
       }
-
-      // Wait for background thread to start.
-      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
-
       // Add data.
       do {
-        NSThread.sleepForTimeInterval(0.05) // Wait until the stream.next is called and blocking
-        for tup in data {
-          try collection.put(tup.0, value: tup.1)
+        for (key, value) in data {
+          try collection.put(key, value: value)
+          XCTAssertTrue(try! collection.exists(key))
         }
       } catch let e {
         XCTFail("Unexpected error: \(e)")
@@ -415,32 +411,40 @@ class BasicDatabaseTests: XCTestCase {
     withTestDbAsync { (db, cleanup) in
       let collection = try db.collection(Identifier(name: "collectionWatchDelete", blessing: anyPermissions))
       try collection.create(anyCollectionPermissions)
-      for tup in data {
-        try collection.put(tup.0, value: tup.1)
+      for (key, value) in data {
+        try collection.put(key, value: value)
       }
       let stream = try db.watch([CollectionRowPattern(
         collectionName: collection.collectionId.name,
         collectionBlessing: collection.collectionId.blessing,
-        rowKey: nil)])
-      let semaphore = dispatch_semaphore_create(0)
+        rowKey: "%")])
+      // Skip all the initial changes.
+      if !self.consumeInitialState(stream) {
+        cleanup()
+        XCTFail("Initial stream died")
+        completed.fulfill()
+        return
+      }
       dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-        dispatch_semaphore_signal(semaphore)
-        // Watch for changes in bg thread.
-        for tup in data {
-          let (key, _) = tup
-          guard let change = stream.next(timeout: 1) else {
+        // Watch for put changes.
+        for (key, _) in data {
+          guard let change = stream.next(timeout: 2) else {
             cleanup()
-            XCTFail("Missing delete change")
+            if stream.err() == nil {
+              XCTFail("Timed out")
+            } else {
+              XCTFail("Missing delete change before end of stream: \(stream.err())")
+            }
             completed.fulfill()
             return
           }
           XCTAssertNil(stream.err())
           XCTAssertEqual(change.changeType, WatchChange.ChangeType.Delete)
-          XCTAssertEqual(change.collectionId.blessing, collection.collectionId.blessing)
-          XCTAssertEqual(change.collectionId.name, collection.collectionId.name)
+          XCTAssertEqual(change.collectionId!.blessing, collection.collectionId.blessing)
+          XCTAssertEqual(change.collectionId!.name, collection.collectionId.name)
           XCTAssertFalse(change.isContinued)
           XCTAssertFalse(change.isFromSync)
-          XCTAssertGreaterThan(change.resumeMarker.length, 0)
+          XCTAssertGreaterThan(change.resumeMarker!.length, 0)
           XCTAssertEqual(change.row, key)
           XCTAssertNil(change.value)
         }
@@ -448,20 +452,28 @@ class BasicDatabaseTests: XCTestCase {
         completed.fulfill()
       }
 
-      // Wait for background thread to start.
-      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
-
       do {
-        NSThread.sleepForTimeInterval(0.05) // Wait until the stream.next is called and blocking
         // Delete rows.
-        for tup in data {
-          try collection.delete(tup.0)
+        for (key, _) in data {
+          try collection.delete(key)
         }
       } catch let e {
         XCTFail("Unexpected error: \(e)")
       }
     }
     waitForExpectationsWithTimeout(2) { XCTAssertNil($0) }
+  }
+
+  func consumeInitialState(stream: WatchStream) -> Bool {
+    // Get all the initial changes.
+    while true {
+      guard let change = stream.next(timeout: 1) else {
+        return false
+      }
+      if !change.isContinued {
+        return true
+      }
+    }
   }
 
   func testWatchError() {
@@ -474,13 +486,28 @@ class BasicDatabaseTests: XCTestCase {
         collectionName: collection.collectionId.name,
         collectionBlessing: collection.collectionId.blessing,
         rowKey: nil)])
+      // Skip all the initial changes.
+      if !self.consumeInitialState(stream!) {
+        XCTFail("Initial stream died")
+        return
+      }
       try collection.destroy()
+      let change = stream!.next(timeout: 1)
+      XCTAssertNotNil(change)
+      XCTAssert(change?.changeType == .Delete)
+      XCTAssert(change?.entityType == .Collection)
     }
     let change = stream!.next(timeout: 1)
-    print("Got watch change: \(stream!.err())")
     XCTAssertNil(change)
-    XCTAssertNotNil(stream!.err())
-    let verr = stream!.err() as! VError
-    XCTAssertTrue(verr.id.hasPrefix("v.io/v23/verror"))
+    guard let err = stream!.err() else {
+      XCTFail("Missing error: \(stream!.err())")
+      return
+    }
+    switch err {
+    case SyncbaseError.UnknownVError(let verr):
+      XCTAssertTrue(verr.id.hasPrefix("v.io/v23/verror"))
+    default:
+      XCTFail("Wrong kind of error: \(err)")
+    }
   }
 }

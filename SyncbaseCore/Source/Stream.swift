@@ -8,7 +8,7 @@ import Foundation
 public protocol Stream: SequenceType, GeneratorType {
   /// Err returns a non-nil error iff the stream encountered any errors. Err does
   /// not block.
-  func err() -> ErrorType?
+  func err() -> SyncbaseError?
 
   /// Cancel notifies the stream provider that it can stop producing elements.
   /// The client must call Cancel if it does not iterate through all elements
@@ -21,11 +21,11 @@ public protocol Stream: SequenceType, GeneratorType {
 /// Typed-stream backed by anonymous callbacks
 public class AnonymousStream<T>: Stream {
   public typealias Element = T
-  public typealias FetchNextFunction = NSTimeInterval? -> (T?, ErrorType?)
+  public typealias FetchNextFunction = NSTimeInterval? -> (T?, SyncbaseError?)
   let fetchNextFunction: FetchNextFunction
   public typealias CancelFunction = Void -> Void
   let cancelFunction: CancelFunction
-  private var lastErr: ErrorType?
+  private var lastErr: SyncbaseError?
   private var isDone: Bool = false
   init(fetchNextFunction: FetchNextFunction, cancelFunction: CancelFunction) {
     self.fetchNextFunction = fetchNextFunction
@@ -63,7 +63,7 @@ public class AnonymousStream<T>: Stream {
 
   /// Err returns a non-nil error iff the stream encountered any errors. Err does
   /// not block.
-  public func err() -> ErrorType? {
+  public func err() -> SyncbaseError? {
     return lastErr
   }
 

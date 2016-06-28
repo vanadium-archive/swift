@@ -339,14 +339,12 @@ public class Database: DatabaseHandle, CustomStringConvertible {
           }
           let change = WatchChange(coreChange: coreChange)
           // Ignore changes to userdata collection.
-          if (change.collectionId.name == Syncbase.USERDATA_SYNCGROUP_NAME) {
-            continue
+          if (change.collectionId?.name != Syncbase.USERDATA_SYNCGROUP_NAME) {
+            batch.append(change)
           }
-          batch.append(change)
           if (!change.isContinued) {
             if (!gotFirstBatch) {
               gotFirstBatch = true
-              let b = batch
               // We synchronously run on Syncbase.queue to facilitate flow control. Go blocks
               // until each callback is consumed before it calls with another WatchChange event.
               // Backpressure in Swift is achieved by blocking until the WatchChange event is
@@ -356,7 +354,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
               // mitigate against out-of-order events should Syncbase.queue be a concurrent queue
               // rather than a serial queue.
               dispatch_sync(Syncbase.queue, {
-                handler.onInitialState(b)
+                handler.onInitialState(batch)
               })
             } else {
               dispatch_sync(Syncbase.queue, {
