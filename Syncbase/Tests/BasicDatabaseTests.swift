@@ -11,32 +11,15 @@ let testQueue = dispatch_queue_create("SyncbaseQueue", DISPATCH_QUEUE_SERIAL)
 
 class BasicDatabaseTests: XCTestCase {
   override class func setUp() {
-    SyncbaseCore.Syncbase.isUnitTest = true
-    let rootDir = NSFileManager.defaultManager()
-      .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
-      .URLByAppendingPathComponent("SyncbaseUnitTest")
-      .path!
-    // TODO(zinman): Once we have create-and-join implemented don't always set
-    // disableUserdataSyncgroup to true.
-    try! Syncbase.configure(
-      adminUserId: "unittest@google.com",
-      rootDir: rootDir,
-      disableUserdataSyncgroup: true,
-      queue: testQueue)
-    let semaphore = dispatch_semaphore_create(0)
-    Syncbase.login(GoogleOAuthCredentials(token: ""), callback: { err in
-      XCTAssertNil(err)
-      dispatch_semaphore_signal(semaphore)
-    })
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    configureDb(disableUserdataSyncgroup: true, disableSyncgroupPublishing: true)
   }
 
   override class func tearDown() {
-    SyncbaseCore.Syncbase.shutdown()
+    Syncbase.shutdown()
   }
 
   func testDatabaseInit() {
-    asyncDbTest() { db in
+    withDb { db in
       // Must be idempotent.
       try db.createIfMissing()
       try db.createIfMissing()
@@ -44,7 +27,7 @@ class BasicDatabaseTests: XCTestCase {
   }
 
   func testCollection() {
-    asyncDbTest() { db in
+    withDb { db in
       var collections = try db.collections()
       XCTAssertEqual(collections.count, 0)
 
@@ -64,4 +47,32 @@ class BasicDatabaseTests: XCTestCase {
   }
 
   // TODO(zinman): Add more unit tests.
+}
+
+class SyncgroupTests: XCTestCase {
+  override class func setUp() {
+    configureDb(disableUserdataSyncgroup: false, disableSyncgroupPublishing: true)
+  }
+
+  override class func tearDown() {
+    Syncbase.shutdown()
+  }
+
+  func testUserdata() {
+    withDb { db in
+      let coreCollections = try db.coreDatabase.listCollections()
+      XCTAssertEqual(coreCollections.count, 1)
+      XCTAssertEqual(coreCollections[0].name, Syncbase.USERDATA_SYNCGROUP_NAME)
+
+      let coreSyncgroups = try db.coreDatabase.listSyncgroups()
+      XCTAssertEqual(coreSyncgroups.count, 1)
+      XCTAssertEqual(coreSyncgroups[0].name, Syncbase.USERDATA_SYNCGROUP_NAME)
+
+      let verSpec = try db.coreDatabase.syncgroup(Syncbase.USERDATA_SYNCGROUP_NAME).getSpec()
+      XCTAssertEqual(verSpec.spec.collections.count, 1)
+
+      // TODO(razvanm): Make the userdata syncgroup private.
+      XCTAssertEqual(verSpec.spec.isPrivate, false)
+    }
+  }
 }

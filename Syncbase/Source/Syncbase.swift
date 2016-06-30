@@ -16,8 +16,11 @@ public enum Syncbase {
   // Initialization state
   static var didInit = false
   static var didPostLogin = false
+  static var didStartShutdown = false
   // Main database.
   static var db: Database?
+  // The userData collection, created post-login.
+  static var userDataCollection: Collection?
   // Options for opening a database.
   static var adminUserId = "alexfandrianto@google.com"
   static var defaultBlessingStringPrefix = "dev.v.io:o:608941808256-43vtfndets79kf5hac8ieujto8837660.apps.googleusercontent.com:"
@@ -91,6 +94,7 @@ public enum Syncbase {
       Syncbase.disableSyncgroupPublishing = disableSyncgroupPublishing
       Syncbase.disableUserdataSyncgroup = disableUserdataSyncgroup
       Syncbase.didPostLogin = false
+      Syncbase.didStartShutdown = false
       // We don't need to set Syncbase.queue as it is a proxy for SyncbaseCore's queue, which is
       // set in the configure below.
       try SyncbaseError.wrap {
@@ -105,25 +109,62 @@ public enum Syncbase {
           // If we get an exception after configuring the low-level API, make sure we shutdown
           // Syncbase so that any subsequent call to this configure method doesn't get a
           // SyncbaseError.AlreadyConfigured exception from SyncbaseCore.Syncbase.configure.
-          SyncbaseCore.Syncbase.shutdown()
+          Syncbase.shutdown()
           throw e
         }
       }
       Syncbase.didInit = true
   }
 
+  /// Shuts down the Syncbase service. You must call configure again before any calls will work.
+  public static func shutdown() {
+    Syncbase.didStartShutdown = true
+    SyncbaseCore.Syncbase.shutdown()
+    Syncbase.didInit = false
+    Syncbase.didPostLogin = false
+  }
+
   private static func postLoginCreateDefaults() throws {
     let coreDb = try SyncbaseCore.Syncbase.database(Syncbase.DB_NAME)
     let database = Database(coreDatabase: coreDb)
     try database.createIfMissing()
-    if (Syncbase.disableUserdataSyncgroup) {
-      try database.collection(Syncbase.USERDATA_SYNCGROUP_NAME, withoutSyncgroup: true)
-    } else {
-      // FIXME(zinman): Implement create-or-join (and watch) of userdata syncgroup.
-      throw SyncbaseError.IllegalArgument(detail: "Synced userdata collection is not yet supported")
+    userDataCollection = try database.collection(Syncbase.USERDATA_SYNCGROUP_NAME, withoutSyncgroup: true)
+    if (!Syncbase.disableUserdataSyncgroup) {
+      let syncgroup = try userDataCollection!.syncgroup()
+      do {
+        try syncgroup.join()
+      } catch {
+        try syncgroup.createIfMissing([userDataCollection!])
+      }
+      // TODO(zinman): Figure out when/how this can throw and if we should handle it better.
+      try database.addWatchChangeHandler(
+        pattern: CollectionRowPattern(collectionName: Syncbase.USERDATA_SYNCGROUP_NAME),
+        handler: WatchChangeHandler(
+          onInitialState: onUserDataWatchChange,
+          onChangeBatch: onUserDataWatchChange,
+          onError: { err in
+            if !Syncbase.didStartShutdown {
+              NSLog("Syncbase - Error watching userdata syncgroups: %@", "\(err)")
+            }
+        }))
     }
     Syncbase.db = database
     Syncbase.didPostLogin = true
+  }
+
+  private static func onUserDataWatchChange(changes: [WatchChange]) {
+    for change in changes {
+      guard let row = change.row where change.entityType == .Row && change.changeType == .Put else {
+        continue
+      }
+      do {
+        let syncgroupId = try Identifier.decode(row)
+        let syncgroup = try Syncbase.database().syncgroup(syncgroupId)
+        try syncgroup.join()
+      } catch let e {
+        NSLog("Syncbase - Error joining syncgroup: %@", "\(e)")
+      }
+    }
   }
 
   /// Returns the shared database handle. Must have already called `configure` and be logged in,

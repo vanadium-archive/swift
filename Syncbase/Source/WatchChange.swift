@@ -5,6 +5,48 @@
 import Foundation
 import SyncbaseCore
 
+/// CollectionRowPattern contains SQL LIKE-style glob patterns ('%' and '_'
+/// wildcards, '\' as escape character) for matching rows and collections by
+/// name components. It is used by the Database.watch API.
+public struct CollectionRowPattern {
+  /// WildCard matches everything.
+  public static var Everything = CollectionRowPattern(
+    collectionName: Wildcard, collectionBlessing: Wildcard, rowKey: Wildcard)
+
+  public static var Wildcard = "%"
+
+  /// collectionName is a SQL LIKE-style glob pattern ('%' and '_' wildcards, '\' as escape
+  /// character) for matching collections. May not be empty.
+  public let collectionName: String
+
+  /// The blessing for collections.
+  public let collectionBlessing: String
+
+  /// rowKey is a SQL LIKE-style glob pattern ('%' and '_' wildcards, '\' as escape character)
+  /// for matching rows. If empty then only the collectionId pattern is matched and NO row events
+  /// are returned.
+  public let rowKey: String?
+
+  public init(collectionName: String = Wildcard, collectionBlessing: String = Wildcard, rowKey: String? = Wildcard) {
+    self.collectionName = collectionName
+    self.collectionBlessing = collectionBlessing
+    self.rowKey = rowKey
+  }
+
+  public init(collectionId: Identifier, rowKey: String? = Wildcard) {
+    self.collectionName = collectionId.name
+    self.collectionBlessing = collectionId.blessing
+    self.rowKey = rowKey
+  }
+
+  func toCore() -> SyncbaseCore.CollectionRowPattern {
+    return SyncbaseCore.CollectionRowPattern(
+      collectionName: collectionName,
+      collectionBlessing: collectionBlessing,
+      rowKey: rowKey)
+  }
+}
+
 /// ResumeMarker provides a compact representation of all the messages that
 /// have been received by the caller for the given Watch call. It is not
 /// something that you would ever generate; it is always provided to you

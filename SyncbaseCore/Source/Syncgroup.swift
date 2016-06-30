@@ -170,7 +170,7 @@ public struct SyncgroupMemberInfo {
   public let syncPriority: UInt8
   public let blobDevType: BlobDevType /// See BlobDevType* constants.
 
-  public init(syncPriority: UInt8, blobDevType: BlobDevType) {
+  public init(syncPriority: UInt8 = 0, blobDevType: BlobDevType = .Leaf) {
     self.syncPriority = syncPriority
     self.blobDevType = blobDevType
   }

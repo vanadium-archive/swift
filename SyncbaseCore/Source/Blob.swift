@@ -9,11 +9,11 @@ public typealias BlobRef = String
 
 public enum BlobDevType: Int {
   /// Blobs migrate toward servers, which store them.  (example: server in cloud)
-  case BlobDevTypeServer = 0
+  case Server = 0
   /// Ordinary devices (example: laptop)
-  case BlobDevTypeNormal = 1
+  case Normal = 1
   /// Blobs migrate from leaves, which have less storage (examples: a camera, phone)
-  case BlobDevTypeLeaf = 2
+  case Leaf = 2
 }
 
 let kNullBlobRef = BlobRef("")

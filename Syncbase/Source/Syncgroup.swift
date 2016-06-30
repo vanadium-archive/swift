@@ -13,7 +13,7 @@ public class Syncgroup: CustomStringConvertible {
 
   static var syncgroupMemberInfo: SyncgroupMemberInfo {
     // TODO(zinman): Validate these are correct.
-    return SyncgroupMemberInfo(syncPriority: UInt8(3), blobDevType: BlobDevType.BlobDevTypeLeaf)
+    return SyncgroupMemberInfo(syncPriority: UInt8(3), blobDevType: BlobDevType.Leaf)
   }
 
   func createIfMissing(collections: [Collection]) throws {
@@ -44,6 +44,12 @@ public class Syncgroup: CustomStringConvertible {
   /// Returns the id of this syncgroup.
   public var syncgroupId: Identifier {
     return Identifier(coreId: coreSyncgroup.syncgroupId)
+  }
+
+  func join() throws {
+    // TODO(razvanm): Find a way to restrict the remote blessing. Cloud is one thing the remote
+    // blessings should include.
+    try coreSyncgroup.join("", expectedSyncbaseBlessings: ["..."], myInfo: Syncgroup.syncgroupMemberInfo)
   }
 
   /// Returns the `AccessList` for this syncgroup.

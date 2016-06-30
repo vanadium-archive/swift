@@ -163,10 +163,12 @@ public class Database: DatabaseHandle, CustomStringConvertible {
       }
     }
     return try SyncbaseError.wrap {
-      let res = Syncgroup(
-        coreSyncgroup: self.coreDatabase.syncgroup(id.toCore()),
-        database: self)
+      let res = Syncgroup(coreSyncgroup: self.coreDatabase.syncgroup(id.toCore()), database: self)
       try res.createIfMissing(collections)
+      // Remember this syncgroup in the userdata collection. The value doesn't matter, so we use
+      // empty data.
+      // Note: We may eventually want to use the value to deal with rejected invitations.
+      try Syncbase.userDataCollection!.put(try id.encode(), value: NSData())
       return res
     }
   }
@@ -184,7 +186,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
   /// Returns all syncgroups in the database.
   public func syncgroups() throws -> [Syncgroup] {
     return try SyncbaseError.wrap {
-      let coreIds = try self.coreDatabase.listSyncgroups()
+      let coreIds = try self.coreDatabase.listSyncgroups().filter({ return $0.name != Syncbase.USERDATA_SYNCGROUP_NAME })
       return coreIds.map { coreId in
         return Syncgroup(coreSyncgroup: self.coreDatabase.syncgroup(coreId), database: self)
       }
@@ -303,79 +305,80 @@ public class Database: DatabaseHandle, CustomStringConvertible {
   /// handler is canceled by `removeWatchChangeHandler` then no subsequent calls will be made. Note
   /// that there may be WatchChanges queued up for a `OnChangeBatch` that will be ignored.
   /// Callbacks to `handler` occur on Syncbase.queue, which defaults to main.
-  public func addWatchChangeHandler(resumeMarker: ResumeMarker? = nil, handler: WatchChangeHandler) throws {
-    // Note: Eventually we'll add a watch variant that takes a query, where the query can be
-    // constructed using some sort of query builder API.
-    // TODO(sadovsky): Support specifying resumeMarker. Note, watch-from-resumeMarker may be
-    // problematic in that we don't track the governing ACL for changes in the watch log.
-    if let resumeMarker = resumeMarker where resumeMarker.length != 0 {
-      throw SyncbaseError.IllegalArgument(detail: "Specifying resumeMarker is not yet supported")
-    }
-    return try SyncbaseError.wrap {
-      let stream = try self.coreDatabase.watch(
-        [CollectionRowPattern(collectionName: "%", collectionBlessing: "%", rowKey: "%")],
-        resumeMarker: resumeMarker)
-      // Create a serial queue to immediately run this watch operation on via SyncbaseCore's
-      // blocking stream.
-      let watchQueue = dispatch_queue_create(
-        "Syncbase WatchChangeHandler \(handler.uniqueId)",
-        DISPATCH_QUEUE_SERIAL)
-      var isCanceled = false
-      Database.watchChangeHandlersMu.lock()
-      defer { Database.watchChangeHandlersMu.unlock() }
-      Database.watchChangeHandlers[handler] = HandlerOperation(
-        databaseId: self.coreDatabase.databaseId,
-        queue: watchQueue,
-        cancel: {
-          isCanceled = true
-          stream.cancel()
-      })
-      dispatch_async(watchQueue) {
-        var gotFirstBatch = false
-        var batch = [WatchChange]()
-        for coreChange in stream {
-          if isCanceled {
-            break
-          }
-          let change = WatchChange(coreChange: coreChange)
-          // Ignore changes to userdata collection.
-          if (change.collectionId?.name != Syncbase.USERDATA_SYNCGROUP_NAME) {
-            batch.append(change)
-          }
-          if (!change.isContinued) {
-            if (!gotFirstBatch) {
-              gotFirstBatch = true
-              // We synchronously run on Syncbase.queue to facilitate flow control. Go blocks
-              // until each callback is consumed before it calls with another WatchChange event.
-              // Backpressure in Swift is achieved by blocking until the WatchChange event is
-              // consumed by the app on Syncbase.queue using dispatch_sync. If we used
-              // dispatch_async, we could potentially queue up events faster than the
-              // ability for the app to consume them. By using dispatch_sync we also help the user
-              // mitigate against out-of-order events should Syncbase.queue be a concurrent queue
-              // rather than a serial queue.
-              dispatch_sync(Syncbase.queue, {
-                handler.onInitialState(batch)
-              })
-            } else {
-              dispatch_sync(Syncbase.queue, {
-                handler.onChangeBatch(batch)
-              })
-            }
-            batch.removeAll()
-          }
-        }
-        // Notify of error if we're permitted (not canceled).
-        if let err = stream.err() where !isCanceled {
-          dispatch_sync(Syncbase.queue, {
-            handler.onError(err)
-          })
-        }
-        // Cleanup
+  public func addWatchChangeHandler(
+    pattern pattern: CollectionRowPattern = CollectionRowPattern.Everything,
+    resumeMarker: ResumeMarker? = nil,
+    handler: WatchChangeHandler) throws {
+      // Note: Eventually we'll add a watch variant that takes a query, where the query can be
+      // constructed using some sort of query builder API.
+      // TODO(sadovsky): Support specifying resumeMarker. Note, watch-from-resumeMarker may be
+      // problematic in that we don't track the governing ACL for changes in the watch log.
+      if let resumeMarker = resumeMarker where resumeMarker.length != 0 {
+        throw SyncbaseError.IllegalArgument(detail: "Specifying resumeMarker is not yet supported")
+      }
+      return try SyncbaseError.wrap {
+        let stream = try self.coreDatabase.watch([pattern.toCore()], resumeMarker: resumeMarker)
+        // Create a serial queue to immediately run this watch operation on via SyncbaseCore's
+        // blocking stream.
+        let watchQueue = dispatch_queue_create(
+          "Syncbase WatchChangeHandler \(handler.uniqueId)",
+          DISPATCH_QUEUE_SERIAL)
+        var isCanceled = false
         Database.watchChangeHandlersMu.lock()
         defer { Database.watchChangeHandlersMu.unlock() }
-        Database.watchChangeHandlers[handler] = nil
+        Database.watchChangeHandlers[handler] = HandlerOperation(
+          databaseId: self.coreDatabase.databaseId,
+          queue: watchQueue,
+          cancel: {
+            isCanceled = true
+            stream.cancel()
+        })
+        dispatch_async(watchQueue) {
+          var gotFirstBatch = false
+          var batch = [WatchChange]()
+          for coreChange in stream {
+            if isCanceled {
+              break
+            }
+            let change = WatchChange(coreChange: coreChange)
+            // Ignore changes to userdata collection.
+            if (change.collectionId?.name != Syncbase.USERDATA_SYNCGROUP_NAME) {
+              batch.append(change)
+            }
+            if (!change.isContinued) {
+              if (!gotFirstBatch) {
+                gotFirstBatch = true
+                // We synchronously run on Syncbase.queue to facilitate flow control. Go blocks
+                // until each callback is consumed before it calls with another WatchChange event.
+                // Backpressure in Swift is achieved by blocking until the WatchChange event is
+                // consumed by the app on Syncbase.queue using dispatch_sync. If we used
+                // dispatch_async, we could potentially queue up events faster than the
+                // ability for the app to consume them. By using dispatch_sync we also help the user
+                // mitigate against out-of-order events should Syncbase.queue be a concurrent queue
+                // rather than a serial queue.
+                dispatch_sync(Syncbase.queue, {
+                  handler.onInitialState(batch)
+                })
+              } else {
+                dispatch_sync(Syncbase.queue, {
+                  handler.onChangeBatch(batch)
+                })
+              }
+              batch.removeAll()
+            }
+          }
+          // Notify of error if we're permitted (not canceled).
+          if let err = stream.err() where !isCanceled {
+            dispatch_sync(Syncbase.queue, {
+              handler.onError(err)
+            })
+          }
+          // Cleanup
+          Database.watchChangeHandlersMu.lock()
+          defer { Database.watchChangeHandlersMu.unlock() }
+          Database.watchChangeHandlers[handler] = nil
+        }
       }
-    }
   }
 
   /// Makes it so `handler` stops receiving notifications. Note there may be queued WatchChanges
