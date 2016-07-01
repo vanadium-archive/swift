@@ -309,6 +309,29 @@ public class Database: DatabaseHandle, CustomStringConvertible {
     pattern pattern: CollectionRowPattern = CollectionRowPattern.Everything,
     resumeMarker: ResumeMarker? = nil,
     handler: WatchChangeHandler) throws {
+      try addWatchChangeHandler(
+        pattern: pattern,
+        resumeMarker: resumeMarker,
+        isWatchingUserdata: false,
+        handler: handler)
+  }
+
+  /// Internal function to watch only the userData collection which normally gets filtered out.
+  func addUserDataWatchChangeHandler(
+    resumeMarker: ResumeMarker? = nil,
+    handler: WatchChangeHandler) throws {
+      try addWatchChangeHandler(
+        pattern: CollectionRowPattern(collectionName: Syncbase.USERDATA_SYNCGROUP_NAME),
+        resumeMarker: resumeMarker,
+        isWatchingUserdata: true,
+        handler: handler)
+  }
+
+  private func addWatchChangeHandler(
+    pattern pattern: CollectionRowPattern,
+    resumeMarker: ResumeMarker?,
+    isWatchingUserdata: Bool,
+    handler: WatchChangeHandler) throws {
       // Note: Eventually we'll add a watch variant that takes a query, where the query can be
       // constructed using some sort of query builder API.
       // TODO(sadovsky): Support specifying resumeMarker. Note, watch-from-resumeMarker may be
@@ -340,12 +363,15 @@ public class Database: DatabaseHandle, CustomStringConvertible {
             if isCanceled {
               break
             }
-            let change = WatchChange(coreChange: coreChange)
-            // Ignore changes to userdata collection.
-            if (change.collectionId?.name != Syncbase.USERDATA_SYNCGROUP_NAME) {
-              batch.append(change)
+            // Don't pass root entity to end-user.
+            if coreChange.entityType != .Root {
+              let change = WatchChange(coreChange: coreChange)
+              // Ignore changes to userdata collection unless we're explicitly looking for it, and
+              if (isWatchingUserdata || change.collectionId?.name != Syncbase.USERDATA_SYNCGROUP_NAME) {
+                batch.append(change)
+              }
             }
-            if (!change.isContinued) {
+            if (!coreChange.isContinued) {
               if (!gotFirstBatch) {
                 gotFirstBatch = true
                 // We synchronously run on Syncbase.queue to facilitate flow control. Go blocks

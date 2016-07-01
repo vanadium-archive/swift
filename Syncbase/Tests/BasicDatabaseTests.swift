@@ -64,15 +64,59 @@ class SyncgroupTests: XCTestCase {
       XCTAssertEqual(coreCollections.count, 1)
       XCTAssertEqual(coreCollections[0].name, Syncbase.USERDATA_SYNCGROUP_NAME)
 
+      // Expect filtered from HLAPI
+      let collections = try db.collections()
+      XCTAssertEqual(collections.count, 0)
+
       let coreSyncgroups = try db.coreDatabase.listSyncgroups()
       XCTAssertEqual(coreSyncgroups.count, 1)
       XCTAssertEqual(coreSyncgroups[0].name, Syncbase.USERDATA_SYNCGROUP_NAME)
+
+      // Expect filtered from HLAPI
+      let syncgroups = try db.syncgroups()
+      XCTAssertEqual(syncgroups.count, 0)
 
       let verSpec = try db.coreDatabase.syncgroup(Syncbase.USERDATA_SYNCGROUP_NAME).getSpec()
       XCTAssertEqual(verSpec.spec.collections.count, 1)
 
       // TODO(razvanm): Make the userdata syncgroup private.
       XCTAssertEqual(verSpec.spec.isPrivate, false)
+    }
+  }
+
+  func testWatchIgnoresUserData() {
+    withDb { db in
+      var semaphore = dispatch_semaphore_create(0)
+      // Nothing for a generic watch.
+      try db.addWatchChangeHandler(handler: WatchChangeHandler(
+        onInitialState: { changes in
+          XCTAssertEqual(changes.count, 0)
+          dispatch_semaphore_signal(semaphore)
+        },
+        onChangeBatch: { changes in
+          XCTFail("Unexpected changes: \(changes)") },
+        onError: { err in
+          XCTFail("Unexpected error: \(err)")
+        }))
+      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+      // TODO(zinman): Add this when we support canceling watches.
+//      db.removeAllWatchChangeHandlers()
+
+      // Userdata only appears when explicitly asking for it.
+      semaphore = dispatch_semaphore_create(0)
+      try db.addUserDataWatchChangeHandler(
+        handler: WatchChangeHandler(
+          onInitialState: { changes in
+            XCTAssertEqual(changes.count, 1)
+            XCTAssert(changes[0].collectionId?.name == Syncbase.USERDATA_SYNCGROUP_NAME)
+            dispatch_semaphore_signal(semaphore)
+          },
+          onChangeBatch: { changes in
+            XCTFail("Unexpected changes: \(changes)") },
+          onError: { err in
+            XCTFail("Unexpected error: \(err)")
+        }))
+      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
     }
   }
 }

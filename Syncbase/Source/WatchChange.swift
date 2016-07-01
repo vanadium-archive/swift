@@ -56,9 +56,9 @@ public typealias ResumeMarker = NSData
 /// Describes a change to a database.
 public class WatchChange: CustomStringConvertible {
   public enum EntityType: Int {
-    case Root
-    case Collection
-    case Row
+    // Root is filtered out of the higher-level API.
+    case Collection = 1
+    case Row = 2
   }
 
   public enum ChangeType: Int {

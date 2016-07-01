@@ -137,8 +137,7 @@ public enum Syncbase {
         try syncgroup.createIfMissing([userDataCollection!])
       }
       // TODO(zinman): Figure out when/how this can throw and if we should handle it better.
-      try database.addWatchChangeHandler(
-        pattern: CollectionRowPattern(collectionName: Syncbase.USERDATA_SYNCGROUP_NAME),
+      try database.addUserDataWatchChangeHandler(
         handler: WatchChangeHandler(
           onInitialState: onUserDataWatchChange,
           onChangeBatch: onUserDataWatchChange,
