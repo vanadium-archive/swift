@@ -300,7 +300,7 @@ public class Collection {
       let cLimitBytes = v23_syncbase_Bytes(
         p: unsafeBitCast(cLimitStr.p, UnsafeMutablePointer<UInt8>.self), n: cLimitStr.n)
       let callbacks = v23_syncbase_CollectionScanCallbacks(
-        handle: v23_syncbase_Handle(oHandle),
+        handle: v23_syncbase_Handle(unsafeBitCast(oHandle, UInt.self)),
         onKeyValue: { Collection.onScanKeyValue($0, kv: $1) },
         onDone: { Collection.onScanDone($0, err: $1) })
       v23_syncbase_CollectionScan(
@@ -321,7 +321,8 @@ public class Collection {
   private static func onScanKeyValue(handle: v23_syncbase_Handle, kv: v23_syncbase_KeyValue) {
     let key = kv.key.toString()!
     let valueBytes = kv.value.toNSData()!
-    let handle = Unmanaged<ScanHandle>.fromOpaque(COpaquePointer(handle)).takeUnretainedValue()
+    let handle = Unmanaged<ScanHandle>.fromOpaque(
+      COpaquePointer(bitPattern: handle)).takeUnretainedValue()
     handle.onKeyValue(key, valueBytes: valueBytes)
   }
 
@@ -330,7 +331,8 @@ public class Collection {
     if let e = err.toVError() {
       serr = SyncbaseError(e)
     }
-    let handle = Unmanaged<ScanHandle>.fromOpaque(COpaquePointer(handle)).takeRetainedValue()
+    let handle = Unmanaged<ScanHandle>.fromOpaque(
+      COpaquePointer(bitPattern: handle)).takeRetainedValue()
     handle.onDone(serr)
   }
 

@@ -182,7 +182,7 @@ enum Watch {
         let cPatterns = try v23_syncbase_CollectionRowPatterns(patterns)
         let cResumeMarker = v23_syncbase_Bytes(resumeMarker)
         let callbacks = v23_syncbase_DbWatchPatternsCallbacks(
-          handle: v23_syncbase_Handle(oHandle),
+          handle: v23_syncbase_Handle(unsafeBitCast(oHandle, UInt.self)),
           onChange: { Watch.onWatchChange($0, change: $1) },
           onError: { Watch.onWatchError($0, err: $1) })
         v23_syncbase_DbWatchPatterns(
@@ -202,7 +202,8 @@ enum Watch {
   // the functions inside the passed handle.
   private static func onWatchChange(handle: v23_syncbase_Handle, change: v23_syncbase_WatchChange) {
     let change = change.toWatchChange()
-    let handle = Unmanaged<Watch.Handle>.fromOpaque(COpaquePointer(handle)).takeUnretainedValue()
+    let handle = Unmanaged<Watch.Handle>.fromOpaque(
+      COpaquePointer(bitPattern: handle)).takeUnretainedValue()
     handle.onChange(change)
   }
 
@@ -211,7 +212,8 @@ enum Watch {
     if let verr: VError = err.toVError() {
       e = SyncbaseError(verr)
     }
-    let handle = Unmanaged<Watch.Handle>.fromOpaque(COpaquePointer(handle)).takeRetainedValue()
+    let handle = Unmanaged<Watch.Handle>.fromOpaque(
+      COpaquePointer(bitPattern: handle)).takeRetainedValue()
     handle.onError(e)
   }
 }
