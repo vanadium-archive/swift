@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="01J-lp-oVM">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <scenes>
+        <!--Login-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController title="Login" id="01J-lp-oVM" customClass="LoginViewController" customModule="Dice_Roller" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Llm-lL-Icb"/>
+                        <viewControllerLayoutGuide type="bottom" id="xb3-aO-Qok"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="v23-icon-white" translatesAutoresizingMaskIntoConstraints="NO" id="dRF-06-cfq">
+                                <rect key="frame" x="225" y="225" width="150" height="150"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="150" id="YVk-j9-HuD"/>
+                                    <constraint firstAttribute="width" constant="150" id="nt4-xy-7aB"/>
+                                </constraints>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jVb-kU-JqR" customClass="GIDSignInButton">
+                                <rect key="frame" x="185" y="452" width="230" height="48"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="I4z-It-F6n"/>
+                                    <constraint firstAttribute="width" constant="230" id="dxO-M7-Nz3"/>
+                                </constraints>
+                            </view>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="QOU-JV-r2d" userLabel="Spinner">
+                                <rect key="frame" x="281.5" y="457.5" width="37" height="37"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.2470588235" green="0.31764705879999999" blue="0.70980392160000005" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="jVb-kU-JqR" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="3JE-Z5-wfB"/>
+                            <constraint firstItem="QOU-JV-r2d" firstAttribute="centerY" secondItem="jVb-kU-JqR" secondAttribute="centerY" id="6C6-T0-Cdt"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="jVb-kU-JqR" secondAttribute="bottom" constant="100" id="Kpm-3v-9E9"/>
+                            <constraint firstItem="dRF-06-cfq" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="ZnZ-Nh-K2P"/>
+                            <constraint firstItem="dRF-06-cfq" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="qiD-Nc-wIn"/>
+                            <constraint firstItem="QOU-JV-r2d" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="rWE-4X-bBi"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="signInButton" destination="jVb-kU-JqR" id="caw-1r-K5Z"/>
+                        <outlet property="spinner" destination="QOU-JV-r2d" id="Wj7-EZ-8Jr"/>
+                        <segue destination="70a-ZD-vEg" kind="showDetail" identifier="LoggedInSegue" id="UW0-Zc-4i8"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="53" y="375"/>
+        </scene>
+        <!--Dice Roller-->
+        <scene sceneID="bSh-d5-IOu">
+            <objects>
+                <viewController title="Dice Roller" id="70a-ZD-vEg" customClass="DiceViewController" customModule="Dice_Roller" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="h0o-JQ-833"/>
+                        <viewControllerLayoutGuide type="bottom" id="0u0-8I-sHK"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Ksc-lJ-zhb">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="APD-dz-sU0">
+                                <rect key="frame" x="260" y="224" width="80" height="152"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="180-RC-nik">
+                                        <rect key="frame" x="0.0" y="0.0" width="80" height="51"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="80" id="5er-Bi-pp9"/>
+                                            <constraint firstAttribute="height" constant="51" id="tWI-mo-C7S"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="42"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="W1t-Lo-OTx">
+                                        <rect key="frame" x="0.0" y="101" width="80" height="51"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="80" id="0AM-UH-0mB"/>
+                                        </constraints>
+                                        <state key="normal" title="Roll the die"/>
+                                        <connections>
+                                            <action selector="didPressRollDie:" destination="70a-ZD-vEg" eventType="touchUpInside" id="jDV-E7-3Ta"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="APD-dz-sU0" firstAttribute="centerY" secondItem="Ksc-lJ-zhb" secondAttribute="centerY" id="LaW-e9-D57"/>
+                            <constraint firstItem="APD-dz-sU0" firstAttribute="centerX" secondItem="Ksc-lJ-zhb" secondAttribute="centerX" id="z53-sC-Pvb"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="numberLabel" destination="180-RC-nik" id="nyZ-Kj-0LD"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2Kd-Zv-Yw1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="803" y="375"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="v23-icon-white" width="320" height="320"/>
+    </resources>
+</document>
