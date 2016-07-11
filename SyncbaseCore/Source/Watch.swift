@@ -177,22 +177,27 @@ enum Watch {
     patterns: [CollectionRowPattern],
     resumeMarker: ResumeMarker? = nil) throws -> WatchStream {
       let handle = Watch.Handle()
-      try VError.maybeThrow { errPtr in
-        let oHandle = UnsafeMutablePointer<Void>(Unmanaged.passRetained(handle).toOpaque())
-        let cPatterns = try v23_syncbase_CollectionRowPatterns(patterns)
-        let cResumeMarker = v23_syncbase_Bytes(resumeMarker)
-        let callbacks = v23_syncbase_DbWatchPatternsCallbacks(
-          handle: v23_syncbase_Handle(unsafeBitCast(oHandle, UInt.self)),
-          onChange: { Watch.onWatchChange($0, change: $1) },
-          onError: { Watch.onWatchError($0, err: $1) })
-        v23_syncbase_DbWatchPatterns(
-          try encodedDatabaseName.toCgoString(),
-          cResumeMarker,
-          cPatterns,
-          callbacks,
-          errPtr)
+      let unmanaged = Unmanaged.passRetained(handle)
+      let oHandle = UnsafeMutablePointer<Void>(unmanaged.toOpaque())
+      do {
+        try VError.maybeThrow { errPtr in
+          let cPatterns = try v23_syncbase_CollectionRowPatterns(patterns)
+          let cResumeMarker = v23_syncbase_Bytes(resumeMarker)
+          let callbacks = v23_syncbase_DbWatchPatternsCallbacks(
+            handle: v23_syncbase_Handle(unsafeBitCast(oHandle, UInt.self)),
+            onChange: { Watch.onWatchChange($0, change: $1) },
+            onError: { Watch.onWatchError($0, err: $1) })
+          v23_syncbase_DbWatchPatterns(
+            try encodedDatabaseName.toCgoString(),
+            cResumeMarker,
+            cPatterns,
+            callbacks,
+            errPtr)
+        }
+      } catch let e {
+        unmanaged.release()
+        throw e
       }
-
       return AnonymousStream(
         fetchNextFunction: handle.fetchNext,
         cancelFunction: { preconditionFailure("stub") })

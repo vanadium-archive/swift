@@ -7,6 +7,15 @@
 
 import Foundation
 
+public extension v23_syncbase_AppPeer {
+  func toNeighborhoodPeer() -> NeighborhoodPeer {
+    return NeighborhoodPeer(
+      appName: appName.toString() ?? "",
+      blessings: blessings.toString() ?? "",
+      isLost: isLost)
+  }
+}
+
 public extension v23_syncbase_BatchOptions {
   init (_ opts: BatchOptions?) throws {
     guard let o = opts else {
@@ -159,6 +168,18 @@ public extension v23_syncbase_Ids {
       free(p)
     }
     return ids
+  }
+}
+
+public extension v23_syncbase_Invite {
+  func toSyncgroupInvite() -> SyncgroupInvite? {
+    guard let id = syncgroup.toIdentifier() else {
+      return nil
+    }
+    return SyncgroupInvite(
+      syncgroupId: id,
+      addresses: addresses.toStrings(),
+      blessingNames: blessingNames.toStrings())
   }
 }
 

@@ -49,6 +49,62 @@ class BasicDatabaseTests: XCTestCase {
   // TODO(zinman): Add more unit tests.
 }
 
+class AdvertiseScanTests: XCTestCase {
+  override class func setUp() {
+    configureDb(disableUserdataSyncgroup: true, disableSyncgroupPublishing: true)
+  }
+
+  override class func tearDown() {
+    Syncbase.shutdown()
+  }
+
+  func testAdvertise() {
+    XCTAssertFalse(Syncbase.isAdvertisingPresenceInNeighborhood())
+    withDb { _ in
+      // Just a simple test of the API as a sanity check -- we'd need an integration test across
+      // devices or multiple simulators to make sure advertising properly worked. Testing within one
+      // process inside the simulator doesn't allow us to test Bluetooth (not possible anyway on the
+      // simulator -- see https://forums.developer.apple.com/thread/47230 ) or mDNS across a real
+      // network. Luckily the Go code has integration tests for discovery already.
+      try Syncbase.startAdvertisingPresenceInNeighborhood()
+      XCTAssertTrue(Syncbase.isAdvertisingPresenceInNeighborhood())
+      try Syncbase.stopAdvertisingPresenceInNeighborhood()
+      XCTAssertFalse(Syncbase.isAdvertisingPresenceInNeighborhood())
+
+      try Syncbase.startAdvertisingPresenceInNeighborhood([User(alias: "zinman@google.com")])
+      XCTAssertTrue(Syncbase.isAdvertisingPresenceInNeighborhood())
+      try Syncbase.stopAdvertisingPresenceInNeighborhood()
+      XCTAssertFalse(Syncbase.isAdvertisingPresenceInNeighborhood())
+    }
+  }
+
+  func testScan() {
+    withDb { _ in
+      let handler = ScanNeighborhoodForUsersHandler(
+        onFound: { user in
+          XCTFail("Unexpected onFound user during unit test: \(user)")
+        },
+        onLost: { user in
+          XCTFail("Unexpected onLost user during unit test: \(user)")
+      })
+      try Syncbase.startScanForUsersInNeighborhood(handler)
+
+      Syncbase.neighborhoodScansMu.lock()
+      XCTAssertEqual(Syncbase.neighborhoodScans.count, 1)
+      Syncbase.neighborhoodScansMu.unlock()
+
+      Syncbase.stopScanForUsersInNeighborhood(handler)
+
+      Syncbase.neighborhoodScansMu.lock()
+      XCTAssertEqual(Syncbase.neighborhoodScans.count, 0)
+      Syncbase.neighborhoodScansMu.unlock()
+
+      try Syncbase.startScanForUsersInNeighborhood(handler)
+      Syncbase.stopAllScansForUsersInNeighborhood()
+    }
+  }
+}
+
 class SyncgroupTests: XCTestCase {
   override class func setUp() {
     configureDb(disableUserdataSyncgroup: false, disableSyncgroupPublishing: true)
@@ -84,6 +140,39 @@ class SyncgroupTests: XCTestCase {
     }
   }
 
+  func testAddingSyncgroup() {
+    withDb { db in
+      let initialSemaphore = dispatch_semaphore_create(0)
+      let changeSemaphore = dispatch_semaphore_create(0)
+      let sg1 = Identifier(coreId: SyncbaseCore.Identifier(name: "sg1", blessing: "..."))
+      var didChange = false
+      try db.addUserDataWatchChangeHandler(handler: WatchChangeHandler(
+        onInitialState: { _ in
+          dispatch_semaphore_signal(initialSemaphore)
+        },
+        onChangeBatch: { changes in
+          XCTAssertFalse(didChange)
+          XCTAssertEqual(changes.count, 1)
+          let change = changes.first!
+          XCTAssertEqual(change.row, try? sg1.encode())
+          XCTAssertEqual(change.changeType, WatchChange.ChangeType.Put)
+          XCTAssertEqual(change.value, NSData())
+          didChange = true
+          dispatch_semaphore_signal(changeSemaphore)
+        },
+        onError: failOnNonContextError))
+      if dispatch_semaphore_wait(initialSemaphore, secondsGCD(1)) != 0 {
+        XCTFail("Timed out")
+      }
+
+      try Syncbase.addSyncgroupToUserData(sg1)
+      if dispatch_semaphore_wait(changeSemaphore, secondsGCD(1)) != 0 {
+        XCTFail("Timed out")
+      }
+      XCTAssertEqual(didChange, true)
+    }
+  }
+
   func testWatchIgnoresUserData() {
     withDb { db in
       var semaphore = dispatch_semaphore_create(0)
@@ -94,11 +183,12 @@ class SyncgroupTests: XCTestCase {
           dispatch_semaphore_signal(semaphore)
         },
         onChangeBatch: { changes in
-          XCTFail("Unexpected changes: \(changes)") },
-        onError: { err in
-          XCTFail("Unexpected error: \(err)")
-        }))
-      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+          XCTFail("Unexpected changes: \(changes)")
+        },
+        onError: failOnNonContextError))
+      if dispatch_semaphore_wait(semaphore, secondsGCD(1)) != 0 {
+        XCTFail("Timed out")
+      }
       // TODO(zinman): Add this when we support canceling watches.
 //      db.removeAllWatchChangeHandlers()
 
@@ -107,16 +197,18 @@ class SyncgroupTests: XCTestCase {
       try db.addUserDataWatchChangeHandler(
         handler: WatchChangeHandler(
           onInitialState: { changes in
-            XCTAssertEqual(changes.count, 1)
-            XCTAssert(changes[0].collectionId?.name == Syncbase.USERDATA_SYNCGROUP_NAME)
+            for change in changes {
+              XCTAssert(change.collectionId?.name == Syncbase.USERDATA_SYNCGROUP_NAME)
+            }
             dispatch_semaphore_signal(semaphore)
           },
           onChangeBatch: { changes in
-            XCTFail("Unexpected changes: \(changes)") },
-          onError: { err in
-            XCTFail("Unexpected error: \(err)")
-        }))
-      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+            XCTFail("Unexpected changes: \(changes)")
+          },
+          onError: failOnNonContextError))
+      if dispatch_semaphore_wait(semaphore, secondsGCD(1)) != 0 {
+        XCTFail("Timed out")
+      }
     }
   }
 }

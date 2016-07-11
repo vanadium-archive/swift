@@ -119,8 +119,6 @@
 		9374F68E1D01074B004ECE59 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				9374F6901D01074B004ECE59 /* Syncbase.h */,
-				9374F68F1D01074B004ECE59 /* Info.plist */,
 				9374F6A21D01081D004ECE59 /* AccessList.swift */,
 				9374F6A31D01081D004ECE59 /* BatchDatabase.swift */,
 				938DEA851D0BAE57003C9734 /* Blessing.swift */,
@@ -129,7 +127,9 @@
 				9374F6A61D01081D004ECE59 /* DatabaseHandle.swift */,
 				93D90C4C1D080E18004A8E72 /* Error.swift */,
 				9374F6A71D01081D004ECE59 /* Id.swift */,
+				9374F68F1D01074B004ECE59 /* Info.plist */,
 				938DEA9E1D12257E003C9734 /* OAuth.swift */,
+				9374F6901D01074B004ECE59 /* Syncbase.h */,
 				9374F6A81D01081D004ECE59 /* Syncbase.swift */,
 				9374F6A91D01081D004ECE59 /* Syncgroup.swift */,
 				9374F6AA1D01081D004ECE59 /* SyncgroupInvite.swift */,

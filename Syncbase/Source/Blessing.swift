@@ -8,11 +8,11 @@ import SyncbaseCore
 // TODO(zinman): This whole file needs to get updated with a consistent strategy for all cgo
 // bridges. In general this code should be moved to go.
 
-func emailFromBlessingPattern(pattern: BlessingPattern) -> String? {
-  return emailFromBlessingString(pattern)
+func aliasFromBlessingPattern(pattern: BlessingPattern) -> String? {
+  return aliasFromBlessingString(pattern)
 }
 
-private func emailFromBlessingString(blessingStr: String) -> String? {
+private func aliasFromBlessingString(blessingStr: String) -> String? {
   guard blessingStr.containsString(":") else {
     return nil
   }
@@ -20,12 +20,12 @@ private func emailFromBlessingString(blessingStr: String) -> String? {
   return parts[parts.count - 1]
 }
 
-private func blessingStringFromEmail(email: String) -> String {
-  return Syncbase.defaultBlessingStringPrefix + email
+private func blessingStringFromAlias(alias: String) -> String {
+  return Syncbase.defaultBlessingStringPrefix + alias
 }
 
-func blessingPatternFromEmail(email: String) -> BlessingPattern {
-  return BlessingPattern(blessingStringFromEmail(email))
+func blessingPatternFromAlias(alias: String) -> BlessingPattern {
+  return BlessingPattern(blessingStringFromAlias(alias))
 }
 
 func personalBlessingString() throws -> String {

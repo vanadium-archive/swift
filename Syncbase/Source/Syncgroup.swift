@@ -66,7 +66,7 @@ public class Syncgroup: CustomStringConvertible {
   public func inviteUsers(users: [User], level: AccessList.AccessLevel, syncgroupOnly: Bool = false) throws {
     var delta = AccessList()
     for user in users {
-      delta.users[user.userId] = level
+      delta.users[user.alias] = level
     }
     try updateAccessList(delta, syncgroupOnly: syncgroupOnly)
   }
@@ -89,7 +89,7 @@ public class Syncgroup: CustomStringConvertible {
   public func ejectUsers(users: [User], syncgroupOnly: Bool = false) throws {
     var delta = AccessList()
     for user in users {
-      delta.users[user.userId] = AccessList.AccessLevel.INTERNAL_ONLY_REMOVE
+      delta.users[user.alias] = AccessList.AccessLevel.INTERNAL_ONLY_REMOVE
     }
     try updateAccessList(delta, syncgroupOnly: syncgroupOnly)
   }

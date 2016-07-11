@@ -5,7 +5,7 @@
 import Foundation
 import SyncbaseCore
 
-// Counter to allow SyncgroupInviteHandler and WatchChangeHandler structs to be unique and hashable.
+// Counter to allow ScanNeighborhoodForUsersHandler, SyncgroupInviteHandler and WatchChangeHandler structs to be unique and hashable.
 var uniqueIdCounter: Int32 = 0
 
 /// Handles discovered syncgroup invites.
@@ -71,8 +71,7 @@ public func == (lhs: WatchChangeHandler, rhs: WatchChangeHandler) -> Bool {
   return lhs.uniqueId == rhs.uniqueId
 }
 
-struct HandlerOperation {
-  let databaseId: SyncbaseCore.Identifier
+struct WatchOperation {
   let queue: dispatch_queue_t
   let cancel: Void -> Void
 }
@@ -89,8 +88,8 @@ public class Database: DatabaseHandle, CustomStringConvertible {
   // adding/removing watch handlers.
   private static let syncgroupInviteHandlersMu = NSLock()
   private static let watchChangeHandlersMu = NSLock()
-  private static var syncgroupInviteHandlers: [SyncgroupInviteHandler: HandlerOperation] = [:]
-  private static var watchChangeHandlers: [WatchChangeHandler: HandlerOperation] = [:]
+  private static var syncgroupInviteHandlers: [SyncgroupInviteHandler: SyncbaseCore.SyncgroupInvitesScanHandler] = [:]
+  private static var watchChangeHandlers: [WatchChangeHandler: WatchOperation] = [:]
 
   func createIfMissing() throws {
     do {
@@ -168,7 +167,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
       // Remember this syncgroup in the userdata collection. The value doesn't matter, so we use
       // empty data.
       // Note: We may eventually want to use the value to deal with rejected invitations.
-      try Syncbase.userDataCollection!.put(try id.encode(), value: NSData())
+      try Syncbase.addSyncgroupToUserData(id)
       return res
     }
   }
@@ -197,30 +196,39 @@ public class Database: DatabaseHandle, CustomStringConvertible {
   public func addSyncgroupInviteHandler(handler: SyncgroupInviteHandler) {
     Database.syncgroupInviteHandlersMu.lock()
     defer { Database.syncgroupInviteHandlersMu.unlock() }
-    preconditionFailure("Not implemented")
+    let coreHandler = SyncbaseCore.SyncgroupInvitesScanHandler(onInvite: { invite in
+      handler.onInvite(SyncgroupInvite(
+        syncgroupId: Identifier(coreId: invite.syncgroupId),
+        inviterBlessingNames: invite.blessingNames))
+    })
+    do {
+      try coreDatabase.scanForSyncgroupInvites(
+        try databaseId.encode(),
+        handler: coreHandler)
+      Database.syncgroupInviteHandlers[handler] = coreHandler
+    } catch let e {
+      handler.onError(e)
+    }
   }
 
   /// Makes it so `handler` stops receiving notifications.
   public func removeSyncgroupInviteHandler(handler: SyncgroupInviteHandler) {
     Database.syncgroupInviteHandlersMu.lock()
-    let op = Database.syncgroupInviteHandlers[handler]
-    Database.syncgroupInviteHandlersMu.unlock()
-    if let op = op {
-      op.cancel()
+    defer { Database.syncgroupInviteHandlersMu.unlock() }
+    if let coreHandler = Database.syncgroupInviteHandlers[handler] {
+      coreDatabase.stopSyncgroupInvitesScan(coreHandler)
+      Database.syncgroupInviteHandlers[handler] = nil
     }
   }
 
   /// Makes it so all syncgroup invite handlers stop receiving notifications.
   public func removeAllSyncgroupInviteHandlers() {
-    // Grab a local copy by value so we don't need to worry about concurrency or deadlocking
-    // on the main mutex.
     Database.syncgroupInviteHandlersMu.lock()
+    defer { Database.syncgroupInviteHandlersMu.unlock() }
     let handlers = Database.syncgroupInviteHandlers
-    Database.syncgroupInviteHandlersMu.unlock()
-    for op in handlers.values {
-      if op.databaseId == coreDatabase.databaseId {
-        op.cancel()
-      }
+    for (handler, coreHandler) in handlers {
+      coreDatabase.stopSyncgroupInvitesScan(coreHandler)
+      Database.syncgroupInviteHandlers[handler] = nil
     }
   }
 
@@ -238,9 +246,13 @@ public class Database: DatabaseHandle, CustomStringConvertible {
         try SyncbaseError.wrap {
           let coreSyncgroup = self.coreDatabase.syncgroup(invite.syncgroupId.toCore())
           let syncgroup = Syncgroup(coreSyncgroup: coreSyncgroup, database: self)
-          try coreSyncgroup.join(invite.remoteSyncbaseName,
-            expectedSyncbaseBlessings: invite.expectedSyncbaseBlessings,
+          let publishName = Syncbase.publishSyncbaseName
+          var expectedBlessings = invite.inviterBlessingNames
+          expectedBlessings.append(Syncbase.cloudBlessing)
+          try coreSyncgroup.join(publishName ?? "",
+            expectedSyncbaseBlessings: expectedBlessings,
             myInfo: Syncgroup.syncgroupMemberInfo)
+          try Syncbase.addSyncgroupToUserData(invite.syncgroupId)
           dispatch_async(Syncbase.queue) {
             callback(sg: syncgroup, err: nil)
           }
@@ -349,8 +361,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
         var isCanceled = false
         Database.watchChangeHandlersMu.lock()
         defer { Database.watchChangeHandlersMu.unlock() }
-        Database.watchChangeHandlers[handler] = HandlerOperation(
-          databaseId: self.coreDatabase.databaseId,
+        Database.watchChangeHandlers[handler] = WatchOperation(
           queue: watchQueue,
           cancel: {
             isCanceled = true
@@ -394,9 +405,9 @@ public class Database: DatabaseHandle, CustomStringConvertible {
             }
           }
           // Notify of error if we're permitted (not canceled).
-          if let err = stream.err() where !isCanceled {
+          if var err = stream.err() where !isCanceled {
             dispatch_sync(Syncbase.queue, {
-              handler.onError(err)
+              handler.onError(SyncbaseError(coreError: err))
             })
           }
           // Cleanup
@@ -411,11 +422,11 @@ public class Database: DatabaseHandle, CustomStringConvertible {
   /// queued up for a `OnChangeBatch` that will be ignored.
   public func removeWatchChangeHandler(handler: WatchChangeHandler) {
     Database.watchChangeHandlersMu.lock()
-    let op = Database.watchChangeHandlers[handler]
-    Database.watchChangeHandlersMu.unlock()
-    if let op = op {
+    defer { Database.watchChangeHandlersMu.unlock() }
+    if let op = Database.watchChangeHandlers[handler] {
       op.cancel()
     }
+    Database.watchChangeHandlers[handler] = nil
   }
 
   /// Makes it so all watch change handlers stop receiving notifications attached to this database.
@@ -423,15 +434,12 @@ public class Database: DatabaseHandle, CustomStringConvertible {
     // Grab a local copy by value so we don't need to worry about concurrency or deadlocking
     // on the main mutex.
     Database.watchChangeHandlersMu.lock()
+    defer { Database.watchChangeHandlersMu.unlock() }
     let handlers = Database.watchChangeHandlers
-    Database.watchChangeHandlersMu.unlock()
     for op in handlers.values {
-      // Because Database.watchChangeHandlers is static, we must make sure the database ids
-      // are the same before we cancel it.
-      if op.databaseId == self.coreDatabase.databaseId {
-        op.cancel()
-      }
+      op.cancel()
     }
+    Database.watchChangeHandlers.removeAll()
   }
 
   public var description: String {

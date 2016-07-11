@@ -7,6 +7,5 @@ import SyncbaseCore
 
 /// Represents a user.
 public struct User {
-  // TODO(zinman): Fill this in.
-  public let userId: String
+  public let alias: String
 }

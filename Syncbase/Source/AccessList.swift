@@ -77,7 +77,7 @@ public struct AccessList {
   static func applyDelta(permissions: Permissions, delta: AccessList) -> Permissions {
     var perms = permissions
     for (userId, level) in delta.users {
-      let bp = blessingPatternFromEmail(userId)
+      let bp = blessingPatternFromAlias(userId)
       switch level {
       case .INTERNAL_ONLY_REMOVE:
         perms[Tags.Resolve.rawValue] = perms[Tags.Resolve.rawValue]?.removeFromAllowed(bp)
@@ -113,8 +113,8 @@ extension SyncbaseCore.AccessList {
     var res = Set<String>()
     for bp in allowed {
       // TODO(sadovsky): Ignore cloud peer's blessing pattern?
-      if let email = emailFromBlessingPattern(bp) {
-        res.insert(email)
+      if let alias = aliasFromBlessingPattern(bp) {
+        res.insert(alias)
       }
     }
     return res

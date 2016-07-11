@@ -26,7 +26,9 @@ class BasicDatabaseTests: XCTestCase {
       XCTAssertNil(err)
       dispatch_semaphore_signal(semaphore)
     })
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER)
+    if dispatch_semaphore_wait(semaphore, secondsGCD(5)) != 0 {
+      XCTFail("Timed out performing login")
+    }
   }
 
   override class func tearDown() {

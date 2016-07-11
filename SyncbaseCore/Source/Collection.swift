@@ -291,26 +291,33 @@ public class Collection {
   /// See helpers Prefix(), Range(), SingleRow().
   public func scan(r: RowRange) throws -> ScanStream {
     let handle = ScanHandle()
-    try VError.maybeThrow { errPtr in
-      let oHandle = UnsafeMutablePointer<Void>(Unmanaged.passRetained(handle).toOpaque())
-      let cStartStr = try r.start.toCgoString()
-      let cLimitStr = try r.limit.toCgoString()
-      let cStartBytes = v23_syncbase_Bytes(
-        p: unsafeBitCast(cStartStr.p, UnsafeMutablePointer<UInt8>.self), n: cStartStr.n)
-      let cLimitBytes = v23_syncbase_Bytes(
-        p: unsafeBitCast(cLimitStr.p, UnsafeMutablePointer<UInt8>.self), n: cLimitStr.n)
-      let callbacks = v23_syncbase_CollectionScanCallbacks(
-        handle: v23_syncbase_Handle(unsafeBitCast(oHandle, UInt.self)),
-        onKeyValue: { Collection.onScanKeyValue($0, kv: $1) },
-        onDone: { Collection.onScanDone($0, err: $1) })
-      v23_syncbase_CollectionScan(
-        try encodedCollectionName.toCgoString(),
-        try cBatchHandle(),
-        cStartBytes,
-        cLimitBytes,
-        callbacks,
-        errPtr)
+    let unmanaged = Unmanaged.passRetained(handle)
+    let oHandle = UnsafeMutablePointer<Void>(unmanaged.toOpaque())
+    do {
+      try VError.maybeThrow { errPtr in
+        let cStartStr = try r.start.toCgoString()
+        let cLimitStr = try r.limit.toCgoString()
+        let cStartBytes = v23_syncbase_Bytes(
+          p: unsafeBitCast(cStartStr.p, UnsafeMutablePointer<UInt8>.self), n: cStartStr.n)
+        let cLimitBytes = v23_syncbase_Bytes(
+          p: unsafeBitCast(cLimitStr.p, UnsafeMutablePointer<UInt8>.self), n: cLimitStr.n)
+        let callbacks = v23_syncbase_CollectionScanCallbacks(
+          handle: v23_syncbase_Handle(unsafeBitCast(oHandle, UInt.self)),
+          onKeyValue: { Collection.onScanKeyValue($0, kv: $1) },
+          onDone: { Collection.onScanDone($0, err: $1) })
+        v23_syncbase_CollectionScan(
+          try encodedCollectionName.toCgoString(),
+          try cBatchHandle(),
+          cStartBytes,
+          cLimitBytes,
+          callbacks,
+          errPtr)
+      }
+    } catch let e {
+      unmanaged.release()
+      throw e
     }
+
     return AnonymousStream(
       fetchNextFunction: handle.fetchNext,
       cancelFunction: { preconditionFailure("stub") })

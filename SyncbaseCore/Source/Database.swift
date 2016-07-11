@@ -27,6 +27,16 @@ public protocol DatabaseHandle {
   func getResumeMarker() throws -> ResumeMarker
 }
 
+public class SyncgroupInvitesScanHandler {
+  public let onInvite: SyncgroupInvite -> Void
+  var isStopped: Bool = false
+  let isStoppedMu: NSLock = NSLock()
+
+  public init(onInvite: SyncgroupInvite -> Void) {
+    self.onInvite = onInvite
+  }
+}
+
 public class Database {
   public let databaseId: Identifier
   let batchHandle: String?
@@ -149,6 +159,50 @@ public class Database {
         errPtr)
     }
     return ids.toIdentifiers()
+  }
+
+  public func scanForSyncgroupInvites(name: String, handler: SyncgroupInvitesScanHandler) throws {
+    let unmanaged = Unmanaged.passRetained(handler)
+    let oHandle = UnsafeMutablePointer<Void>(unmanaged.toOpaque())
+    do {
+      try VError.maybeThrow { errPtr in
+        v23_syncbase_DbSyncgroupInvitesNewScan(
+          try encodedDatabaseName.toCgoString(),
+          v23_syncbase_DbSyncgroupInvitesCallbacks(
+            handle: v23_syncbase_Handle(unsafeBitCast(oHandle, UInt.self)),
+            onInvite: { Database.onInvite($0, invite: $1) }
+          ),
+          errPtr)
+      }
+    } catch let e {
+      unmanaged.release()
+      throw e
+    }
+  }
+
+  // Callback handlers that convert the Cgo bridge types to native Swift types and pass them to
+  // the functions inside the passed handle.
+  private static func onInvite(handle: v23_syncbase_Handle, invite: v23_syncbase_Invite) {
+    let invite = invite.toSyncgroupInvite()!
+    let handle = Unmanaged<SyncgroupInvitesScanHandler>.fromOpaque(
+      COpaquePointer(bitPattern: handle)).takeUnretainedValue()
+    dispatch_async(Syncbase.queue) {
+      handle.onInvite(invite)
+    }
+  }
+
+  public func stopSyncgroupInvitesScan(handler: SyncgroupInvitesScanHandler) {
+    handler.isStoppedMu.lock()
+    defer { handler.isStoppedMu.unlock() }
+    if handler.isStopped {
+      // Prevent double-free.
+      return
+    }
+    let unmanaged = Unmanaged.passRetained(handler)
+    let oHandle = UnsafeMutablePointer<Void>(unmanaged.toOpaque())
+    v23_syncbase_DbSyncgroupInvitesStopScan(unsafeBitCast(oHandle, UInt.self))
+    unmanaged.release()
+    handler.isStopped = true
   }
 
   /// CreateBlob creates a new blob and returns a handle to it.

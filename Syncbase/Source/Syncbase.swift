@@ -166,6 +166,19 @@ public enum Syncbase {
     }
   }
 
+  static func addSyncgroupToUserData(syncgroupId: Identifier) throws {
+    if !Syncbase.didInit {
+      throw SyncbaseError.NotConfigured
+    }
+    if !Syncbase.didPostLogin {
+      throw SyncbaseError.NotLoggedIn
+    }
+    guard let userDataCollection = Syncbase.userDataCollection else {
+      throw SyncbaseError.IllegalArgument(detail: "No user data collection")
+    }
+    try userDataCollection.put(try syncgroupId.encode(), value: NSData())
+  }
+
   /// Returns the shared database handle. Must have already called `configure` and be logged in,
   /// otherwise this will throw a `SyncbaseError.NotConfigured` or `SyncbaseError.NotLoggedIn`
   /// error.
@@ -222,4 +235,101 @@ public enum Syncbase {
     }
     return SyncbaseCore.Syncbase.isLoggedIn
   }
+
+  static var neighborhoodScans: [ScanNeighborhoodForUsersHandler: SyncbaseCore.NeighborhoodScanHandler] = [:]
+  static let neighborhoodScansMu = NSLock()
+
+  /// Scans the neighborhood for nearby users.
+  ///
+  /// - parameter handler: The handler for to call when a User is found or lost.
+  /// Callbacks are called on `Syncbase.queue`.
+  public static func startScanForUsersInNeighborhood(handler: ScanNeighborhoodForUsersHandler) throws {
+    let coreHandler = NeighborhoodScanHandler(onPeer: { peer in
+      guard let alias = aliasFromBlessingPattern(peer.blessings) else {
+        NSLog("Syncbase - Could not get blessings from pattern %@", "\(peer.blessings)")
+        return
+      }
+      let user = User(alias: alias)
+      dispatch_async(Syncbase.queue) {
+        if peer.isLost {
+          handler.onLost(user)
+        } else {
+          handler.onFound(user)
+        }
+      }
+    })
+    try SyncbaseError.wrap {
+      try Neighborhood.startScan(coreHandler)
+    }
+    neighborhoodScansMu.lock()
+    neighborhoodScans[handler] = coreHandler
+    neighborhoodScansMu.unlock()
+  }
+
+  /// Stops the handler from receiving new neighborhood scan updates.
+  ///
+  /// - parameter handler: The original handler passed to a started scan.
+  public static func stopScanForUsersInNeighborhood(handler: ScanNeighborhoodForUsersHandler) {
+    neighborhoodScansMu.lock()
+    if let coreHandler = neighborhoodScans[handler] {
+      Neighborhood.stopScan(coreHandler)
+      neighborhoodScans.removeValueForKey(handler)
+    }
+    neighborhoodScansMu.unlock()
+  }
+
+  /// Stops all existing scanning handlers from receiving new neighborhood scan updates.
+  public static func stopAllScansForUsersInNeighborhood() {
+    neighborhoodScansMu.lock()
+    for coreHandler in neighborhoodScans.values {
+      Neighborhood.stopScan(coreHandler)
+    }
+    neighborhoodScans.removeAll()
+    neighborhoodScansMu.unlock()
+  }
+
+  /// Advertises the logged in user's presence to the target set of users who must be around them.
+  ///
+  /// - parameter usersWhoCanSee: The set of users who are allowed to find this user. If empty
+  /// then everyone can see the advertisement.
+  public static func startAdvertisingPresenceInNeighborhood(usersWhoCanSee: [User] = []) throws {
+    let visibility = usersWhoCanSee.map { return blessingPatternFromAlias($0.alias) }
+    try SyncbaseError.wrap {
+      try Neighborhood.startAdvertising(visibility)
+    }
+  }
+
+  /// Stops advertising the presence of the logged in user so that they can no longer be found.
+  public static func stopAdvertisingPresenceInNeighborhood() throws {
+    try SyncbaseError.wrap {
+      try Neighborhood.stopAdvertising()
+    }
+  }
+
+  /// Returns true iff this person appears in the neighborhood.
+  public static func isAdvertisingPresenceInNeighborhood() -> Bool {
+    return Neighborhood.isAdvertising()
+  }
+}
+
+public struct ScanNeighborhoodForUsersHandler: Hashable {
+  public let onFound: User -> Void
+  public let onLost: User -> Void
+  // This internal-only variable allows us to test ScanNeighborhoodForUsersHandler structs for equality.
+  // This cannot be done otherwise as function calls cannot be tested for equality.
+  // Equality/hashValue is used to keep the set of all handlers in use.
+  let uniqueId = OSAtomicIncrement32(&uniqueIdCounter)
+
+  public init(onFound: User -> Void, onLost: User -> Void) {
+    self.onFound = onFound
+    self.onLost = onLost
+  }
+
+  public var hashValue: Int {
+    return uniqueId.hashValue
+  }
+}
+
+public func == (lhs: ScanNeighborhoodForUsersHandler, rhs: ScanNeighborhoodForUsersHandler) -> Bool {
+  return lhs.uniqueId == rhs.uniqueId
 }

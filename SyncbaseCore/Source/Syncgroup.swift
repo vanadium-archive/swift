@@ -165,6 +165,12 @@ public class Syncgroup {
   }
 }
 
+public struct SyncgroupInvite {
+  public let syncgroupId: Identifier
+  public let addresses: [String]
+  public let blessingNames: [String]
+}
+
 /// SyncgroupMemberInfo contains per-member metadata.
 public struct SyncgroupMemberInfo {
   public let syncPriority: UInt8

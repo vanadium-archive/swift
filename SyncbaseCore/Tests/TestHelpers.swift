@@ -26,6 +26,11 @@ let anySyncgroupPermissions = [
   "Admin": AccessList(allowed: [anyPermissions], notAllowed: []),
   "Read": AccessList(allowed: [anyPermissions], notAllowed: [])]
 
+/// Convert integer seconds into Grand Central Dispatch (GCD)'s dispatch_time_t format.
+func secondsGCD(seconds: Int64) -> dispatch_time_t {
+  return dispatch_time(DISPATCH_TIME_NOW, seconds * Int64(NSEC_PER_SEC))
+}
+
 extension XCTestCase {
   func withTestDb(runBlock: Database throws -> Void) {
     withTestDbAsync { (db, cleanup) in
