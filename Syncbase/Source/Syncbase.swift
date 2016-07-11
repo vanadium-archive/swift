@@ -43,7 +43,7 @@ public enum Syncbase {
     return NSFileManager.defaultManager()
       .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
       .URLByAppendingPathComponent("Syncbase")
-      .absoluteString
+      .path!
   }
 
   static var publishSyncbaseName: String? {
@@ -75,10 +75,7 @@ public enum Syncbase {
   public static func configure(
     adminUserId adminUserId: String,
     // Default to Application Support/Syncbase.
-    rootDir: String = NSFileManager.defaultManager()
-      .URLsForDirectory(.ApplicationSupportDirectory, inDomains: .UserDomainMask)[0]
-      .URLByAppendingPathComponent("Syncbase")
-      .path!,
+    rootDir: String = defaultRootDir,
     mountPoints: [String] = ["/ns.dev.v.io:8101/tmp/todos/users/"],
     defaultBlessingStringPrefix: String = "dev.v.io:o:608941808256-43vtfndets79kf5hac8ieujto8837660.apps.googleusercontent.com:",
     disableSyncgroupPublishing: Bool = false,
@@ -192,7 +189,7 @@ public enum Syncbase {
     return db
   }
 
-  public typealias LoginCallback = (err: ErrorType?) -> Void
+  public typealias LoginCallback = (err: SyncbaseError?) -> Void
 
   /// Authorize using an oauth token. Right now only Google OAuth token is supported
   /// (you should use the Google Sign In SDK to get this).
@@ -206,21 +203,19 @@ public enum Syncbase {
       SyncbaseCore.GoogleOAuthCredentials(token: credentials.token),
       callback: { err in
         guard err == nil else {
-          if let e = err as? SyncbaseCore.SyncbaseError {
-            callback(err: SyncbaseError(coreError: e))
-          } else {
-            callback(err: err)
-          }
+          callback(err: SyncbaseError(coreError: err!))
           return
         }
         // postLoginCreateDefaults can be blocking when performing create-or-join. Run on
         // a background queue to prevent blocking from the Go callback.
         dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-          var callbackErr: ErrorType?
+          var callbackErr: SyncbaseError?
           do {
             try postLoginCreateDefaults()
-          } catch let e {
+          } catch let e as SyncbaseError {
             callbackErr = e
+          } catch {
+            preconditionFailure("Unsupported ErrorType: \(error)")
           }
           dispatch_async(Syncbase.queue) {
             callback(err: callbackErr)

@@ -9,6 +9,7 @@ import UIKit
 class LoginViewController: UIViewController, GIDSignInUIDelegate {
   @IBOutlet weak var signInButton: GIDSignInButton!
   @IBOutlet weak var spinner: UIActivityIndicatorView!
+  var doLogout: Bool = false
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -16,6 +17,33 @@ class LoginViewController: UIViewController, GIDSignInUIDelegate {
     GIDSignIn.sharedInstance().uiDelegate = self
     signInButton.colorScheme = .Light
     spinner.alpha = 0
+    signInButton.alpha = 0
+
+    if doLogout {
+      // Coming back from the game picker -- log out as the current user and reset the world.
+      logout()
+    } else {
+      // Normal case.
+      attemptAutomaticLogin()
+    }
+  }
+
+  func logout() {
+    doLogout = false
+    showSpinner()
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+      Syncbase.shutdown()
+      // Because the user might sign in with a different user, we must shutdown Syncbase and
+      // delete it's root directory, otherwise the existing credentials will be invalid.
+      // TODO(zinman): Remove this once https://github.com/vanadium/issues/issues/1381 is fixed.
+      try! NSFileManager.defaultManager().removeItemAtPath(Syncbase.defaultRootDir)
+      AppDelegate.configureSyncbase()
+      // This will call back via the delegate below -- it will redirect to didDisconnectForLogout.
+      GIDSignIn.sharedInstance().disconnect()
+    }
+  }
+
+  func attemptAutomaticLogin() {
     // Advance if already logged in or we have exchangable oauth keys.
     do {
       if try Syncbase.isLoggedIn() {
@@ -28,6 +56,8 @@ class LoginViewController: UIViewController, GIDSignInUIDelegate {
     if GIDSignIn.sharedInstance().hasAuthInKeychain() {
       showSpinner()
       GIDSignIn.sharedInstance().signInSilently()
+    } else {
+      showSignInButton()
     }
   }
 
@@ -79,9 +109,28 @@ extension LoginViewController: GIDSignInDelegate {
           self.didSignIn()
         } else {
           print("Unable to login to Syncbase: \(err) ")
+          switch err! {
+          case .NoAccess:
+            // We signed in with a different user -- our credentials are now invalid. We must
+            // delete the Syncbase database and retry.
+            self.logout()
+          default:
+            // Delete the credentials so the user has the chance to sign-in again.
+            GIDSignIn.sharedInstance().disconnect()
+          }
           self.showSignInButton()
           self.showErrorMsg("Unable to login to Syncbase. Try again.")
         }
+      }
+    }
+  }
+
+  func signIn(signIn: GIDSignIn!, didDisconnectWithUser user: GIDGoogleUser!, withError error: NSError!) {
+    dispatch_async(dispatch_get_main_queue()) {
+      self.showSignInButton()
+      if error != nil {
+        print("Couldn't logout: \(error)")
+        self.showErrorMsg("Unable to logout of Syncbase. Try again.")
       }
     }
   }

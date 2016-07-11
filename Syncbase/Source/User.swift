@@ -6,6 +6,18 @@ import Foundation
 import SyncbaseCore
 
 /// Represents a user.
-public struct User {
+public class User: Hashable {
   public let alias: String
+
+  public init(alias:String) {
+    self.alias = alias
+  }
+
+  public var hashValue: Int {
+    return alias.hashValue
+  }
+}
+
+public func == (lhs: User, rhs: User) -> Bool {
+  return lhs.alias == rhs.alias
 }

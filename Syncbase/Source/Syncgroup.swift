@@ -21,7 +21,7 @@ public class Syncgroup: CustomStringConvertible {
     let spec = SyncgroupSpec(
       description: "",
       collections: cxCoreIds,
-      permissions: try defaultSyncbasePerms(),
+      permissions: try defaultSyncgroupPerms(),
       publishSyncbaseName: Syncbase.publishSyncbaseName,
       mountTables: Syncbase.mountPoints,
       isPrivate: false)

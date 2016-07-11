@@ -94,9 +94,6 @@ public enum Neighborhood {
   }
 
   public static func stopScan(handler: NeighborhoodScanHandler) {
-    if !Syncbase.didInit || !Syncbase.isLoggedIn {
-      return
-    }
     handler.isStoppedMu.lock()
     defer { handler.isStoppedMu.unlock() }
     if handler.isStopped {

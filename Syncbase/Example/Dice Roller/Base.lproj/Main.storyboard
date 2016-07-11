@@ -48,12 +48,28 @@
                     <connections>
                         <outlet property="signInButton" destination="jVb-kU-JqR" id="caw-1r-K5Z"/>
                         <outlet property="spinner" destination="QOU-JV-r2d" id="Wj7-EZ-8Jr"/>
-                        <segue destination="70a-ZD-vEg" kind="showDetail" identifier="LoggedInSegue" id="UW0-Zc-4i8"/>
+                        <segue destination="KPY-km-KOL" kind="showDetail" identifier="LoggedInSegue" id="Kl1-6W-rp8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="53" y="375"/>
+            <point key="canvasLocation" x="-283" y="391"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="nwv-Br-yC5">
+            <objects>
+                <navigationController id="KPY-km-KOL" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="oh2-bt-Q2o">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="70a-ZD-vEg" kind="relationship" relationship="rootViewController" id="dfS-gp-ION"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZJK-Xx-84S" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="569" y="391"/>
         </scene>
         <!--Dice Roller-->
         <scene sceneID="bSh-d5-IOu">
@@ -99,13 +115,21 @@
                             <constraint firstItem="APD-dz-sU0" firstAttribute="centerX" secondItem="Ksc-lJ-zhb" secondAttribute="centerX" id="z53-sC-Pvb"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="4Vi-Tj-k1m">
+                        <barButtonItem key="leftBarButtonItem" title="Logout" id="QPP-VQ-J0Q">
+                            <connections>
+                                <action selector="didPressLogout:" destination="70a-ZD-vEg" id="2C8-a5-nuJ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="numberLabel" destination="180-RC-nik" id="nyZ-Kj-0LD"/>
+                        <segue destination="01J-lp-oVM" kind="showDetail" identifier="LogoutSegue" id="fOL-0c-Tbh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Kd-Zv-Yw1" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="803" y="375"/>
+            <point key="canvasLocation" x="1497" y="391"/>
         </scene>
     </scenes>
     <resources>

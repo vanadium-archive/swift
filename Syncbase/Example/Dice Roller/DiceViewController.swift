@@ -5,28 +5,52 @@
 import Syncbase
 import UIKit
 
-let collectionName = "dice"
-let rowKey = " result"
+let deviceUUID = UIDevice.currentDevice().identifierForVendor ?? NSUUID()
+let collectionName = "dice_\(deviceUUID.UUIDString.stringByReplacingOccurrencesOfString("-", withString: ""))"
+let rowKey = "result"
 
 class DiceViewController: UIViewController {
   @IBOutlet weak var numberLabel: UILabel!
+  var collection: Collection?
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    do {
+      collection = try Syncbase.database().collection(collectionName)
+    } catch let e {
+      print("Unexpected error: \(e)")
+    }
+  }
+
+  override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
     do {
       try Syncbase.database().addWatchChangeHandler(
-        pattern: CollectionRowPattern(collectionName: collectionName, rowKey: rowKey),
+        pattern: CollectionRowPattern(rowKey: rowKey),
         handler: WatchChangeHandler(
           onInitialState: onWatchChanges,
           onChangeBatch: onWatchChanges,
           onError: onWatchError))
     } catch let e {
-      print("Unable to start watch handler: \(e)")
+      print("Unexpected error: \(e)")
+    }
+  }
+
+  override func viewWillDisappear(animated: Bool) {
+    super.viewWillDisappear(animated)
+    do {
+      try Syncbase.database().removeAllWatchChangeHandlers()
+    } catch let e {
+      print("Unexpected error: \(e)")
     }
   }
 
   func onWatchChanges(changes: [WatchChange]) {
     let lastValue = changes
+    // Only look at the prefix so that different devices (with different collection names)
+    // are examined for their values.
+    .filter { $0.collectionId?.name.hasPrefix("dice") ?? false }
       .filter { $0.entityType == .Row && $0.changeType == .Put }
       .last?
       .value
@@ -50,9 +74,19 @@ class DiceViewController: UIViewController {
     // it to work properly.
     let value = NSData(bytes: &nextNum, length: 1)
     do {
-      try Syncbase.database().collection(collectionName).put(rowKey, value: value)
+      try collection?.put(rowKey, value: value)
     } catch let e {
       print("Unexpected error: \(e)")
+    }
+  }
+
+  @IBAction func didPressLogout(sender: UIBarButtonItem) {
+    performSegueWithIdentifier("LogoutSegue", sender: self)
+  }
+
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if let loginVC = segue.destinationViewController as? LoginViewController {
+      loginVC.doLogout = true
     }
   }
 }

@@ -55,7 +55,7 @@ func defaultCollectionPerms() throws -> SyncbaseCore.Permissions {
     Tags.Admin.rawValue: selfAndCloud]
 }
 
-func defaultSyncbasePerms() throws -> SyncbaseCore.Permissions {
+func defaultSyncgroupPerms() throws -> SyncbaseCore.Permissions {
   let selfAndCloud = try selfAndCloudAL()
   return [
     Tags.Read.rawValue: selfAndCloud,

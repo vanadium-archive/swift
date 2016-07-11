@@ -11,20 +11,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
   func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-    // Configure Google Sign-In
+    AppDelegate.configureGoogleSignIn()
+    AppDelegate.configureSyncbase()
+    return true
+  }
+
+  static var googleSignInClientID: String {
     let infoPath = NSBundle.mainBundle().pathForResource("GoogleService-Info", ofType: "plist")!
     let info = NSDictionary(contentsOfFile: infoPath)!
-    let clientID = info["CLIENT_ID"] as! String
-    GIDSignIn.sharedInstance().clientID = clientID
+    return info["CLIENT_ID"] as! String
+  }
 
-    // Configure Syncbase
+  static func configureGoogleSignIn() {
+    GIDSignIn.sharedInstance().clientID = AppDelegate.googleSignInClientID
+  }
+
+  static func configureSyncbase() {
     try! Syncbase.configure(adminUserId: "zinman@google.com",
       // Craft a blessing prefix using google sign-in and the dev.v.io blessings provider.
-      defaultBlessingStringPrefix: "dev.v.io:o:\(clientID):",
+      defaultBlessingStringPrefix: "dev.v.io:o:\(AppDelegate.googleSignInClientID):",
       // Cloud mount-point.
-      // TODO(zinman): Determine if this is correct.
       mountPoints: ["/ns.dev.v.io:8101/tmp/ios/diceroller/users/"])
-    return true
   }
 
   func application(app: UIApplication, openURL url: NSURL, options: [String: AnyObject]) -> Bool {

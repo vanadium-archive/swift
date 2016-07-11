@@ -97,7 +97,7 @@ public enum Syncbase {
     return Principal.blessingsDebugDescription
   }
 
-  public typealias LoginCallback = (err: ErrorType?) -> Void
+  public typealias LoginCallback = (err: SyncbaseError?) -> Void
 
   /// Authorize using an oauth token. Right now only Google OAuth token is supported
   /// (you should use the Google Sign In SDK to get this), and you should use the
@@ -115,7 +115,7 @@ public enum Syncbase {
     }
     // Go's login is blocking, so call on a background concurrent queue.
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
-      var err: ErrorType? = nil
+      var err: SyncbaseError? = nil
       do {
         try VError.maybeThrow { errPtr in
           v23_syncbase_Login(
@@ -123,8 +123,10 @@ public enum Syncbase {
             try credentials.token.toCgoString(),
             errPtr)
         }
-      } catch (let e) {
+      } catch let e as SyncbaseError {
         err = e
+      } catch {
+        preconditionFailure("Invalid ErrorType: \(error)")
       }
       dispatch_async(Syncbase.queue) {
         callback(err: err)
