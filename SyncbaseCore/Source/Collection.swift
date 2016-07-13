@@ -27,13 +27,13 @@ public class Collection {
   /// do not exist.
   public func exists() throws -> Bool {
     return try VError.maybeThrow { errPtr in
-      var exists = v23_syncbase_Bool(false)
+      var exists = false
       v23_syncbase_CollectionExists(
         try encodedCollectionName.toCgoString(),
         try cBatchHandle(),
         &exists,
         errPtr)
-      return exists.toBool()
+      return exists
     }
   }
 
@@ -91,7 +91,7 @@ public class Collection {
 
   /// Returns true if there is a value associated with `key`.
   public func exists(key: String) throws -> Bool {
-    var exists = v23_syncbase_Bool(false)
+    var exists = false
     try VError.maybeThrow { errPtr in
       v23_syncbase_RowExists(
         try encodedRowName(key),
@@ -99,7 +99,7 @@ public class Collection {
         &exists,
         errPtr)
     }
-    return exists.toBool()
+    return exists
   }
 
   /**

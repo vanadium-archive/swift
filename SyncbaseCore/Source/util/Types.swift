@@ -28,22 +28,6 @@ public extension v23_syncbase_BatchOptions {
   }
 }
 
-public extension v23_syncbase_Bool {
-  init(_ bool: Bool) {
-    switch bool {
-    case true: self = 1
-    case false: self = 0
-    }
-  }
-
-  func toBool() -> Bool {
-    switch self {
-    case 0: return false
-    default: return true
-    }
-  }
-}
-
 public extension v23_syncbase_Bytes {
   init(_ data: NSData?) {
     guard let data = data else {

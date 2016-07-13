@@ -71,9 +71,9 @@ public class Database {
   // cause Exists to return false instead of an error.
   public func exists() throws -> Bool {
     return try VError.maybeThrow { errPtr in
-      var exists = v23_syncbase_Bool(false)
+      var exists = false
       v23_syncbase_DbExists(try encodedDatabaseName.toCgoString(), &exists, errPtr)
-      return exists.toBool()
+      return exists
     }
   }
 

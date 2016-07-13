@@ -31,10 +31,12 @@ public enum Syncbase {
           withIntermediateDirectories: true,
           attributes: [NSFileProtectionKey: NSFileProtectionCompleteUntilFirstUserAuthentication])
       }
-      v23_syncbase_Init(
-        v23_syncbase_Bool(false),
-        try rootDir.toCgoString(),
-        v23_syncbase_Bool(isUnitTest))
+      let opts = v23_syncbase_InitOpts(
+        clientUnderstandsVOM: false,
+        rootDir: try rootDir.toCgoString(),
+        testLogin: isUnitTest,
+        verboseLevel: 0)
+      v23_syncbase_Init(opts)
       if isLoggedIn {
         try serve()
       }
@@ -87,9 +89,9 @@ public enum Syncbase {
   /// Must return true before any Syncbase operation can work. Authorize using GoogleCredentials
   /// created from a Google OAuth token (you should use the Google Sign In SDK to get this).
   public static var isLoggedIn: Bool {
-    var ret = v23_syncbase_Bool(false)
+    var ret = false
     v23_syncbase_IsLoggedIn(&ret)
-    return ret.toBool()
+    return ret
   }
 
   /// For debugging the current Syncbase user blessings.

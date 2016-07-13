@@ -58,9 +58,9 @@ public enum Neighborhood {
     if !Syncbase.didInit || !Syncbase.isLoggedIn {
       return false
     }
-    var isAdvertising = v23_syncbase_Bool(false)
+    var isAdvertising = false
     v23_syncbase_NeighborhoodIsAdvertising(&isAdvertising)
-    return isAdvertising.toBool()
+    return isAdvertising
   }
 
   public static func startScan(handler: NeighborhoodScanHandler) throws {
