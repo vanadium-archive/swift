@@ -5,8 +5,6 @@
 import Syncbase
 import UIKit
 
-let deviceUUID = UIDevice.currentDevice().identifierForVendor ?? NSUUID()
-let collectionName = "dice_\(deviceUUID.UUIDString.stringByReplacingOccurrencesOfString("-", withString: ""))"
 let rowKey = "result"
 
 class DiceViewController: UIViewController {
@@ -17,12 +15,12 @@ class DiceViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    activityIndicator.alpha = 0.0
 
     do {
-      activityIndicator.alpha = 0.0
-      collection = try Syncbase.database().collection(collectionName)
-    } catch let e {
-      print("Unexpected error: \(e)")
+      collection = try Syncbase.database().userdataCollection
+    } catch {
+      print("Unexpected error: \(error)")
     }
   }
 
@@ -30,7 +28,9 @@ class DiceViewController: UIViewController {
     super.viewWillAppear(animated)
     do {
       try Syncbase.database().addWatchChangeHandler(
-        pattern: CollectionRowPattern(rowKey: rowKey),
+        pattern: CollectionRowPattern(
+          collectionName: Syncbase.UserdataSyncgroupName,
+          rowKey: rowKey),
         handler: WatchChangeHandler(
           onInitialState: onWatchChanges,
           onChangeBatch: onWatchChanges,
@@ -51,9 +51,6 @@ class DiceViewController: UIViewController {
 
   func onWatchChanges(changes: [WatchChange]) {
     let lastValue = changes
-    // Only look at the prefix so that different devices (with different collection names)
-    // are examined for their values.
-    .filter { $0.collectionId?.name.hasPrefix("dice") ?? false }
       .filter { $0.entityType == .Row && $0.changeType == .Put }
       .last?
       .value

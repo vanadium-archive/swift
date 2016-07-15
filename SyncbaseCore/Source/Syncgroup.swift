@@ -182,7 +182,7 @@ public struct SyncgroupMemberInfo {
   }
 }
 
-public struct SyncgroupSpec {
+public struct SyncgroupSpec: CustomDebugStringConvertible {
   /// Human-readable description of this syncgroup.
   public let description: String
 
@@ -222,5 +222,15 @@ public struct SyncgroupSpec {
       self.publishSyncbaseName = publishSyncbaseName
       self.mountTables = mountTables
       self.isPrivate = isPrivate
+  }
+
+  public var debugDescription: String {
+    return "SyncgroupSpec[\n" +
+      "Description: \(description)\n" +
+      "Collections: \(collections)\n" +
+      "Permissions: \(permissions)\n" +
+      "PublicSyncbaseName: \(publishSyncbaseName)\n" +
+      "MountTables: \(mountTables)\n" +
+      "IsPrivate: \(isPrivate)]"
   }
 }

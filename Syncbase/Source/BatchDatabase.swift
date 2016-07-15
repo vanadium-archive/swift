@@ -20,11 +20,14 @@ public class BatchDatabase: DatabaseHandle {
     return Identifier(coreId: coreBatchDatabase.databaseId)
   }
 
-  public func collection(name: String, withoutSyncgroup: Bool = false) throws -> Collection {
+  public func createCollection(prefix prefix: String = "cx", withoutSyncgroup: Bool = false) throws -> Collection {
     if (!withoutSyncgroup) {
       throw SyncbaseError.BatchError(detail: "Cannot create syncgroup in a batch")
     }
-    let res = try collection(Identifier(name: name, blessing: personalBlessingString()))
+    // TODO(zinman): Remove the replacingOccurences once collections are no longer strict about
+    // their names.
+    let uuid = NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
+    let res = try collection(Identifier(name: prefix + "_" + uuid, blessing: personalBlessingString()))
     try res.createIfMissing()
     return res
   }

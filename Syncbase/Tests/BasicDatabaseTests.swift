@@ -31,12 +31,14 @@ class BasicDatabaseTests: XCTestCase {
       var collections = try db.collections()
       XCTAssertEqual(collections.count, 0)
 
-      let collection = try db.collection("collection1")
+      let collection = try db.createCollection(prefix: "testCollection")
       // Must be idempotent.
       try collection.createIfMissing()
       try collection.createIfMissing()
       collections = try db.collections()
       XCTAssertEqual(collections.count, 1)
+      XCTAssertTrue(collection.collectionId.name.hasPrefix("testCollection"))
+      XCTAssertGreaterThan(collection.collectionId.name.characters.count, "testCollection_".characters.count)
       // Should be empty.
       XCTAssertFalse(try collection.exists("a"))
 
@@ -105,7 +107,7 @@ class AdvertiseScanTests: XCTestCase {
   }
 }
 
-class SyncgroupTests: XCTestCase {
+class SyncgroupTest: XCTestCase {
   override class func setUp() {
     configureDb(disableUserdataSyncgroup: false, disableSyncgroupPublishing: true)
   }
@@ -113,40 +115,47 @@ class SyncgroupTests: XCTestCase {
   override class func tearDown() {
     Syncbase.shutdown()
   }
+}
 
+class UserdataTest: SyncgroupTest {
   func testUserdata() {
     withDb { db in
       let coreCollections = try db.coreDatabase.listCollections()
       XCTAssertEqual(coreCollections.count, 1)
-      XCTAssertEqual(coreCollections[0].name, Syncbase.USERDATA_SYNCGROUP_NAME)
+      XCTAssertEqual(coreCollections[0].name, Syncbase.UserdataSyncgroupName)
 
-      // Expect filtered from HLAPI
+      // Expect filtered from HLAPI.
       let collections = try db.collections()
       XCTAssertEqual(collections.count, 0)
 
       let coreSyncgroups = try db.coreDatabase.listSyncgroups()
       XCTAssertEqual(coreSyncgroups.count, 1)
-      XCTAssertEqual(coreSyncgroups[0].name, Syncbase.USERDATA_SYNCGROUP_NAME)
+      XCTAssertEqual(coreSyncgroups[0].name, Syncbase.UserdataSyncgroupName)
 
-      // Expect filtered from HLAPI
+      // Expect filtered from HLAPI.
       let syncgroups = try db.syncgroups()
       XCTAssertEqual(syncgroups.count, 0)
 
-      let verSpec = try db.coreDatabase.syncgroup(Syncbase.USERDATA_SYNCGROUP_NAME).getSpec()
+      let verSpec = try db.coreDatabase.syncgroup(Syncbase.UserdataSyncgroupName).getSpec()
       XCTAssertEqual(verSpec.spec.collections.count, 1)
 
       // TODO(razvanm): Make the userdata syncgroup private.
       XCTAssertEqual(verSpec.spec.isPrivate, false)
+
+      // Shouldn't crash unpacking.
+      db.userdataCollection
     }
   }
+}
 
+class WatchSyncgroupTest: SyncgroupTest {
   func testAddingSyncgroup() {
     withDb { db in
       let initialSemaphore = dispatch_semaphore_create(0)
       let changeSemaphore = dispatch_semaphore_create(0)
       let sg1 = Identifier(coreId: SyncbaseCore.Identifier(name: "sg1", blessing: "..."))
       var didChange = false
-      try db.addUserDataWatchChangeHandler(handler: WatchChangeHandler(
+      try db.addInternalUserdataWatchChangeHandler(handler: WatchChangeHandler(
         onInitialState: { _ in
           dispatch_semaphore_signal(initialSemaphore)
         },
@@ -154,7 +163,7 @@ class SyncgroupTests: XCTestCase {
           XCTAssertFalse(didChange)
           XCTAssertEqual(changes.count, 1)
           let change = changes.first!
-          XCTAssertEqual(change.row, try? sg1.encode())
+          XCTAssertEqual(change.row, try? Syncbase.UserdataCollectionPrefix + sg1.encode())
           XCTAssertEqual(change.changeType, WatchChange.ChangeType.Put)
           XCTAssertEqual(change.value, NSData())
           didChange = true
@@ -165,7 +174,7 @@ class SyncgroupTests: XCTestCase {
         XCTFail("Timed out")
       }
 
-      try Syncbase.addSyncgroupToUserData(sg1)
+      try Syncbase.addSyncgroupToUserdata(sg1)
       if dispatch_semaphore_wait(changeSemaphore, secondsGCD(1)) != 0 {
         XCTFail("Timed out")
       }
@@ -173,40 +182,49 @@ class SyncgroupTests: XCTestCase {
     }
   }
 
-  func testWatchIgnoresUserData() {
+  func testWatchIgnoresInternalUserData() {
     withDb { db in
-      var semaphore = dispatch_semaphore_create(0)
-      // Nothing for a generic watch.
+      var initialSemaphore = dispatch_semaphore_create(0)
+      let changeSemaphore = dispatch_semaphore_create(0)
+      // Only our own userdata additions should appear.
       try db.addWatchChangeHandler(handler: WatchChangeHandler(
         onInitialState: { changes in
-          XCTAssertEqual(changes.count, 0)
-          dispatch_semaphore_signal(semaphore)
+          dispatch_semaphore_signal(initialSemaphore)
         },
         onChangeBatch: { changes in
-          XCTFail("Unexpected changes: \(changes)")
+          XCTAssertEqual(changes.count, 1)
+          let change = changes[0]
+          XCTAssertEqual(change.collectionId?.name, Syncbase.UserdataSyncgroupName)
+          XCTAssertEqual(change.row, "testValue")
+          dispatch_semaphore_signal(changeSemaphore)
         },
         onError: failOnNonContextError))
-      if dispatch_semaphore_wait(semaphore, secondsGCD(1)) != 0 {
+      if dispatch_semaphore_wait(initialSemaphore, secondsGCD(1)) != 0 {
         XCTFail("Timed out")
       }
-      // TODO(zinman): Add this when we support canceling watches.
-//      db.removeAllWatchChangeHandlers()
+      try db.userdataCollection.put("testValue", value: NSData())
+      if dispatch_semaphore_wait(changeSemaphore, secondsGCD(1)) != 0 {
+        XCTFail("Timed out")
+      }
+      db.removeAllWatchChangeHandlers()
 
       // Userdata only appears when explicitly asking for it.
-      semaphore = dispatch_semaphore_create(0)
-      try db.addUserDataWatchChangeHandler(
+      initialSemaphore = dispatch_semaphore_create(0)
+      try db.addInternalUserdataWatchChangeHandler(
         handler: WatchChangeHandler(
           onInitialState: { changes in
+            XCTAssertFalse(changes.isEmpty)
             for change in changes {
-              XCTAssert(change.collectionId?.name == Syncbase.USERDATA_SYNCGROUP_NAME)
+              XCTAssert(change.collectionId?.name == Syncbase.UserdataSyncgroupName)
+              XCTAssert(change.row?.hasPrefix(Syncbase.UserdataCollectionPrefix) ?? false)
             }
-            dispatch_semaphore_signal(semaphore)
+            dispatch_semaphore_signal(initialSemaphore)
           },
           onChangeBatch: { changes in
             XCTFail("Unexpected changes: \(changes)")
           },
           onError: failOnNonContextError))
-      if dispatch_semaphore_wait(semaphore, secondsGCD(1)) != 0 {
+      if dispatch_semaphore_wait(initialSemaphore, secondsGCD(1)) != 0 {
         XCTFail("Timed out")
       }
     }

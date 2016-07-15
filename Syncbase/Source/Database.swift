@@ -109,7 +109,14 @@ public class Database: DatabaseHandle, CustomStringConvertible {
     return Identifier(coreId: coreDatabase.databaseId)
   }
 
-  public func collection(name: String, withoutSyncgroup: Bool = false) throws -> Collection {
+  public func createCollection(prefix prefix: String = "cx", withoutSyncgroup: Bool = false) throws -> Collection {
+    // TODO(zinman): Remove the replacingOccurences once collections are no longer strict about
+    // their names.
+    let uuid = NSUUID().UUIDString.stringByReplacingOccurrencesOfString("-", withString: "")
+    return try createCollection(name: prefix + "_" + uuid, withoutSyncgroup: withoutSyncgroup)
+  }
+
+  func createCollection(name name: String, withoutSyncgroup: Bool) throws -> Collection {
     let res = try collection(Identifier(name: name, blessing: personalBlessingString()))
     try res.createIfMissing()
     // TODO(sadovsky): Unwind collection creation on syncgroup creation failure? It would be
@@ -134,13 +141,22 @@ public class Database: DatabaseHandle, CustomStringConvertible {
   /// Returns all collections in the database.
   public func collections() throws -> [Collection] {
     return try SyncbaseError.wrap {
-      let coreIds = try self.coreDatabase.listCollections().filter({ return $0.name != Syncbase.USERDATA_SYNCGROUP_NAME })
+      let coreIds = try self.coreDatabase.listCollections().filter({ return $0.name != Syncbase.UserdataSyncgroupName })
       return try coreIds.map { coreId in
         return Collection(
           coreCollection: try self.coreDatabase.collection(coreId),
           databaseHandle: self)
       }
     }
+  }
+
+  /// Returns a reference to the userdata collection. This collection is private to the user and
+  /// is automatically joined or created at login.
+  public var userdataCollection: Collection {
+    // We know it's safe to unwrap userdataCollection because it must exist to have been able
+    // to get the Database reference (more specifically, it is created post-login, and post-login
+    // must be completed in order to get a Database reference).
+    return Syncbase.userdataCollection!
   }
 
   /// **FOR ADVANCED USERS**. Creates syncgroup and adds it to the user's "userdata" collection, as
@@ -167,7 +183,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
       // Remember this syncgroup in the userdata collection. The value doesn't matter, so we use
       // empty data.
       // Note: We may eventually want to use the value to deal with rejected invitations.
-      try Syncbase.addSyncgroupToUserData(id)
+      try Syncbase.addSyncgroupToUserdata(id)
       return res
     }
   }
@@ -185,7 +201,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
   /// Returns all syncgroups in the database.
   public func syncgroups() throws -> [Syncgroup] {
     return try SyncbaseError.wrap {
-      let coreIds = try self.coreDatabase.listSyncgroups().filter({ return $0.name != Syncbase.USERDATA_SYNCGROUP_NAME })
+      let coreIds = try self.coreDatabase.listSyncgroups().filter({ return $0.name != Syncbase.UserdataSyncgroupName })
       return coreIds.map { coreId in
         return Syncgroup(coreSyncgroup: self.coreDatabase.syncgroup(coreId), database: self)
       }
@@ -252,7 +268,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
           try coreSyncgroup.join(publishName ?? "",
             expectedSyncbaseBlessings: expectedBlessings,
             myInfo: Syncgroup.syncgroupMemberInfo)
-          try Syncbase.addSyncgroupToUserData(invite.syncgroupId)
+          try Syncbase.addSyncgroupToUserdata(invite.syncgroupId)
           dispatch_async(Syncbase.queue) {
             callback(sg: syncgroup, err: nil)
           }
@@ -324,25 +340,26 @@ public class Database: DatabaseHandle, CustomStringConvertible {
       try addWatchChangeHandler(
         pattern: pattern,
         resumeMarker: resumeMarker,
-        isWatchingUserdata: false,
+        isWatchingInternalUserdata: false,
         handler: handler)
   }
 
-  /// Internal function to watch only the userData collection which normally gets filtered out.
-  func addUserDataWatchChangeHandler(
+  /// Internal function to watch only the userData collection's internal changes that are otherwise
+  /// filtered out.
+  func addInternalUserdataWatchChangeHandler(
     resumeMarker: ResumeMarker? = nil,
     handler: WatchChangeHandler) throws {
       try addWatchChangeHandler(
-        pattern: CollectionRowPattern(collectionName: Syncbase.USERDATA_SYNCGROUP_NAME),
+        pattern: CollectionRowPattern(collectionName: Syncbase.UserdataSyncgroupName),
         resumeMarker: resumeMarker,
-        isWatchingUserdata: true,
+        isWatchingInternalUserdata: true,
         handler: handler)
   }
 
   private func addWatchChangeHandler(
     pattern pattern: CollectionRowPattern,
     resumeMarker: ResumeMarker?,
-    isWatchingUserdata: Bool,
+    isWatchingInternalUserdata: Bool,
     handler: WatchChangeHandler) throws {
       // Note: Eventually we'll add a watch variant that takes a query, where the query can be
       // constructed using some sort of query builder API.
@@ -377,9 +394,30 @@ public class Database: DatabaseHandle, CustomStringConvertible {
             // Don't pass root entity to end-user.
             if coreChange.entityType != .Root {
               let change = WatchChange(coreChange: coreChange)
-              // Ignore changes to userdata collection unless we're explicitly looking for it, and
-              if (isWatchingUserdata || change.collectionId?.name != Syncbase.USERDATA_SYNCGROUP_NAME) {
-                batch.append(change)
+              let isUserdataCollection = change.collectionId?.name == Syncbase.UserdataSyncgroupName
+              let isInternalUserdata = isUserdataCollection &&
+              (change.row?.hasPrefix(Syncbase.UserdataCollectionPrefix) ?? false)
+
+              // There are two diff kinds of watches -- the internal-only version that only passes
+              // internal userdata changes (specifically, puts into the userdata collection with the
+              // correct prefix), and the normal public watch that hides the internal userdata
+              // changes and the userdata collection creation. Switch on the type and then figure
+              // out if this change makes the filter or not.
+              if isWatchingInternalUserdata {
+                // Ignore changes to userdata collection's internal usage (starts with the
+                // UserdataCollectionPrefix) unless we're explicitly looking for it,
+                if isInternalUserdata {
+                  batch.append(change)
+                }
+              } else {
+                // Ignore internal userdata.
+                if !isInternalUserdata &&
+                // Ignore the creation of the userdata collection; it's supposed to already be there.
+                !(change.entityType == .Collection && isUserdataCollection) {
+                  // Only add if it's not internal userdata changes since we're not watching them,
+                  // or the intial creation of the userdata collection.
+                  batch.append(change)
+                }
               }
             }
             if (!coreChange.isContinued) {
@@ -396,7 +434,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
                 dispatch_sync(Syncbase.queue, {
                   handler.onInitialState(batch)
                 })
-              } else {
+              } else if !batch.isEmpty {
                 dispatch_sync(Syncbase.queue, {
                   handler.onChangeBatch(batch)
                 })

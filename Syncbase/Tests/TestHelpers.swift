@@ -31,6 +31,8 @@ func failOnNonContextError(err: ErrorType) {
     }
   default: break
   }
+  // TODO(zinman): Remove once https://github.com/vanadium/issues/issues/1391 is solved.
+  print("Unexpected error: \(err)")
   XCTFail("Unexpected error: \(err)")
 }
 
@@ -38,7 +40,8 @@ extension XCTestCase {
   class func configureDb(disableUserdataSyncgroup disableUserdataSyncgroup: Bool, disableSyncgroupPublishing: Bool) {
     SyncbaseCore.Syncbase.isUnitTest = true
 
-    try! NSFileManager.defaultManager().removeItemAtPath(unitTestRootDir)
+    do { try NSFileManager.defaultManager().removeItemAtPath(unitTestRootDir) }
+    catch { }
 
     // TODO(zinman): Once we have create-and-join implemented don't always set
     // disableUserdataSyncgroup to true.
@@ -64,10 +67,12 @@ extension XCTestCase {
       let db = try Syncbase.database()
       try runBlock(db)
       try db.collections().forEach { try $0.destroy() }
-      // TODO(zinman): Re-enable when supported in Syncbase
+      // TODO(zinman): Re-enable when supported in Syncbase.
 //      try db.syncgroups().forEach { try $0.coreSyncgroup.destroy() }
-    } catch let e {
-      XCTFail("Unexpected error: \(e)")
+    } catch {
+      // TODO(zinman): Remove once https://github.com/vanadium/issues/issues/1391 is solved.
+      print("Unepected error: \(error)")
+      XCTFail("Unexpected error: \(error)")
     }
   }
 }

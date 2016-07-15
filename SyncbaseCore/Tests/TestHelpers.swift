@@ -61,12 +61,15 @@ extension XCTestCase {
         XCTAssertTrue(try db.exists(), "Database should exist after being created")
         // Always delete the db at the end to prevent conflicts between tests
         try runBlock(db: db, cleanup: cleanup)
-      } catch let e {
-        XCTFail("Got unexpected exception: \(e)")
+      } catch {
+        print("Got unexpected exception: \(error)")
+        XCTFail("Got unexpected exception: \(error)")
         cleanup()
       }
-    } catch (let e) {
-      XCTFail("Got unexpected exception: \(e)")
+    } catch {
+      // TODO(zinman): Remove once https://github.com/vanadium/issues/issues/1391 is solved.
+      print("Got unexpected exception: \(error)")
+      XCTFail("Got unexpected exception: \(error)")
     }
   }
 
@@ -91,8 +94,10 @@ extension XCTestCase {
           try f(db)
         }
       }
-    } catch let e {
-      XCTFail("Got unexpected exception: \(e)")
+    } catch {
+      // TODO(zinman): Remove once https://github.com/vanadium/issues/issues/1391 is solved.
+      print("Got unexpected exception: \(error)")
+      XCTFail("Got unexpected exception: \(error)")
     }
   }
 }

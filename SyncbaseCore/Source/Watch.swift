@@ -110,6 +110,7 @@ enum Watch {
     var data: WatchChange? = nil
     var streamErr: SyncbaseError? = nil
     var updateAvailable = false
+    var isCanceled = false
 
     // The anonymous function that gets called from the Swift. It blocks until there's an update
     // available from Go.
@@ -140,10 +141,18 @@ enum Watch {
     // The callback from Go when there's a new Row (key-value) scanned.
     func onChange(change: WatchChange) {
       condition.lock()
+      if isCanceled {
+        condition.unlock()
+        return
+      }
       // Wait until any existing update has been received by the fetch so we don't just blow
       // past it.
-      while updateAvailable {
+      while updateAvailable && !isCanceled {
         condition.wait()
+      }
+      if isCanceled {
+        condition.unlock()
+        return
       }
       // Set the new data.
       data = change
@@ -157,10 +166,18 @@ enum Watch {
     // be closed and no new changes will ever come in from this request.
     func onError(err: SyncbaseError) {
       condition.lock()
+      if isCanceled {
+        condition.unlock()
+        return
+      }
       // Wait until any existing update has been received by the fetch so we don't just blow
       // past it.
-      while updateAvailable {
+      while updateAvailable && !isCanceled {
         condition.wait()
+      }
+      if isCanceled {
+        condition.unlock()
+        return
       }
       // Marks the end of data by clearing it and saving the error from Syncbase.
       data = nil
@@ -200,7 +217,13 @@ enum Watch {
       }
       return AnonymousStream(
         fetchNextFunction: handle.fetchNext,
-        cancelFunction: { preconditionFailure("stub") })
+        cancelFunction: {
+          handle.condition.lock()
+          // Until we can cancel a watch (see: https://github.com/vanadium/issues/issues/1392)
+          // we hack around it.
+          handle.isCanceled = true
+          handle.condition.unlock()
+      })
   }
 
   // Callback handlers that convert the Cgo bridge types to native Swift types and pass them to

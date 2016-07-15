@@ -9,18 +9,17 @@ import SyncbaseCore
 /// devices. It works even when devices are not connected to the Internet.
 public enum Syncbase {
   // Constants
-  static let TAG = "syncbase",
-    DIR_NAME = "syncbase",
-    DB_NAME = "db",
-    USERDATA_SYNCGROUP_NAME = "userdata__"
+  static let DbName = "db"
+  public static let UserdataSyncgroupName = "userdata__",
+    UserdataCollectionPrefix = "__collections/"
   // Initialization state
   static var didInit = false
   static var didPostLogin = false
   static var didStartShutdown = false
   // Main database.
   static var db: Database?
-  // The userData collection, created post-login.
-  static var userDataCollection: Collection?
+  // The userdata collection, created post-login.
+  static var userdataCollection: Collection?
   // Options for opening a database.
   static var adminUserId = "alexfandrianto@google.com"
   static var defaultBlessingStringPrefix = "dev.v.io:o:608941808256-43vtfndets79kf5hac8ieujto8837660.apps.googleusercontent.com:"
@@ -122,39 +121,49 @@ public enum Syncbase {
   }
 
   private static func postLoginCreateDefaults() throws {
-    let coreDb = try SyncbaseCore.Syncbase.database(Syncbase.DB_NAME)
+    let coreDb = try SyncbaseCore.Syncbase.database(Syncbase.DbName)
     let database = Database(coreDatabase: coreDb)
     try database.createIfMissing()
-    userDataCollection = try database.collection(Syncbase.USERDATA_SYNCGROUP_NAME, withoutSyncgroup: true)
+    userdataCollection = try database.createCollection(
+      name: Syncbase.UserdataSyncgroupName, withoutSyncgroup: true)
+
     if (!Syncbase.disableUserdataSyncgroup) {
-      let syncgroup = try userDataCollection!.syncgroup()
+      let syncgroup = try userdataCollection!.syncgroup()
       do {
+        // TODO(zinman): Return (via throwing) if this fails because the cloud isn't accessible,
+        // instead of it failing because a join isn't possible.
         try syncgroup.join()
       } catch {
-        try syncgroup.createIfMissing([userDataCollection!])
+        // The above join() will fail the first time the user logs in and we create the syncgroup
+        // UNLESS another device of the same user is available to discovery (nearby or connected
+        // via some network path). If so, then the join will work. In subsequent boots join() will
+        // not throw and we won't re-attempt creation.
+        try syncgroup.createIfMissing([userdataCollection!])
       }
       // TODO(zinman): Figure out when/how this can throw and if we should handle it better.
-      try database.addUserDataWatchChangeHandler(
+      try database.addInternalUserdataWatchChangeHandler(
         handler: WatchChangeHandler(
-          onInitialState: onUserDataWatchChange,
-          onChangeBatch: onUserDataWatchChange,
+          onInitialState: onUserdataWatchChange,
+          onChangeBatch: onUserdataWatchChange,
           onError: { err in
             if !Syncbase.didStartShutdown {
               NSLog("Syncbase - Error watching userdata syncgroups: %@", "\(err)")
             }
         }))
     }
+
     Syncbase.db = database
     Syncbase.didPostLogin = true
   }
 
-  private static func onUserDataWatchChange(changes: [WatchChange]) {
+  private static func onUserdataWatchChange(changes: [WatchChange]) {
     for change in changes {
       guard let row = change.row where change.entityType == .Row && change.changeType == .Put else {
         continue
       }
       do {
-        let syncgroupId = try Identifier.decode(row)
+        let syncgroupId = try Identifier.decode(
+          row.stringByReplacingOccurrencesOfString(Syncbase.UserdataCollectionPrefix, withString: ""))
         let syncgroup = try Syncbase.database().syncgroup(syncgroupId)
         try syncgroup.join()
       } catch let e {
@@ -163,17 +172,17 @@ public enum Syncbase {
     }
   }
 
-  static func addSyncgroupToUserData(syncgroupId: Identifier) throws {
+  static func addSyncgroupToUserdata(syncgroupId: Identifier) throws {
     if !Syncbase.didInit {
       throw SyncbaseError.NotConfigured
     }
     if !Syncbase.didPostLogin {
       throw SyncbaseError.NotLoggedIn
     }
-    guard let userDataCollection = Syncbase.userDataCollection else {
+    guard let userdataCollection = Syncbase.userdataCollection else {
       throw SyncbaseError.IllegalArgument(detail: "No user data collection")
     }
-    try userDataCollection.put(try syncgroupId.encode(), value: NSData())
+    try userdataCollection.put(try Syncbase.UserdataCollectionPrefix + syncgroupId.encode(), value: NSData())
   }
 
   /// Returns the shared database handle. Must have already called `configure` and be logged in,
@@ -229,6 +238,14 @@ public enum Syncbase {
       throw SyncbaseError.NotConfigured
     }
     return SyncbaseCore.Syncbase.isLoggedIn
+  }
+
+  public static func loggedInUser() -> User? {
+    if let bp = try? personalBlessingString(),
+      alias = aliasFromBlessingPattern(bp) {
+        return User(alias: alias)
+    }
+    return nil
   }
 
   static var neighborhoodScans: [ScanNeighborhoodForUsersHandler: SyncbaseCore.NeighborhoodScanHandler] = [:]

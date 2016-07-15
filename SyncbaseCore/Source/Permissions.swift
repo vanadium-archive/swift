@@ -61,23 +61,16 @@ public struct AccessList {
     return ["In": allowed, "NotIn": notAllowed]
   }
 
-  static func fromJsonable(jsonable: [String: AnyObject]) -> AccessList? {
-    // We do this funky casting structure because we want to differentiate between a map element
-    // where it's value is null (legal and happens), and non-nils where we want to return nil
-    // if it's anything other than a string array.
+  static func fromJsonable(jsonable: [String: AnyObject]) -> AccessList {
+    // In and NotIn's value are allowed to be null -- use Swift equivalent defaults of an empty
+    // array.
     var castIn = [String]()
     var castNotIn = [String]()
-    if let allowed = jsonable["In"] {
-      guard let allowedStr = allowed as? [String] else {
-        return nil
-      }
-      castIn = allowedStr
+    if let allowed = jsonable["In"] as? [String] {
+      castIn = allowed
     }
-    if let notAllowed = jsonable["In"] {
-      guard let notAllowedStr = notAllowed as? [String] else {
-        return nil
-      }
-      castNotIn = notAllowedStr
+    if let notAllowed = jsonable["NotIn"] as? [String] {
+      castNotIn = notAllowed
     }
     return AccessList(
       allowed: castIn as [BlessingPattern],

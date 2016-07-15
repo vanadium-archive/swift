@@ -191,11 +191,10 @@ public extension v23_syncbase_Permissions {
     var p = Permissions()
     for (k, v) in map {
       guard let key = k as? String,
-        jsonAcessList = v as? [String: AnyObject],
-        accessList = AccessList.fromJsonable(jsonAcessList) else {
+        jsonAcessList = v as? [String: AnyObject] else {
           throw SyncbaseError.CastError(obj: v)
       }
-      p[key] = accessList
+      p[key] = AccessList.fromJsonable(jsonAcessList)
     }
     return p
   }
