@@ -84,7 +84,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="center" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="APD-dz-sU0">
-                                <rect key="frame" x="260" y="174" width="80" height="253"/>
+                                <rect key="frame" x="260" y="224" width="80" height="152"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="180-RC-nik">
                                         <rect key="frame" x="0.0" y="0.0" width="80" height="51"/>
@@ -106,13 +106,7 @@
                                             <action selector="didPressRollDie:" destination="70a-ZD-vEg" eventType="touchUpInside" id="jDV-E7-3Ta"/>
                                         </connections>
                                     </button>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="ofb-qf-jIF">
-                                        <rect key="frame" x="30" y="202" width="20" height="51"/>
-                                    </activityIndicatorView>
                                 </subviews>
-                                <constraints>
-                                    <constraint firstItem="ofb-qf-jIF" firstAttribute="top" secondItem="W1t-Lo-OTx" secondAttribute="bottom" id="Ik5-Rh-9RQ"/>
-                                </constraints>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -129,7 +123,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="activityIndicator" destination="ofb-qf-jIF" id="iqN-ov-TiD"/>
                         <outlet property="numberLabel" destination="180-RC-nik" id="nyZ-Kj-0LD"/>
                         <segue destination="01J-lp-oVM" kind="showDetail" identifier="LogoutSegue" id="fOL-0c-Tbh"/>
                     </connections>

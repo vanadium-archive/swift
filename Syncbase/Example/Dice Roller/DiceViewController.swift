@@ -9,13 +9,11 @@ let rowKey = "result"
 
 class DiceViewController: UIViewController {
   @IBOutlet weak var numberLabel: UILabel!
-  @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   var collection: Collection?
   var currentDieRoll = UInt8(2) // The starting number from the XIB
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    activityIndicator.alpha = 0.0
 
     do {
       collection = try Syncbase.database().userdataCollection
@@ -59,10 +57,7 @@ class DiceViewController: UIViewController {
       // when we have VOM support in Swift.
       currentDieRoll = unsafeBitCast(value.bytes, UnsafePointer<UInt8>.self).memory
       numberLabel.text = currentDieRoll.description
-
-      UIView.animateWithDuration(0.35) {
-        self.activityIndicator.alpha = 0.0
-      }
+      UIApplication.sharedApplication().networkActivityIndicatorVisible = false
     }
   }
 
@@ -73,11 +68,6 @@ class DiceViewController: UIViewController {
 
   @IBAction func didPressRollDie(sender: UIButton) {
     var nextNum: UInt8
-
-    UIView.animateWithDuration(0.35) {
-      self.activityIndicator.alpha = 1.0
-    }
-
     repeat {
       nextNum = UInt8(arc4random_uniform(6) + 1)
     } while (nextNum == currentDieRoll)
@@ -87,6 +77,7 @@ class DiceViewController: UIViewController {
     // it to work properly.
     let value = NSData(bytes: &nextNum, length: 1)
     do {
+      UIApplication.sharedApplication().networkActivityIndicatorVisible = true
       try collection?.put(rowKey, value: value)
     } catch let e {
       print("Unexpected error: \(e)")

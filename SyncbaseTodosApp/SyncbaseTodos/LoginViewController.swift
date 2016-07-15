@@ -19,7 +19,11 @@ class LoginViewController: UIViewController, GIDSignInUIDelegate {
     // Advance if already logged in or we have exchangable oauth keys.
     do {
       if try Syncbase.isLoggedIn() {
-        didSignIn()
+        // If we're in viewDidLoad then we can't perform a segue just yet -- schedule it after
+        // viewDidLoad completes.
+        dispatch_async(dispatch_get_main_queue()) {
+          self.didSignIn()
+        }
         return
       }
     } catch let e {
