@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+import GoogleSignIn
 import UIKit
+import Syncbase
 
 class TodosViewController: UIViewController {
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var addButton: UIBarButtonItem!
-  // The menu toolbar is shown when the "edit" navigation bar is pressed
+  // The menu toolbar is shown when the "edit" navigation bar is pressed.
   @IBOutlet weak var menuToolbar: UIToolbar!
   @IBOutlet weak var menuToolbarTopConstraint: NSLayoutConstraint!
-  var data: [TodoList] = []
+  var handler: ModelEventHandler!
   static let dateFormatter: NSDateFormatter = {
     let dateFormatter = NSDateFormatter()
     dateFormatter.dateFormat = "MMM d"
@@ -21,62 +23,57 @@ class TodosViewController: UIViewController {
     super.viewDidLoad()
     // Hide the bottom menu by default
     menuToolbarTopConstraint.constant = -menuToolbar.frame.size.height
-    createFakeData()
-    tableView.reloadData()
+    handler = ModelEventHandler(onEvents: onEvents)
+    do {
+      try startWatching()
+    } catch {
+      print("Unable to start watch: \(error)")
+    }
   }
 
   override func viewWillAppear(animated: Bool) {
     super.viewWillAppear(animated)
+    startWatchModelEvents(handler)
     tableView.reloadData()
   }
 
-  func createFakeData() {
-    // TODO(azinman): Remove
-    data = [TodoList(name: "Nooglers Training"), TodoList(name: "Sunday BBQ Shopping")]
-    let person = Person(name: "John", imageName: "profilePhoto")
-    data[0].members = [person, person, person]
-    data[0].tasks = [
-      Task(text: "Retrieve Noogler Hat"),
-      Task(text: "Eat lunch at a cafe", done: true),
-      Task(text: "Pick up badge", done: true),
-      Task(text: "Parkin building 45", done: true),
-    ]
-
-    data[1].members = [person, person]
-    data[1].tasks = [
-      Task(text: "Apples"),
-      Task(text: "Frosted Mini Wheats", done: true),
-      Task(text: "Whole wheat bagels"),
-      Task(text: "Kale"),
-      Task(text: "Eggs", done: true),
-    ]
+  override func viewWillDisappear(animated: Bool) {
+    super.viewWillDisappear(animated)
+    stopWatchingModelEvents(handler)
   }
 
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-    // When we tap on a todo list and segue into the tasks list
+    // When we tap on a todo list and segue into the tasks list.
     if let tvc = segue.destinationViewController as? TasksViewController,
       cell = sender as? TodoListCell,
       indexPath = tableView.indexPathForCell(cell) {
-        tvc.todoList = data[indexPath.row]
+        tvc.todoList = todoLists[indexPath.row]
     }
+  }
+
+  func onEvents(events: [ModelEvent]) {
+    print("got events: \(events)")
+    tableView.reloadData()
   }
 }
 
-//Handles tableview functionality, including rendering and swipe actions. Tap actions are
-// handled directly in Main.storyboard using segues
+/// Handles tableview functionality, including rendering and swipe actions. Tap actions are
+/// handled directly in Main.storyboard using segues.
 extension TodosViewController: UITableViewDelegate, UITableViewDataSource {
   func numberOfSectionsInTableView(tableView: UITableView) -> Int {
     return 1
   }
 
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return data.count
+    return todoLists.count
   }
 
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     // TodoListCell is the prototype inside the Main.storyboard. Cannot fail.
-    let cell = tableView.dequeueReusableCellWithIdentifier(TodoListCell.todoListCellId, forIndexPath: indexPath) as! TodoListCell
-    cell.todoList = data[indexPath.row]
+    let cell = tableView.dequeueReusableCellWithIdentifier(
+      TodoListCell.todoListCellId,
+      forIndexPath: indexPath) as! TodoListCell
+    cell.todoList = todoLists[indexPath.row]
     cell.updateView()
     return cell
   }
@@ -84,8 +81,7 @@ extension TodosViewController: UITableViewDelegate, UITableViewDataSource {
   func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
     switch editingStyle {
     case .Delete:
-      data.removeAtIndex(indexPath.row)
-      tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+      deleteRow(indexPath)
     default: break
     }
   }
@@ -96,18 +92,32 @@ extension TodosViewController: UITableViewDelegate, UITableViewDataSource {
         self?.completeAllTasks(indexPath)
       }),
       UITableViewRowAction(style: .Default, title: "Delete", handler: { [weak self](action, indexPath) in
-        self?.deleteList(indexPath)
+        self?.deleteRow(indexPath)
       })
     ]
     return actions
   }
+
+  func deleteRow(indexPath: NSIndexPath) {
+    do {
+      try removeList(todoLists[indexPath.row])
+    } catch {
+      print("Unexpected error: \(error)")
+      let ac = UIAlertController(
+        title: "Oops!",
+        message: "Error deleting list. Try again.",
+        preferredStyle: .Alert)
+      ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+      self.presentViewController(ac, animated: true, completion: nil)
+    }
+  }
 }
 
-// IBActions and data modification functions
+/// IBActions and data modification functions.
 extension TodosViewController {
   @IBAction func toggleEdit() {
     // Do this manually because we're a UIViewController not a UITableViewController, so we don't
-    // get editing behavior for free
+    // get editing behavior for free.
     if tableView.editing {
       tableView.setEditing(false, animated: true)
       navigationItem.leftBarButtonItem?.title = "Edit"
@@ -123,6 +133,36 @@ extension TodosViewController {
     UIView.animateWithDuration(0.35) { self.view.layoutIfNeeded() }
   }
 
+  @IBAction func didPressAddTodoList() {
+    let ac = UIAlertController(title: "New Todo List",
+      message: "Please name your new list",
+      preferredStyle: UIAlertControllerStyle.Alert)
+    ac.addAction(UIAlertAction(title: "Create", style: UIAlertActionStyle.Default)
+      { (action: UIAlertAction) in
+        if let name = ac.textFields?.first?.text where !name.isEmpty {
+          self.addTodoList(name)
+        }
+    })
+    ac.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
+    ac.addTextFieldWithConfigurationHandler { $0.placeholder = "My New List" }
+    self.presentViewController(ac, animated: true, completion: nil)
+  }
+
+  func addTodoList(name: String) {
+    let list = TodoList(name: name)
+    do {
+      try addList(list)
+    } catch {
+      print("Error adding list: \(error)")
+      let ac = UIAlertController(
+        title: "Oops!",
+        message: "Error adding list. Try again.",
+        preferredStyle: .Alert)
+      ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+      self.presentViewController(ac, animated: true, completion: nil)
+    }
+  }
+
   @IBAction func debug() {
     // TODO(azinman): Make real
   }
@@ -132,19 +172,18 @@ extension TodosViewController {
   }
 
   func completeAllTasks(indexPath: NSIndexPath) {
-    // TODO(azinman): Make real
-    assert(data.indices.contains(indexPath.row), "data does not contain that index path")
-    let todoList = data[indexPath.row]
-    for task in todoList.tasks {
-      task.done = true
+    let todoList = todoLists[indexPath.row]
+    do {
+      try setTasksAreDone(todoList, tasks: todoList.tasks, isDone: true)
+    } catch {
+      print("Error completing all tasks: \(error)")
+      let ac = UIAlertController(
+        title: "Oops!",
+        message: "Error completing all tasks. Try again.",
+        preferredStyle: .Alert)
+      ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+      presentViewController(ac, animated: true, completion: nil)
     }
-    tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-  }
-
-  func deleteList(indexPath: NSIndexPath) {
-    // TODO(azinman): Make real
-    data.removeAtIndex(indexPath.row)
-    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
   }
 }
 
@@ -155,11 +194,10 @@ class TodoListCell: UITableViewCell {
   @IBOutlet weak var memberView: MemberView!
   @IBOutlet weak var lastModifiedLabel: UILabel!
   static let todoListCellId = "todoListCellId"
-  var todoList = TodoList()
+  var todoList: TodoList!
 
-  // Fills in the iboutlets with data from todoList local property.
-  // memberView has it's only render method that draws out the photos of the members in this todo
-  // list.
+  /// Fills in the iboutlets with data from todoList local property. memberView has it's only render
+  /// method that draws out the photos of the members in this todo list.
   func updateView() {
     if todoList.isComplete() {
       // Draw a strikethrough
@@ -171,7 +209,11 @@ class TodoListCell: UITableViewCell {
     } else {
       titleLabel.text = todoList.name
     }
-    completedLabel.text = "\(todoList.numberTasksComplete())/\(todoList.tasks.count) completed"
+    if todoList.tasks.isEmpty {
+      completedLabel.text = "No tasks"
+    } else {
+      completedLabel.text = "\(todoList.numberTasksComplete())/\(todoList.tasks.count) completed"
+    }
     lastModifiedLabel.text = TodosViewController.dateFormatter.stringFromDate(todoList.updatedAt)
     // Draw the photos of list members
     memberView.todoList = todoList

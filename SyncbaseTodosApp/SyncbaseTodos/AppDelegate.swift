@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 
 import GoogleSignIn
-import UIKit
 import Syncbase
+import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -22,9 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       // Craft a blessing prefix using google sign-in and the dev.v.io blessings provider.
       defaultBlessingStringPrefix: "dev.v.io:o:\(clientID):",
       // Cloud mount-point.
-      mountPoints: ["/ns.dev.v.io:8101/tmp/todos/users/"],
-      // TODO(zinman): Remove this once we have create-or-join implemented.
-      disableUserdataSyncgroup: true)
+      // TODO(mrschmidt): Remove the ios-specific portion of mountpoint when VOM is implemented.
+      mountPoints: ["/ns.dev.v.io:8101/tmp/ios/todos/users/"])
     return true
   }
 
@@ -53,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   func applicationWillTerminate(application: UIApplication) {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    Syncbase.shutdown()
   }
 }
 

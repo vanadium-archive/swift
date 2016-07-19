@@ -37,20 +37,20 @@ public func == (lhs: SyncgroupInviteHandler, rhs: SyncgroupInviteHandler) -> Boo
 public struct WatchChangeHandler: Hashable, Equatable {
   /// Called once, when a watch change handler is added, to provide the initial state of the
   /// values being watched.
-  public let onInitialState: [WatchChange] -> Void
+  public let onInitialState: ([WatchChange] -> Void)?
 
   /// Called whenever a batch of changes is committed to the database. Individual puts/deletes
   /// surface as a single-change batch.
-  public let onChangeBatch: [WatchChange] -> Void
+  public let onChangeBatch: ([WatchChange] -> Void)?
 
   /// Called when an error occurs while watching for changes. Once `onError` is called,
   /// no other methods will be called on this handler.
-  public let onError: ErrorType -> Void
+  public let onError: (ErrorType -> Void)?
 
   public init(
-    onInitialState: [WatchChange] -> Void,
-    onChangeBatch: [WatchChange] -> Void,
-    onError: ErrorType -> Void) {
+    onInitialState: ([WatchChange] -> Void)?,
+    onChangeBatch: ([WatchChange] -> Void)?,
+    onError: (ErrorType -> Void)?) {
       self.onInitialState = onInitialState
       self.onChangeBatch = onChangeBatch
       self.onError = onError
@@ -432,11 +432,11 @@ public class Database: DatabaseHandle, CustomStringConvertible {
                 // mitigate against out-of-order events should Syncbase.queue be a concurrent queue
                 // rather than a serial queue.
                 dispatch_sync(Syncbase.queue, {
-                  handler.onInitialState(batch)
+                  handler.onInitialState?(batch)
                 })
               } else if !batch.isEmpty {
                 dispatch_sync(Syncbase.queue, {
-                  handler.onChangeBatch(batch)
+                  handler.onChangeBatch?(batch)
                 })
               }
               batch.removeAll()
@@ -445,7 +445,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
           // Notify of error if we're permitted (not canceled).
           if var err = stream.err() where !isCanceled {
             dispatch_sync(Syncbase.queue, {
-              handler.onError(SyncbaseError(coreError: err))
+              handler.onError?(SyncbaseError(coreError: err))
             })
           }
           // Cleanup

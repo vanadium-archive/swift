@@ -20,7 +20,7 @@ public enum SyncbaseError: ErrorType {
   case ReadOnlyBatch
   case ConcurrentBatch
   case BlobNotCommitted
-  case SyncgroupJoinFailed
+  case SyncgroupJoinFailed(detail: String)
   case BadExecStreamHeader
   case InvalidPermissionsChange
   case Exist
@@ -46,7 +46,7 @@ public enum SyncbaseError: ErrorType {
     case .ReadOnlyBatch: self = .ReadOnlyBatch
     case .ConcurrentBatch: self = .ConcurrentBatch
     case .BlobNotCommitted: self = .BlobNotCommitted
-    case .SyncgroupJoinFailed: self = .SyncgroupJoinFailed
+    case .SyncgroupJoinFailed(let detail): self = .SyncgroupJoinFailed(detail: detail)
     case .BadExecStreamHeader: self = .BadExecStreamHeader
     case .InvalidPermissionsChange: self = .InvalidPermissionsChange
     case .Exist: self = .Exist
@@ -92,7 +92,7 @@ extension SyncbaseError: CustomStringConvertible {
     case .ReadOnlyBatch: return "Batch is read-only"
     case .ConcurrentBatch: return "Concurrent batch"
     case .BlobNotCommitted: return "Blob is not yet committed"
-    case .SyncgroupJoinFailed: return "Syncgroup join failed"
+    case .SyncgroupJoinFailed(let detail): return "Syncgroup join failed: \(detail)"
     case .BadExecStreamHeader: return "Exec stream header improperly formatted"
     case .InvalidPermissionsChange: return "The sequence of permission changes is invalid"
     case .Exist: return "Already exists"

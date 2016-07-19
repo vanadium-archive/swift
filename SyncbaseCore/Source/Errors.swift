@@ -15,7 +15,7 @@ public enum SyncbaseError: ErrorType, CustomStringConvertible {
   case ReadOnlyBatch
   case ConcurrentBatch
   case BlobNotCommitted
-  case SyncgroupJoinFailed
+  case SyncgroupJoinFailed(detail: String)
   case BadExecStreamHeader
   case InvalidPermissionsChange
   case Exist
@@ -41,7 +41,7 @@ public enum SyncbaseError: ErrorType, CustomStringConvertible {
     case "v.io/v23/services/syncbase.ReadOnlyBatch": self = SyncbaseError.ReadOnlyBatch
     case "v.io/v23/services/syncbase.ConcurrentBatch": self = SyncbaseError.ConcurrentBatch
     case "v.io/v23/services/syncbase.BlobNotCommitted": self = SyncbaseError.BlobNotCommitted
-    case "v.io/v23/services/syncbase.SyncgroupJoinFailed": self = SyncbaseError.SyncgroupJoinFailed
+    case "v.io/v23/services/syncbase.SyncgroupJoinFailed": self = SyncbaseError.SyncgroupJoinFailed(detail: err.msg)
     case "v.io/v23/services/syncbase.BadExecStreamHeader": self = SyncbaseError.BadExecStreamHeader
     case "v.io/v23/services/syncbase.InvalidPermissionsChange": self = SyncbaseError.InvalidPermissionsChange
     case "v.io/v23/verror.Exist": self = SyncbaseError.Exist
@@ -63,7 +63,7 @@ public enum SyncbaseError: ErrorType, CustomStringConvertible {
     case .ReadOnlyBatch: return "Batch is read-only"
     case .ConcurrentBatch: return "Concurrent batch"
     case .BlobNotCommitted: return "Blob is not yet committed"
-    case .SyncgroupJoinFailed: return "Syncgroup join failed"
+    case .SyncgroupJoinFailed(let detail): return "Syncgroup join failed: \(detail)"
     case .BadExecStreamHeader: return "Exec stream header improperly formatted"
     case .InvalidPermissionsChange: return "The sequence of permission changes is invalid"
     case .NoExist: return "Does not exist"

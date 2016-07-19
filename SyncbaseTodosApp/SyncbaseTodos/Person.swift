@@ -4,15 +4,27 @@
 
 import Foundation
 
-// All of this is trash to be replaced by syncbase model
-class Person {
+final class Person: Jsonable {
   var name: String = ""
-  var imageName: String = ""
+  var imageRef: String = ""
   var email: String = ""
 
-  convenience init(name: String, imageName: String) {
-    self.init()
+  init(name: String, imageRef: String, email: String) {
     self.name = name
-    self.imageName = imageName
+    self.imageRef = imageRef
+    self.email = email
+  }
+
+  func toJsonable() -> [String: AnyObject] {
+    return ["name": name, "imageRef": imageRef, "email": email]
+  }
+
+  static func fromJsonable(data: [String: AnyObject]) -> Person? {
+    guard let name = data["name"] as? String,
+      imageRef = data["imageRef"] as? String,
+      email = data["email"] as? String else {
+        return nil
+    }
+    return Person(name: name, imageRef: imageRef, email: email)
   }
 }

@@ -215,6 +215,9 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="mjQ-zJ-bqJ">
                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="didPressAddTodoList" destination="4Az-YS-hA9" id="3sh-hT-J0z"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
@@ -317,7 +320,7 @@
                                                     </constraints>
                                                     <state key="normal" image="checkmarkOff"/>
                                                     <connections>
-                                                        <action selector="toggleComplete" destination="3XL-e6-zxp" eventType="touchUpInside" id="ShA-fQ-Ywv"/>
+                                                        <action selector="toggleIsDone:" destination="9RW-nK-7je" eventType="touchUpInside" id="g1i-qU-2OC"/>
                                                     </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Retrieve noogler hat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IFI-3u-8gC">

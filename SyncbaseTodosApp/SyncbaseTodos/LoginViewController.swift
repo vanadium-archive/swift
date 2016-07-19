@@ -26,8 +26,8 @@ class LoginViewController: UIViewController, GIDSignInUIDelegate {
         }
         return
       }
-    } catch let e {
-      print("Syncbase error: \(e) ")
+    } catch {
+      print("Syncbase error: \(error) ")
     }
     if GIDSignIn.sharedInstance().hasAuthInKeychain() {
       showSpinner()
@@ -58,6 +58,11 @@ class LoginViewController: UIViewController, GIDSignInUIDelegate {
     ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
     presentViewController(ac, animated: true, completion: nil)
   }
+
+  func signIn(signIn: GIDSignIn!, presentViewController viewController: UIViewController!) {
+    showSpinner()
+    presentViewController(viewController, animated: true, completion: nil)
+  }
 }
 
 extension LoginViewController: GIDSignInDelegate {
@@ -75,6 +80,12 @@ extension LoginViewController: GIDSignInDelegate {
 
       Syncbase.login(GoogleOAuthCredentials(token: user.authentication.accessToken)) { err in
         if err == nil {
+          let imageURL = user.profile.imageURLWithDimension(160)
+          do {
+            try setUserPhotoURL(imageURL)
+          } catch {
+            print("Unexpected error: \(error)")
+          }
           self.didSignIn()
         } else {
           print("Unable to login to Syncbase: \(err) ")

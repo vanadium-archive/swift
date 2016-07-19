@@ -29,8 +29,8 @@ class InviteViewController: UITableViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     initSearchController()
-    createFakeData()
-    tableView.reloadData()
+//    createFakeData()
+//    tableView.reloadData()
   }
 
   func initSearchController() {
@@ -44,30 +44,30 @@ class InviteViewController: UITableViewController {
     definesPresentationContext = true
   }
 
-  func createFakeData() {
-    // TODO(azinman): Remove.
-    people.insert([
-      Person(name: "Lady Rainicorn", imageName: "profilePhoto"),
-      Person(name: "Princess Bubblegum", imageName: "profilePhoto"),
-      Person(name: "Ice King", imageName: "profilePhoto")
-      ],
-      atIndex: Category.NearbyContacts.rawValue
-    )
-
-    people.insert([
-      Person(name: "Gunter", imageName: "profilePhoto"),
-      Person(name: "dayang@google.com", imageName: "profilePhoto"),
-      Person(name: "Tom", imageName: "profilePhoto"),
-      ],
-      atIndex: Category.Nearby.rawValue
-    )
-
-    people.insert([
-      Person(name: "Lady Rainicorn", imageName: "profilePhoto"),
-      ],
-      atIndex: Category.Contacts.rawValue
-    )
-  }
+//  func createFakeData() {
+//    // TODO(azinman): Remove.
+//    people.insert([
+//      Person(name: "Lady Rainicorn", imageName: "profilePhoto"),
+//      Person(name: "Princess Bubblegum", imageName: "profilePhoto"),
+//      Person(name: "Ice King", imageName: "profilePhoto")
+//      ],
+//      atIndex: Category.NearbyContacts.rawValue
+//    )
+//
+//    people.insert([
+//      Person(name: "Gunter", imageName: "profilePhoto"),
+//      Person(name: "dayang@google.com", imageName: "profilePhoto"),
+//      Person(name: "Tom", imageName: "profilePhoto"),
+//      ],
+//      atIndex: Category.Nearby.rawValue
+//    )
+//
+//    people.insert([
+//      Person(name: "Lady Rainicorn", imageName: "profilePhoto"),
+//      ],
+//      atIndex: Category.Contacts.rawValue
+//    )
+//  }
 
   override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
     if searchController.active && !searchResultsFound {
@@ -150,8 +150,7 @@ class InviteViewController: UITableViewController {
       let validEmail = NSPredicate(format: "SELF MATCHES %@", emailRegEx).evaluateWithObject(text)
       if validEmail {
         // Create new person with this email.
-        personToInvite = Person()
-        personToInvite?.email = text
+        personToInvite = Person(name: "", imageRef: "", email: text)
       } else {
         // Invalid email, show alert.
         let alert = UIAlertController(title: "Invalid email",
@@ -207,9 +206,9 @@ class PersonCell: UITableViewCell {
 
   func updateView() {
     nameLabel.text = person?.name
-    if let imageName = person?.imageName {
-      photoImageView.image = UIImage(named: imageName)
-    }
+//    if let imageName = person?.imageName {
+//      photoImageView.image = UIImage(named: imageName)
+//    }
   }
 }
 

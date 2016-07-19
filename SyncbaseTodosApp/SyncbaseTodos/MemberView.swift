@@ -13,15 +13,16 @@ class MemberView: UIView {
     for view in subviews {
       view.removeFromSuperview()
     }
-    if let list = todoList {
-      var x: CGFloat = 0
-      // Create and add a photo circle for all members
-      for member in list.members {
-        let profilePhoto = imageFactory(member.imageName, offset: x)
-        insertSubview(profilePhoto, atIndex: 0)
-        x += profilePhoto.frame.size.width - profilePhoto.frame.size.width * 0.25
-      }
-    }
+// TODO(zinman): Uncomment & fix when we get photos for members.
+//    if let list = todoList {
+//      var x: CGFloat = 0
+//      // Create and add a photo circle for all members
+//      for member in list.members {
+//        let profilePhoto = imageFactory(member.imageName, offset: x)
+//        insertSubview(profilePhoto, atIndex: 0)
+//        x += profilePhoto.frame.size.width - profilePhoto.frame.size.width * 0.25
+//      }
+//    }
   }
 
   func imageFactory(imageName: String, offset: CGFloat) -> UIImageView {

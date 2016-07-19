@@ -14,7 +14,8 @@ class TasksViewController: UIViewController {
   let taskCellId = "taskCellId"
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var addButton: UIBarButtonItem!
-  var todoList = TodoList() // Set by segue from TodosViewController
+  var todoList: TodoList! // Set by segue from TodosViewController
+  var handler: ModelEventHandler!
   static let dateFormatter: NSDateFormatter = {
     let dateFormatter = NSDateFormatter()
     dateFormatter.dateFormat = "MMM d"
@@ -24,14 +25,28 @@ class TasksViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     title = todoList.name
+    handler = ModelEventHandler(onEvents: onEvents)
+    tableView.reloadData()
+  }
+
+  override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
+    startWatchModelEvents(handler)
+  }
+
+  override func viewWillDisappear(animated: Bool) {
+    super.viewWillDisappear(animated)
+    stopWatchingModelEvents(handler)
+  }
+
+  func onEvents(events: [ModelEvent]) {
+    print("got events: \(events)")
     tableView.reloadData()
   }
 }
 
-/*
- * Handles tableview functionality, including rendering and swipe actions. Tap actions are
- * handled directly in Main.storyboard using segues
- */
+/// Handles tableview functionality, including rendering and swipe actions. Tap actions are
+/// handled directly in Main.storyboard using segues.
 extension TasksViewController: UITableViewDataSource, UITableViewDelegate {
   func numberOfSectionsInTableView(tableView: UITableView) -> Int {
     return 2
@@ -62,7 +77,18 @@ extension TasksViewController: UITableViewDataSource, UITableViewDelegate {
 
   func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
     if editingStyle == .Delete {
-      self.deleteTask(indexPath)
+      let task = todoList.tasks[indexPath.row]
+      do {
+        try removeTask(todoList, task: task)
+      } catch {
+        print("Unexpected error: \(error)")
+        let ac = UIAlertController(
+          title: "Oops!",
+          message: "Error deleting task. Try again.",
+          preferredStyle: .Alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+        presentViewController(ac, animated: true, completion: nil)
+      }
     }
   }
 
@@ -75,9 +101,7 @@ extension TasksViewController: UITableViewDataSource, UITableViewDelegate {
   }
 }
 
-/*
- * IBActions and data modification functions
- */
+/// IBActions and data modification functions.
 extension TasksViewController {
   @IBAction func toggleEdit() {
     // Do this manually because we're a UIViewController not a UITableViewController, so we don't
@@ -100,32 +124,50 @@ extension TasksViewController {
     alert.addTextFieldWithConfigurationHandler { (textField) in }
     alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
     alert.addAction(UIAlertAction(title: "Add", style: .Default, handler: { [weak self] action in
-      if let field = alert.textFields?.first, text = field.text {
-        self?.addTask(text)
+      if let field = alert.textFields?.first,
+        text = field.text,
+        todoList = self?.todoList {
+          let task = Task(text: text)
+          do {
+            try addTask(todoList, task: task)
+          } catch {
+            print("Unexpected error: \(error)")
+            let ac = UIAlertController(
+              title: "Oops!",
+              message: "Error adding task. Try again.",
+              preferredStyle: .Alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+            self?.presentViewController(ac, animated: true, completion: nil)
+          }
       }
       }))
     presentViewController(alert, animated: true, completion: nil)
   }
 
-  func addTask(text: String) {
-    // TODO(azinman): Make real
-    let task = Task(text: text)
-    todoList.tasks.insert(task, atIndex: 0)
-    tableView.insertRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: Section.Tasks.rawValue)], withRowAnimation: .Automatic)
-  }
-
-  func deleteTask(indexPath: NSIndexPath) {
-    todoList.tasks.removeAtIndex(indexPath.row)
-    tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+  @IBAction func toggleIsDone(sender: UIButton) {
+    if let contentView = sender.superview,
+      let taskCell = contentView.superview as? TaskCell {
+        do {
+          try setTaskIsDone(todoList, task: taskCell.task, isDone: !taskCell.task.done)
+        } catch {
+          print("Unexpected error: \(error)")
+          let ac = UIAlertController(
+            title: "Oops!",
+            message: "Error marking done. Try again.",
+            preferredStyle: .Alert)
+          ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+          presentViewController(ac, animated: true, completion: nil)
+        }
+    }
   }
 }
 
-// Displays the memebers of the todo list as photos and an invite button to launch the invite flow
+/// Displays the memebers of the todo list as photos and an invite button to launch the invite flow.
 class InviteCell: UITableViewCell {
   @IBOutlet weak var memberView: MemberView!
   var todoList: TodoList?
 
-  // Member view has its own render method that draws the member photos
+  // Member view has its own render method that draws the member photos.
   func updateView() {
     selectionStyle = .None
     memberView.todoList = todoList
@@ -139,7 +181,8 @@ class TaskCell: UITableViewCell {
   @IBOutlet weak var completeButton: UIButton!
   @IBOutlet weak var taskNameLabel: UILabel!
   @IBOutlet weak var addedAtLabel: UILabel!
-  var task = Task(text: "default")
+  weak var delegate: TasksViewController!
+  var task: Task!
 
   func updateView() {
     selectionStyle = .None
@@ -165,10 +208,5 @@ class TaskCell: UITableViewCell {
     } else {
       completeButton.setImage(UIImage(named: "checkmarkOff"), forState: .Normal)
     }
-  }
-
-  @IBAction func toggleComplete() {
-    task.done = !task.done
-    updateView()
   }
 }

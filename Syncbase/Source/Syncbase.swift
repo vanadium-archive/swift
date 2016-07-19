@@ -26,7 +26,6 @@ public enum Syncbase {
   static var disableSyncgroupPublishing = false
   static var disableUserdataSyncgroup = false
   static var mountPoints = ["/ns.dev.v.io:8101/tmp/todos/users/"]
-  static var rootDir = Syncbase.defaultRootDir
   /// Queue used to dispatch all asynchronous callbacks. Defaults to main.
   public static var queue: dispatch_queue_t {
     // Map directly to SyncbaseCore.
@@ -84,7 +83,6 @@ public enum Syncbase {
         throw SyncbaseError.AlreadyConfigured
       }
       Syncbase.adminUserId = adminUserId
-      Syncbase.rootDir = rootDir
       Syncbase.mountPoints = mountPoints
       Syncbase.defaultBlessingStringPrefix = defaultBlessingStringPrefix
       Syncbase.disableSyncgroupPublishing = disableSyncgroupPublishing
@@ -94,7 +92,7 @@ public enum Syncbase {
       // We don't need to set Syncbase.queue as it is a proxy for SyncbaseCore's queue, which is
       // set in the configure below.
       try SyncbaseError.wrap {
-        try SyncbaseCore.Syncbase.configure(rootDir: Syncbase.rootDir, queue: queue)
+        try SyncbaseCore.Syncbase.configure(rootDir: rootDir, queue: queue)
       }
       // We use SyncbaseCore's isLoggedIn because this frameworks would fail as didInit hasn't
       // been set to true yet.
@@ -161,13 +159,16 @@ public enum Syncbase {
       guard let row = change.row where change.entityType == .Row && change.changeType == .Put else {
         continue
       }
+      guard let syncgroupId = try? Identifier.decode(
+        row.stringByReplacingOccurrencesOfString(Syncbase.UserdataCollectionPrefix, withString: "")) else {
+          print("Syncbase - Unable to decode userdata key: (row)")
+          continue
+      }
       do {
-        let syncgroupId = try Identifier.decode(
-          row.stringByReplacingOccurrencesOfString(Syncbase.UserdataCollectionPrefix, withString: ""))
         let syncgroup = try Syncbase.database().syncgroup(syncgroupId)
         try syncgroup.join()
-      } catch let e {
-        NSLog("Syncbase - Error joining syncgroup: %@", "\(e)")
+      } catch {
+        NSLog("Syncbase - Error joining syncgroup \(syncgroupId): %@", "\(error)")
       }
     }
   }

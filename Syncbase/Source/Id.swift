@@ -41,11 +41,10 @@ public struct Identifier: Hashable {
   }
 
   public var hashValue: Int {
-    // Note: Copied from VDL.
     var result = 1
     let prime = 31
-    result = prime * result + blessing.hashValue
-    result = prime * result + name.hashValue
+    result = prime &* result &+ blessing.hashValue
+    result = prime &* result &+ name.hashValue
     return result
   }
 
