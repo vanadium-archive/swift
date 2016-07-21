@@ -24,6 +24,7 @@
 		938DEA891D0F3FD4003C9734 /* BasicDatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938DEA871D0F3FC7003C9734 /* BasicDatabaseTests.swift */; };
 		938DEA8B1D107078003C9734 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938DEA8A1D107078003C9734 /* TestHelpers.swift */; };
 		938DEA9F1D12257E003C9734 /* OAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 938DEA9E1D12257E003C9734 /* OAuth.swift */; };
+		93971D041D3F4D0E00FE4033 /* StressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93971D031D3F4D0E00FE4033 /* StressTests.swift */; };
 		93D90C4D1D080E18004A8E72 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D90C4C1D080E18004A8E72 /* Error.swift */; };
 		93D90C591D08BD6E004A8E72 /* SyncbaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D90C561D08BD62004A8E72 /* SyncbaseCore.framework */; };
 /* End PBXBuildFile section */
@@ -73,6 +74,7 @@
 		938DEA871D0F3FC7003C9734 /* BasicDatabaseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicDatabaseTests.swift; sourceTree = "<group>"; };
 		938DEA8A1D107078003C9734 /* TestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		938DEA9E1D12257E003C9734 /* OAuth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuth.swift; sourceTree = "<group>"; };
+		93971D031D3F4D0E00FE4033 /* StressTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StressTests.swift; sourceTree = "<group>"; };
 		93D90C4C1D080E18004A8E72 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		93D90C501D08BD61004A8E72 /* SyncbaseCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SyncbaseCore.xcodeproj; path = ../SyncbaseCore/SyncbaseCore.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -145,6 +147,7 @@
 				9374F6941D010751004ECE59 /* Info.plist */,
 				938DEA871D0F3FC7003C9734 /* BasicDatabaseTests.swift */,
 				938DEA8A1D107078003C9734 /* TestHelpers.swift */,
+				93971D031D3F4D0E00FE4033 /* StressTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -311,6 +314,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				938DEA891D0F3FD4003C9734 /* BasicDatabaseTests.swift in Sources */,
+				93971D041D3F4D0E00FE4033 /* StressTests.swift in Sources */,
 				938DEA8B1D107078003C9734 /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
