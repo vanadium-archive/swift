@@ -352,7 +352,7 @@ public class Collection {
   private static func encodedName(databaseId: Identifier, collectionId: Identifier) throws -> String {
     var cStr = v23_syncbase_String()
     v23_syncbase_NamingJoin(
-      v23_syncbase_Strings([try databaseId.encodeId(), try collectionId.encodeId()]),
+      v23_syncbase_Strings([try databaseId.encode(), try collectionId.encode()]),
       &cStr)
     return cStr.toString()!
   }

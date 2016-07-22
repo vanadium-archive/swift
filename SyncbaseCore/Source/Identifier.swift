@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct Identifier {
+public struct Identifier: Equatable {
   public let name: String
   public let blessing: String
 
@@ -13,11 +13,21 @@ public struct Identifier {
     self.blessing = blessing
   }
 
-  func encodeId() throws -> v23_syncbase_String {
+  /// ***Advanced users only*** encodes this identifier as needed for low-level Syncbase APIs.
+  public func encode() throws -> v23_syncbase_String {
     var cStr = v23_syncbase_String()
     let id = try v23_syncbase_Id(self)
     v23_syncbase_EncodeId(id, &cStr)
     return cStr
+  }
+
+  /// ***Advanced users only*** decodes an identifier as returned from low-level Syncbase APIs.
+  public static func decode(encodedId: String) throws -> Identifier {
+    var cId = v23_syncbase_Id()
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_DecodeId(try v23_syncbase_String(encodedId), &cId, errPtr)
+    }
+    return cId.toIdentifier()!
   }
 }
 

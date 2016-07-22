@@ -77,3 +77,14 @@ extension XCTestCase {
     }
   }
 }
+
+// This class serves as a base class to inherit -- it doesn't have any tests itself.
+class SyncgroupTest: XCTestCase {
+  override class func setUp() {
+    configureDb(disableUserdataSyncgroup: false, disableSyncgroupPublishing: true)
+  }
+
+  override class func tearDown() {
+    Syncbase.shutdown()
+  }
+}

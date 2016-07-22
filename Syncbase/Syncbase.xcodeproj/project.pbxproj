@@ -14,7 +14,7 @@
 		9374F6AF1D01081D004ECE59 /* Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6A41D01081D004ECE59 /* Collection.swift */; };
 		9374F6B01D01081D004ECE59 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6A51D01081D004ECE59 /* Database.swift */; };
 		9374F6B11D01081D004ECE59 /* DatabaseHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6A61D01081D004ECE59 /* DatabaseHandle.swift */; };
-		9374F6B21D01081D004ECE59 /* Id.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6A71D01081D004ECE59 /* Id.swift */; };
+		9374F6B21D01081D004ECE59 /* Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6A71D01081D004ECE59 /* Identifier.swift */; };
 		9374F6B31D01081D004ECE59 /* Syncbase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6A81D01081D004ECE59 /* Syncbase.swift */; };
 		9374F6B41D01081D004ECE59 /* Syncgroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6A91D01081D004ECE59 /* Syncgroup.swift */; };
 		9374F6B51D01081D004ECE59 /* SyncgroupInvite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9374F6AA1D01081D004ECE59 /* SyncgroupInvite.swift */; };
@@ -64,7 +64,7 @@
 		9374F6A41D01081D004ECE59 /* Collection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Collection.swift; sourceTree = "<group>"; };
 		9374F6A51D01081D004ECE59 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		9374F6A61D01081D004ECE59 /* DatabaseHandle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseHandle.swift; sourceTree = "<group>"; };
-		9374F6A71D01081D004ECE59 /* Id.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Id.swift; sourceTree = "<group>"; };
+		9374F6A71D01081D004ECE59 /* Identifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Identifier.swift; sourceTree = "<group>"; };
 		9374F6A81D01081D004ECE59 /* Syncbase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Syncbase.swift; sourceTree = "<group>"; };
 		9374F6A91D01081D004ECE59 /* Syncgroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Syncgroup.swift; sourceTree = "<group>"; };
 		9374F6AA1D01081D004ECE59 /* SyncgroupInvite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncgroupInvite.swift; sourceTree = "<group>"; };
@@ -128,7 +128,7 @@
 				9374F6A51D01081D004ECE59 /* Database.swift */,
 				9374F6A61D01081D004ECE59 /* DatabaseHandle.swift */,
 				93D90C4C1D080E18004A8E72 /* Error.swift */,
-				9374F6A71D01081D004ECE59 /* Id.swift */,
+				9374F6A71D01081D004ECE59 /* Identifier.swift */,
 				9374F68F1D01074B004ECE59 /* Info.plist */,
 				938DEA9E1D12257E003C9734 /* OAuth.swift */,
 				9374F6901D01074B004ECE59 /* Syncbase.h */,
@@ -296,7 +296,7 @@
 				938DEA9F1D12257E003C9734 /* OAuth.swift in Sources */,
 				9374F6AF1D01081D004ECE59 /* Collection.swift in Sources */,
 				9374F6B11D01081D004ECE59 /* DatabaseHandle.swift in Sources */,
-				9374F6B21D01081D004ECE59 /* Id.swift in Sources */,
+				9374F6B21D01081D004ECE59 /* Identifier.swift in Sources */,
 				93D90C4D1D080E18004A8E72 /* Error.swift in Sources */,
 				938DEA861D0BAE57003C9734 /* Blessing.swift in Sources */,
 				9374F6B51D01081D004ECE59 /* SyncgroupInvite.swift in Sources */,

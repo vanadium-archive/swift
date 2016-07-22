@@ -45,7 +45,7 @@ public class Database {
   init(databaseId: Identifier, batchHandle: String?) throws {
     self.databaseId = databaseId
     self.batchHandle = batchHandle
-    self.encodedDatabaseName = try databaseId.encodeId().toString()!
+    self.encodedDatabaseName = try databaseId.encode().toString()!
   }
 
   /// Create creates this Database.

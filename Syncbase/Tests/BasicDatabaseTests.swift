@@ -107,16 +107,6 @@ class AdvertiseScanTests: XCTestCase {
   }
 }
 
-class SyncgroupTest: XCTestCase {
-  override class func setUp() {
-    configureDb(disableUserdataSyncgroup: false, disableSyncgroupPublishing: true)
-  }
-
-  override class func tearDown() {
-    Syncbase.shutdown()
-  }
-}
-
 class UserdataTest: SyncgroupTest {
   func testUserdata() {
     withDb { db in

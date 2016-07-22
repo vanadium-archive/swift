@@ -21,23 +21,13 @@ public struct Identifier: Hashable {
   }
 
   public func encode() throws -> String {
-    var cStr = v23_syncbase_String()
-    let id = try v23_syncbase_Id(toCore())
-    v23_syncbase_EncodeId(id, &cStr)
-    // If there was a UTF-8 problem, it would have been thrown when UTF-8 encoding the id above.
-    // Therefore, we can be confident in unwrapping the conditional here.
-    return cStr.toString()!
+    // If there was a UTF-8 problem, it would have been thrown when UTF-8 encoding core's call
+    // to CGO. Therefore, we can be confident in unwrapping the conditional here.
+    return try toCore().encode().toString()!
   }
 
-  // TODO(zinman): Replace decode method implementations with call to Cgo.
-  static let separator = ","
   public static func decode(encodedId: String) throws -> Identifier {
-    let parts = encodedId.componentsSeparatedByString(separator)
-    if parts.count != 2 {
-      throw SyncbaseError.IllegalArgument(detail: "Invalid encoded id: \(encodedId)")
-    }
-    let (blessing, name) = (parts[0], parts[1])
-    return Identifier(name: name, blessing: blessing)
+    return Identifier(coreId: try SyncbaseCore.Identifier.decode(encodedId))
   }
 
   public var hashValue: Int {
