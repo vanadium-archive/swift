@@ -69,8 +69,8 @@ public enum SyncbaseError: ErrorType {
       throw SyncbaseError(coreError: e)
     } catch let e as VError {
       throw SyncbaseError.UnknownVError(err: e)
-    } catch let e {
-      throw SyncbaseError.UnknownError(err: e)
+    } catch {
+      throw SyncbaseError.UnknownError(err: error)
     }
   }
 }

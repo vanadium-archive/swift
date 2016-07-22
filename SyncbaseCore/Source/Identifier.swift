@@ -27,7 +27,7 @@ public struct Identifier: Equatable {
     try VError.maybeThrow { errPtr in
       v23_syncbase_DecodeId(try v23_syncbase_String(encodedId), &cId, errPtr)
     }
-    return cId.toIdentifier()!
+    return cId.extract()!
   }
 }
 

@@ -80,16 +80,16 @@ public enum Neighborhood {
             onPeer: { Neighborhood.onPeer($0, peer: $1) }),
           errPtr)
       }
-    } catch let e {
+    } catch {
       unmanaged.release()
-      throw e
+      throw error
     }
   }
 
   static func onPeer(handle: v23_syncbase_Handle, peer: v23_syncbase_AppPeer) {
     let handle = Unmanaged<NeighborhoodScanHandler>.fromOpaque(
       COpaquePointer(bitPattern: handle)).takeUnretainedValue()
-    let peer = peer.toNeighborhoodPeer()
+    let peer = peer.extract()
     handle.onPeer(peer)
   }
 

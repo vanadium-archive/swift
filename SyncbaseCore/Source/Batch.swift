@@ -35,9 +35,9 @@ public enum Batch {
             err = nil
           } catch SyncbaseError.ConcurrentBatch {
             continue
-          } catch let e {
-            log.warning("Unable to complete batch operation: \(e)")
-            err = e
+          } catch {
+            log.warning("Unable to complete batch operation: \(error)")
+            err = error
           }
           dispatch_async(Syncbase.queue) {
             completionHandler(err)
@@ -75,9 +75,9 @@ public enum Batch {
           return
         } catch SyncbaseError.ConcurrentBatch {
           continue
-        } catch let e {
-          log.warning("Unable to complete batch operation: \(e)")
-          throw e
+        } catch {
+          log.warning("Unable to complete batch operation: \(error)")
+          throw error
         }
       }
       // We never were able to do it without error.
@@ -92,8 +92,8 @@ public enum Batch {
       if !commitCalled {
         do {
           try batchDb.abort()
-        } catch let e {
-          log.warning("Unable abort the non-comitted batch: \(e)")
+        } catch {
+          log.warning("Unable abort the non-comitted batch: \(error)")
         }
       }
     }

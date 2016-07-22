@@ -23,7 +23,7 @@ public struct Identifier: Hashable {
   public func encode() throws -> String {
     // If there was a UTF-8 problem, it would have been thrown when UTF-8 encoding core's call
     // to CGO. Therefore, we can be confident in unwrapping the conditional here.
-    return try toCore().encode().toString()!
+    return try toCore().encode().extract()!
   }
 
   public static func decode(encodedId: String) throws -> Identifier {

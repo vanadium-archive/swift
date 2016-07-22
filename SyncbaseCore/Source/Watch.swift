@@ -211,9 +211,9 @@ enum Watch {
             callbacks,
             errPtr)
         }
-      } catch let e {
+      } catch {
         unmanaged.release()
-        throw e
+        throw error
       }
       return AnonymousStream(
         fetchNextFunction: handle.fetchNext,
@@ -229,7 +229,7 @@ enum Watch {
   // Callback handlers that convert the Cgo bridge types to native Swift types and pass them to
   // the functions inside the passed handle.
   private static func onWatchChange(handle: v23_syncbase_Handle, change: v23_syncbase_WatchChange) {
-    let change = change.toWatchChange()
+    let change = change.extract()
     let handle = Unmanaged<Watch.Handle>.fromOpaque(
       COpaquePointer(bitPattern: handle)).takeUnretainedValue()
     handle.onChange(change)
@@ -237,7 +237,7 @@ enum Watch {
 
   private static func onWatchError(handle: v23_syncbase_Handle, err: v23_syncbase_VError) {
     var e = SyncbaseError.InvalidOperation(reason: "A watch error occurred")
-    if let verr: VError = err.toVError() {
+    if let verr: VError = err.extract() {
       e = SyncbaseError(verr)
     }
     let handle = Unmanaged<Watch.Handle>.fromOpaque(

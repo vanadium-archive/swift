@@ -15,7 +15,7 @@ public enum Principal {
       v23_syncbase_AppBlessingFromContext(&cStr, errPtr)
       return cStr
     }
-    guard let str = cStr.toString() else {
+    guard let str = cStr.extract() else {
       throw SyncbaseError.NotAuthorized
     }
     return str
@@ -29,7 +29,7 @@ public enum Principal {
       v23_syncbase_UserBlessingFromContext(&cStr, errPtr)
       return cStr
     }
-    guard let str = cStr.toString() else {
+    guard let str = cStr.extract() else {
       throw SyncbaseError.NotAuthorized
     }
     return str
@@ -39,6 +39,6 @@ public enum Principal {
   static var blessingsDebugDescription: String {
     var cStr = v23_syncbase_String()
     v23_syncbase_BlessingStoreDebugString(&cStr)
-    return cStr.toString() ?? "ERROR"
+    return cStr.extract() ?? "ERROR"
   }
 }

@@ -82,7 +82,7 @@ public enum Syncbase {
     var ids = v23_syncbase_Ids()
     return try VError.maybeThrow { err in
       v23_syncbase_ServiceListDatabases(&ids, err)
-      return ids.toIdentifiers()
+      return ids.extract()
     }
   }
 
@@ -150,7 +150,7 @@ public enum Syncbase {
     }
     // TODO(zinman): Verify that permissions defaulting to zero-value is correct for Permissions.
     // We force cast of cVersion because we know it can be UTF-8 converted.
-    return (try cPermissions.toPermissions() ?? Permissions(), cVersion.toString()!)
+    return (try cPermissions.extract() ?? Permissions(), cVersion.extract()!)
   }
 
   public static func setPermissions(permissions: Permissions, version: PermissionsVersion) throws {

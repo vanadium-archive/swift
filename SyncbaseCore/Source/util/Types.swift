@@ -7,11 +7,19 @@
 
 import Foundation
 
+func mallocOrDie<T>(length: Int) -> UnsafeMutablePointer<T> {
+  let p = malloc(length)
+  if p == nil {
+    fatalError("Couldn't allocate \(length) bytes")
+  }
+  return unsafeBitCast(p, UnsafeMutablePointer<T>.self)
+}
+
 public extension v23_syncbase_AppPeer {
-  func toNeighborhoodPeer() -> NeighborhoodPeer {
+  func extract() -> NeighborhoodPeer {
     return NeighborhoodPeer(
-      appName: appName.toString() ?? "",
-      blessings: blessings.toString() ?? "",
+      appName: appName.extract() ?? "",
+      blessings: blessings.extract() ?? "",
       isLost: isLost)
   }
 }
@@ -19,34 +27,29 @@ public extension v23_syncbase_AppPeer {
 public extension v23_syncbase_BatchOptions {
   init (_ opts: BatchOptions?) throws {
     guard let o = opts else {
-      self.hint = v23_syncbase_String()
-      self.readOnly = false
+      hint = v23_syncbase_String()
+      readOnly = false
       return
     }
-    self.hint = try o.hint?.toCgoString() ?? v23_syncbase_String()
-    self.readOnly = o.readOnly
+    hint = try o.hint?.toCgoString() ?? v23_syncbase_String()
+    readOnly = o.readOnly
   }
 }
 
 public extension v23_syncbase_Bytes {
   init(_ data: NSData?) {
     guard let data = data else {
-      self.n = 0
-      self.p = nil
+      n = 0
+      p = nil
       return
     }
-    let p = malloc(data.length)
-    if p == nil {
-      fatalError("Couldn't allocate \(data.length) bytes")
-    }
-    let n = data.length
-    data.getBytes(p, length: n)
-    self.p = UnsafeMutablePointer<UInt8>(p)
-    self.n = Int32(n)
+    p = mallocOrDie(data.length)
+    data.getBytes(p, length: data.length)
+    n = Int32(data.length)
   }
 
   // Return value takes ownership of the memory associated with this object.
-  func toNSData() -> NSData? {
+  func extract() -> NSData? {
     if p == nil {
       return nil
     }
@@ -55,62 +58,58 @@ public extension v23_syncbase_Bytes {
 }
 
 public extension v23_syncbase_ChangeType {
-  func toChangeType() -> WatchChange.ChangeType? {
-    return WatchChange.ChangeType(rawValue: Int(self.rawValue))
+  func extract() -> WatchChange.ChangeType? {
+    return WatchChange.ChangeType(rawValue: Int(rawValue))
   }
 }
 
 public extension v23_syncbase_CollectionRowPattern {
   init(_ pattern: CollectionRowPattern) throws {
-    self.collectionBlessing = try pattern.collectionBlessing.toCgoString()
-    self.collectionName = try pattern.collectionName.toCgoString()
-    self.rowKey = try (pattern.rowKey ?? "").toCgoString()
+    collectionBlessing = try pattern.collectionBlessing.toCgoString()
+    collectionName = try pattern.collectionName.toCgoString()
+    rowKey = try (pattern.rowKey ?? "").toCgoString()
   }
 }
 
 public extension v23_syncbase_CollectionRowPatterns {
   init(_ patterns: [CollectionRowPattern]) throws {
     if (patterns.isEmpty) {
-      self.n = 0
-      self.p = nil
+      n = 0
+      p = nil
       return
     }
-    let numBytes = patterns.count * sizeof(v23_syncbase_CollectionRowPattern)
-    self.p = unsafeBitCast(malloc(numBytes), UnsafeMutablePointer<v23_syncbase_CollectionRowPattern>.self)
-    if self.p == nil {
-      fatalError("Couldn't allocate \(numBytes) bytes")
-    }
-    self.n = Int32(patterns.count)
+    p = mallocOrDie(patterns.count * sizeof(v23_syncbase_CollectionRowPattern))
+    n = Int32(patterns.count)
     var i = 0
     do {
       for pattern in patterns {
-        self.p.advancedBy(i).memory = try v23_syncbase_CollectionRowPattern(pattern)
+        p.advancedBy(i).memory = try v23_syncbase_CollectionRowPattern(pattern)
         i += 1
       }
-    } catch let e {
-      free(self.p)
-      self.p = nil
-      self.n = 0
-      throw e
+    } catch {
+      free(p)
+      p = nil
+      n = 0
+      throw error
     }
   }
 }
 
 public extension v23_syncbase_EntityType {
-  func toEntityType() -> WatchChange.EntityType? {
-    return WatchChange.EntityType(rawValue: Int(self.rawValue))
+  func extract() -> WatchChange.EntityType? {
+    return WatchChange.EntityType(rawValue: Int(rawValue))
   }
 }
 
 public extension v23_syncbase_Id {
   init(_ id: Identifier) throws {
-    self.name = try id.name.toCgoString()
-    self.blessing = try id.blessing.toCgoString()
+    name = try id.name.toCgoString()
+    blessing = try id.blessing.toCgoString()
   }
 
-  func toIdentifier() -> Identifier? {
-    guard let name = name.toString(),
-      blessing = blessing.toString() else {
+  func extract() -> Identifier? {
+    guard let name = name.extract(),
+      blessing = blessing.extract() else {
         return nil
     }
     return Identifier(name: name, blessing: blessing)
@@ -119,11 +118,8 @@ public extension v23_syncbase_Id {
 
 public extension v23_syncbase_Ids {
   init(_ ids: [Identifier]) throws {
-    let arrayBytes = ids.count * sizeof(v23_syncbase_Id)
-    let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_Id>.self)
-    if p == nil {
-      fatalError("Couldn't allocate \(arrayBytes) bytes")
-    }
+    p = mallocOrDie(ids.count * sizeof(v23_syncbase_Id))
+    n = Int32(ids.count)
     for i in 0 ..< ids.count {
       do {
         p.advancedBy(i).memory = try v23_syncbase_Id(ids[i])
@@ -136,15 +132,13 @@ public extension v23_syncbase_Ids {
         throw e
       }
     }
-    self.p = p
-    self.n = Int32(ids.count)
   }
 
-  func toIdentifiers() -> [Identifier] {
+  func extract() -> [Identifier] {
     var ids: [Identifier] = []
     for i in 0 ..< n {
       let idStruct = p.advancedBy(Int(i)).memory
-      if let id = idStruct.toIdentifier() {
+      if let id = idStruct.extract() {
         ids.append(id)
       }
     }
@@ -156,14 +150,14 @@ public extension v23_syncbase_Ids {
 }
 
 public extension v23_syncbase_Invite {
-  func toSyncgroupInvite() -> SyncgroupInvite? {
-    guard let id = syncgroup.toIdentifier() else {
+  func extract() -> SyncgroupInvite? {
+    guard let id = syncgroup.extract() else {
       return nil
     }
     return SyncgroupInvite(
       syncgroupId: id,
-      addresses: addresses.toStrings(),
-      blessingNames: blessingNames.toStrings())
+      addresses: addresses.extract(),
+      blessingNames: blessingNames.extract())
   }
 }
 
@@ -171,7 +165,7 @@ public extension v23_syncbase_Permissions {
   init(_ permissions: Permissions?) throws {
     guard let p = permissions where !p.isEmpty else {
       // Zero-value constructor.
-      self.json = v23_syncbase_Bytes()
+      json = v23_syncbase_Bytes()
       return
     }
     var m = [String: AnyObject]()
@@ -180,11 +174,11 @@ public extension v23_syncbase_Permissions {
     }
     let serialized = try NSJSONSerialization.serialize(m)
     let bytes = v23_syncbase_Bytes(serialized)
-    self.json = bytes
+    json = bytes
   }
 
-  func toPermissions() throws -> Permissions? {
-    guard let data = self.json.toNSData(),
+  func extract() throws -> Permissions? {
+    guard let data = json.extract(),
       map = try NSJSONSerialization.deserialize(data) as? NSDictionary else {
         return nil
     }
@@ -206,18 +200,13 @@ public extension v23_syncbase_String {
     guard let data = string.dataUsingEncoding(NSUTF8StringEncoding) else {
       throw SyncbaseError.InvalidUTF8(invalidUtf8: string)
     }
-    let p = malloc(data.length)
-    if p == nil {
-      fatalError("Unable to allocate \(data.length) bytes")
-    }
-    let n = data.length
-    data.getBytes(p, length: n)
-    self.p = UnsafeMutablePointer<Int8>(p)
-    self.n = Int32(n)
+    p = mallocOrDie(data.length)
+    data.getBytes(p, length: data.length)
+    n = Int32(data.length)
   }
 
   // Return value takes ownership of the memory associated with this object.
-  func toString() -> String? {
+  func extract() -> String? {
     if p == nil {
       return nil
     }
@@ -230,11 +219,8 @@ public extension v23_syncbase_String {
 
 public extension v23_syncbase_Strings {
   init(_ strings: [String]) throws {
-    let arrayBytes = strings.count * sizeof(v23_syncbase_String)
-    let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_String>.self)
-    if p == nil {
-      fatalError("Couldn't allocate \(arrayBytes) bytes")
-    }
+    p = mallocOrDie(strings.count * sizeof(v23_syncbase_String))
+    n = Int32(strings.count)
     for i in 0 ..< strings.count {
       do {
         p.advancedBy(i).memory = try v23_syncbase_String(strings[i])
@@ -246,33 +232,26 @@ public extension v23_syncbase_Strings {
         throw e
       }
     }
-    self.p = p
-    self.n = Int32(strings.count)
   }
 
   init(_ strings: [v23_syncbase_String]) {
-    let arrayBytes = strings.count * sizeof(v23_syncbase_String)
-    let p = unsafeBitCast(malloc(arrayBytes), UnsafeMutablePointer<v23_syncbase_String>.self)
-    if p == nil {
-      fatalError("Couldn't allocate \(arrayBytes) bytes")
-    }
+    p = mallocOrDie(strings.count * sizeof(v23_syncbase_String))
+    n = Int32(strings.count)
     var i = 0
     for string in strings {
       p.advancedBy(i).memory = string
       i += 1
     }
-    self.p = p
-    self.n = Int32(strings.count)
   }
 
   // Return value takes ownership of the memory associated with this object.
-  func toStrings() -> [String] {
+  func extract() -> [String] {
     if p == nil {
       return []
     }
     var ret = [String]()
     for i in 0 ..< n {
-      ret.append(p.advancedBy(Int(i)).memory.toString() ?? "")
+      ret.append(p.advancedBy(Int(i)).memory.extract() ?? "")
     }
     free(p)
     return ret
@@ -288,11 +267,11 @@ public extension String {
 
 public extension v23_syncbase_SyncgroupMemberInfo {
   init(_ info: SyncgroupMemberInfo) {
-    self.syncPriority = info.syncPriority
-    self.blobDevType = UInt8(info.blobDevType.rawValue)
+    syncPriority = info.syncPriority
+    blobDevType = UInt8(info.blobDevType.rawValue)
   }
 
-  func toSyncgroupMemberInfo() -> SyncgroupMemberInfo {
+  func extract() -> SyncgroupMemberInfo {
     return SyncgroupMemberInfo(
       syncPriority: syncPriority,
       blobDevType: BlobDevType(rawValue: Int(blobDevType))!)
@@ -300,11 +279,11 @@ public extension v23_syncbase_SyncgroupMemberInfo {
 }
 
 public extension v23_syncbase_SyncgroupMemberInfoMap {
-  func toSyncgroupMemberInfoMap() -> [String: SyncgroupMemberInfo] {
+  func extract() -> [String: SyncgroupMemberInfo] {
     var ret = [String: SyncgroupMemberInfo]()
     for i in 0 ..< Int(n) {
-      let key = keys.advancedBy(i).memory.toString() ?? ""
-      let value = values.advancedBy(i).memory.toSyncgroupMemberInfo()
+      let key = keys.advancedBy(i).memory.extract() ?? ""
+      let value = values.advancedBy(i).memory.extract()
       ret[key] = value
     }
     free(keys)
@@ -315,67 +294,67 @@ public extension v23_syncbase_SyncgroupMemberInfoMap {
 
 public extension v23_syncbase_SyncgroupSpec {
   init(_ spec: SyncgroupSpec) throws {
-    self.collections = try v23_syncbase_Ids(spec.collections)
-    self.description = try spec.description.toCgoString()
-    self.isPrivate = spec.isPrivate
-    self.mountTables = try v23_syncbase_Strings(spec.mountTables)
-    self.perms = try v23_syncbase_Permissions(spec.permissions)
-    self.publishSyncbaseName = try spec.publishSyncbaseName?.toCgoString() ?? v23_syncbase_String()
+    collections = try v23_syncbase_Ids(spec.collections)
+    description = try spec.description.toCgoString()
+    isPrivate = spec.isPrivate
+    mountTables = try v23_syncbase_Strings(spec.mountTables)
+    perms = try v23_syncbase_Permissions(spec.permissions)
+    publishSyncbaseName = try spec.publishSyncbaseName?.toCgoString() ?? v23_syncbase_String()
   }
 
-  func toSyncgroupSpec() throws -> SyncgroupSpec {
+  func extract() throws -> SyncgroupSpec {
     return SyncgroupSpec(
-      description: self.description.toString() ?? "",
-      collections: self.collections.toIdentifiers(),
-      permissions: try self.perms.toPermissions() ?? [:],
-      publishSyncbaseName: self.publishSyncbaseName.toString(),
-      mountTables: self.mountTables.toStrings(),
-      isPrivate: self.isPrivate)
+      description: description.extract() ?? "",
+      collections: collections.extract(),
+      permissions: try perms.extract() ?? [:],
+      publishSyncbaseName: publishSyncbaseName.extract(),
+      mountTables: mountTables.extract(),
+      isPrivate: isPrivate)
   }
 }
 
 public extension v23_syncbase_WatchChange {
-  func toWatchChange() -> WatchChange {
+  func extract() -> WatchChange {
     let resumeMarkerData = v23_syncbase_Bytes(
-      p: unsafeBitCast(self.resumeMarker.p, UnsafeMutablePointer<UInt8>.self),
-      n: self.resumeMarker.n).toNSData()
+      p: unsafeBitCast(resumeMarker.p, UnsafeMutablePointer<UInt8>.self),
+      n: resumeMarker.n).extract()
     // Turn row & collectionId zero-values into nil.
-    var row = self.row.toString()
+    var row = self.row.extract()
     if row == "" {
       row = nil
     }
-    var collectionId = self.collection.toIdentifier()
+    var collectionId = collection.extract()
     if collectionId?.name == "" && collectionId?.blessing == "" {
       collectionId = nil
     }
     // Zero-valued Value does not get turned into a nil on put -- if it's a put then we know
     // it cannot be nil. This allows us to store empty arrays (an esoteric use case but one that
     // is supported nevertheless).
-    var value = self.value.toNSData()
-    if value == nil && self.changeType == v23_syncbase_ChangeTypePut {
+    var value = self.value.extract()
+    if value == nil && changeType == v23_syncbase_ChangeTypePut {
       value = NSData()
     }
     return WatchChange(
-      entityType: self.entityType.toEntityType()!,
+      entityType: entityType.extract()!,
       collectionId: collectionId,
       row: row,
-      changeType: self.changeType.toChangeType()!,
+      changeType: changeType.extract()!,
       value: value,
       resumeMarker: resumeMarkerData,
-      isFromSync: self.fromSync,
-      isContinued: self.continued)
+      isFromSync: fromSync,
+      isContinued: continued)
   }
 }
 
 // Note, we don't define init(VError) since we never pass Swift VError objects to Go.
 public extension v23_syncbase_VError {
   // Return value takes ownership of the memory associated with this object.
-  func toVError() -> VError? {
+  func extract() -> VError? {
     if id.p == nil {
       return nil
     }
     // Take ownership of all memory before checking optionals.
-    let vId = id.toString(), vMsg = msg.toString(), vStack = stack.toString()
+    let vId = id.extract(), vMsg = msg.extract(), vStack = stack.extract()
     // TODO: Stop requiring id, msg, and stack to be valid UTF-8?
     return VError(id: vId!, actionCode: actionCode, msg: vMsg ?? "", stack: vStack!)
   }
@@ -390,7 +369,7 @@ public struct VError: ErrorType {
   static func maybeThrow<T>(@noescape f: UnsafeMutablePointer<v23_syncbase_VError> throws -> T) throws -> T {
     var e = v23_syncbase_VError()
     let res = try f(&e)
-    if let err = e.toVError() {
+    if let err = e.extract() {
       throw SyncbaseError(err)
     }
     return res

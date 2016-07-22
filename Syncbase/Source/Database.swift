@@ -222,8 +222,8 @@ public class Database: DatabaseHandle, CustomStringConvertible {
         try databaseId.encode(),
         handler: coreHandler)
       Database.syncgroupInviteHandlers[handler] = coreHandler
-    } catch let e {
-      handler.onError(e)
+    } catch {
+      handler.onError(error)
     }
   }
 
@@ -275,9 +275,9 @@ public class Database: DatabaseHandle, CustomStringConvertible {
             callback(sg: syncgroup, err: nil)
           }
         }
-      } catch let e {
+      } catch {
         dispatch_async(Syncbase.queue) {
-          callback(sg: nil, err: e)
+          callback(sg: nil, err: error)
         }
       }
     }

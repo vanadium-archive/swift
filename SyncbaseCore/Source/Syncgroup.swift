@@ -64,7 +64,7 @@ public class Syncgroup {
         &spec,
         errPtr)
     }
-    return try spec.toSyncgroupSpec()
+    return try spec.extract()
   }
 
   /// Leave leaves the syncgroup. Previously synced data will continue
@@ -127,8 +127,8 @@ public class Syncgroup {
         errPtr)
     }
     return VersionedSpec(
-      spec: try spec.toSyncgroupSpec(),
-      version: version.toString()!)
+      spec: try spec.extract(),
+      version: version.extract()!)
   }
 
   /// SetSpec sets the syncgroup spec. version may be either empty or
@@ -161,7 +161,7 @@ public class Syncgroup {
         &members,
         errPtr)
     }
-    return members.toSyncgroupMemberInfoMap()
+    return members.extract()
   }
 }
 

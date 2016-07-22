@@ -131,12 +131,12 @@ public enum Syncbase {
       if (SyncbaseCore.Syncbase.isLoggedIn) {
         do {
           try Syncbase.postLoginCreateDefaults()
-        } catch let e {
+        } catch {
           // If we get an exception after configuring the low-level API, make sure we shutdown
           // Syncbase so that any subsequent call to this configure method doesn't get a
           // SyncbaseError.AlreadyConfigured exception from SyncbaseCore.Syncbase.configure.
           Syncbase.shutdown()
-          throw e
+          throw error
         }
       }
       Syncbase.didInit = true

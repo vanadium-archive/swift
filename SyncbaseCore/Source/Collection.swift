@@ -75,7 +75,7 @@ public class Collection {
         errPtr)
     }
     // TODO(zinman): Verify that permissions defaulting to zero-value is correct.
-    return try permissions.toPermissions() ?? Permissions()
+    return try permissions.extract() ?? Permissions()
   }
 
   /// SetPermissions replaces the current Permissions for the Collection.
@@ -151,9 +151,9 @@ public class Collection {
     }
     // If we got here then we know that row exists, otherwise we would have gotten the NoExist
     // exception above. However, that row might also just be empty data. Because
-    // cBytes.toNSData can't distinguish between the struct's zero-values and a nil array,
+    // cBytes.extract can't distinguish between the struct's zero-values and a nil array,
     // we must explicitly default to an empty NSData here since we know that it is not nil.
-    return cBytes.toNSData() ?? NSData()
+    return cBytes.extract() ?? NSData()
   }
 
   /// Put writes the given value to this Collection under the given key.
@@ -313,9 +313,9 @@ public class Collection {
           callbacks,
           errPtr)
       }
-    } catch let e {
+    } catch {
       unmanaged.release()
-      throw e
+      throw error
     }
 
     return AnonymousStream(
@@ -326,8 +326,8 @@ public class Collection {
   // Callback handlers that convert the Cgo bridge types to native Swift types and pass them to
   // the functions inside the passed handle.
   private static func onScanKeyValue(handle: v23_syncbase_Handle, kv: v23_syncbase_KeyValue) {
-    let key = kv.key.toString()!
-    let valueBytes = kv.value.toNSData()!
+    let key = kv.key.extract()!
+    let valueBytes = kv.value.extract()!
     let handle = Unmanaged<ScanHandle>.fromOpaque(
       COpaquePointer(bitPattern: handle)).takeUnretainedValue()
     handle.onKeyValue(key, valueBytes: valueBytes)
@@ -335,7 +335,7 @@ public class Collection {
 
   private static func onScanDone(handle: v23_syncbase_Handle, err: v23_syncbase_VError) {
     var serr: SyncbaseError?
-    if let e = err.toVError() {
+    if let e = err.extract() {
       serr = SyncbaseError(e)
     }
     let handle = Unmanaged<ScanHandle>.fromOpaque(
@@ -354,7 +354,7 @@ public class Collection {
     v23_syncbase_NamingJoin(
       v23_syncbase_Strings([try databaseId.encode(), try collectionId.encode()]),
       &cStr)
-    return cStr.toString()!
+    return cStr.extract()!
   }
 
   private func encodedRowName(key: String) throws -> v23_syncbase_String {

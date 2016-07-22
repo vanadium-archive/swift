@@ -45,7 +45,7 @@ public class Database {
   init(databaseId: Identifier, batchHandle: String?) throws {
     self.databaseId = databaseId
     self.batchHandle = batchHandle
-    self.encodedDatabaseName = try databaseId.encode().toString()!
+    self.encodedDatabaseName = try databaseId.encode().extract()!
   }
 
   /// Create creates this Database.
@@ -110,7 +110,7 @@ public class Database {
         &cHandle,
         errPtr)
     }
-    guard let handle = cHandle.toString() else {
+    guard let handle = cHandle.extract() else {
       throw SyncbaseError.InvalidUTF8(invalidUtf8: "\(cHandle)")
     }
     return try BatchDatabase(databaseId: databaseId, batchHandle: handle)
@@ -158,7 +158,7 @@ public class Database {
         &ids,
         errPtr)
     }
-    return ids.toIdentifiers()
+    return ids.extract()
   }
 
   public func scanForSyncgroupInvites(name: String, handler: SyncgroupInvitesScanHandler) throws {
@@ -174,16 +174,16 @@ public class Database {
           ),
           errPtr)
       }
-    } catch let e {
+    } catch {
       unmanaged.release()
-      throw e
+      throw error
     }
   }
 
   // Callback handlers that convert the Cgo bridge types to native Swift types and pass them to
   // the functions inside the passed handle.
   private static func onInvite(handle: v23_syncbase_Handle, invite: v23_syncbase_Invite) {
-    let invite = invite.toSyncgroupInvite()!
+    let invite = invite.extract()!
     let handle = Unmanaged<SyncgroupInvitesScanHandler>.fromOpaque(
       COpaquePointer(bitPattern: handle)).takeUnretainedValue()
     dispatch_async(Syncbase.queue) {
@@ -254,7 +254,7 @@ extension Database: DatabaseHandle {
         try batchHandle?.toCgoString() ?? v23_syncbase_String(),
         &ids,
         errPtr)
-      return ids.toIdentifiers()
+      return ids.extract()
     }
   }
 
@@ -267,7 +267,7 @@ extension Database: DatabaseHandle {
         &cMarker,
         errPtr)
     }
-    return ResumeMarker(data: cMarker.toNSData() ?? NSData())
+    return ResumeMarker(data: cMarker.extract() ?? NSData())
   }
 }
 
@@ -284,7 +284,7 @@ extension Database: AccessController {
     }
     // TODO(zinman): Verify that permissions defaulting to zero-value is correct for Permissions.
     // We force cast of cVersion because we know it can be UTF-8 converted.
-    return (try cPermissions.toPermissions() ?? Permissions(), cVersion.toString()!)
+    return (try cPermissions.extract() ?? Permissions(), cVersion.extract()!)
   }
 
   public func setPermissions(permissions: Permissions, version: PermissionsVersion) throws {

@@ -14,7 +14,7 @@ class IdentifierTest: XCTestCase {
         Identifier(name: "_%/-,,hi", blessing: "root:o:app:user"),
         Identifier(name: "", blessing: "root:o:app:user"),
         Identifier(name: "something", blessing: "")] {
-          let mirror = try Identifier.decode(try id.encode().toString()!)
+          let mirror = try Identifier.decode(try id.encode().extract()!)
           XCTAssertEqual(id, mirror)
       }
     } catch {
