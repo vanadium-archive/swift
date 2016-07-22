@@ -21,8 +21,7 @@ public enum Syncbase {
   // The userdata collection, created post-login.
   static var userdataCollection: Collection?
   // Options for opening a database.
-  static var adminUserId = "alexfandrianto@google.com"
-  static var defaultBlessingStringPrefix = "dev.v.io:o:608941808256-43vtfndets79kf5hac8ieujto8837660.apps.googleusercontent.com:"
+  static var adminUserId = ""
   static var disableSyncgroupPublishing = false
   static var disableUserdataSyncgroup = false
   static var mountPoints = ["/ns.dev.v.io:8101/tmp/todos/users/"]
@@ -66,7 +65,6 @@ public enum Syncbase {
   /// - parameter adminUserId:                 The email address for the administrator user.
   /// - parameter rootDir:                     Where data should be persisted.
   /// - parameter mountPoints:                 // TODO(zinman): Get appropriate documentation on mountPoints
-  /// - parameter defaultBlessingStringPrefix: // TODO(zinman): Figure out what this should default to.
   /// - parameter disableSyncgroupPublishing:  **FOR ADVANCED USERS**. If true, syncgroups will not be published to the cloud peer.
   /// - parameter disableUserdataSyncgroup:    **FOR ADVANCED USERS**. If true, the user's data will not be synced across their devices.
   /// - parameter callback:                    Called on `Syncbase.queue` with either `Database` if successful, or an error if unsuccessful.
@@ -74,8 +72,7 @@ public enum Syncbase {
     adminUserId adminUserId: String,
     // Default to Application Support/Syncbase.
     rootDir: String = defaultRootDir,
-    mountPoints: [String] = ["/ns.dev.v.io:8101/tmp/todos/users/"],
-    defaultBlessingStringPrefix: String = "dev.v.io:o:608941808256-43vtfndets79kf5hac8ieujto8837660.apps.googleusercontent.com:",
+    mountPoints: [String],
     disableSyncgroupPublishing: Bool = false,
     disableUserdataSyncgroup: Bool = false,
     queue: dispatch_queue_t = dispatch_get_main_queue()) throws {
@@ -84,7 +81,6 @@ public enum Syncbase {
       }
       Syncbase.adminUserId = adminUserId
       Syncbase.mountPoints = mountPoints
-      Syncbase.defaultBlessingStringPrefix = defaultBlessingStringPrefix
       Syncbase.disableSyncgroupPublishing = disableSyncgroupPublishing
       Syncbase.disableUserdataSyncgroup = disableUserdataSyncgroup
       Syncbase.didPostLogin = false
@@ -306,7 +302,7 @@ public enum Syncbase {
   /// - parameter usersWhoCanSee: The set of users who are allowed to find this user. If empty
   /// then everyone can see the advertisement.
   public static func startAdvertisingPresenceInNeighborhood(usersWhoCanSee: [User] = []) throws {
-    let visibility = usersWhoCanSee.map { return blessingPatternFromAlias($0.alias) }
+    let visibility = try usersWhoCanSee.map { return try blessingPatternFromAlias($0.alias) }
     try SyncbaseError.wrap {
       try Neighborhood.startAdvertising(visibility)
     }

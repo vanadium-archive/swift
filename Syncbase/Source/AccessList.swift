@@ -74,10 +74,10 @@ public struct AccessList {
   }
 
   /// Applies delta to perms, returning the updates permissions.
-  static func applyDelta(permissions: Permissions, delta: AccessList) -> Permissions {
+  static func applyDelta(permissions: Permissions, delta: AccessList) throws -> Permissions {
     var perms = permissions
     for (userId, level) in delta.users {
-      let bp = blessingPatternFromAlias(userId)
+      let bp = try blessingPatternFromAlias(userId)
       switch level {
       case .INTERNAL_ONLY_REMOVE:
         perms[Tags.Resolve.rawValue] = perms[Tags.Resolve.rawValue]?.removeFromAllowed(bp)

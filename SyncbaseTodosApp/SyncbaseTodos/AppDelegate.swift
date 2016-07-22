@@ -19,8 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // Configure Syncbase
     try! Syncbase.configure(adminUserId: "zinman@google.com",
-      // Craft a blessing prefix using google sign-in and the dev.v.io blessings provider.
-      defaultBlessingStringPrefix: "dev.v.io:o:\(clientID):",
       // Cloud mount-point.
       // TODO(mrschmidt): Remove the ios-specific portion of mountpoint when VOM is implemented.
       mountPoints: ["/ns.dev.v.io:8101/tmp/ios/todos/users/"])

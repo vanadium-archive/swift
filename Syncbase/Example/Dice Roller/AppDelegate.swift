@@ -16,20 +16,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return true
   }
 
-  static var googleSignInClientID: String {
+  static func configureGoogleSignIn() {
     let infoPath = NSBundle.mainBundle().pathForResource("GoogleService-Info", ofType: "plist")!
     let info = NSDictionary(contentsOfFile: infoPath)!
-    return info["CLIENT_ID"] as! String
-  }
-
-  static func configureGoogleSignIn() {
-    GIDSignIn.sharedInstance().clientID = AppDelegate.googleSignInClientID
+    let googleSignInClientID = info["CLIENT_ID"] as! String
+    GIDSignIn.sharedInstance().clientID = googleSignInClientID
   }
 
   static func configureSyncbase() {
-    try! Syncbase.configure(adminUserId: "zinman@google.com",
-      // Craft a blessing prefix using google sign-in and the dev.v.io blessings provider.
-      defaultBlessingStringPrefix: "dev.v.io:o:\(AppDelegate.googleSignInClientID):",
+    try! Syncbase.configure(
+      adminUserId: "zinman@google.com",
       // Cloud mount-point.
       mountPoints: ["/ns.dev.v.io:8101/tmp/ios/diceroller/users/"])
   }

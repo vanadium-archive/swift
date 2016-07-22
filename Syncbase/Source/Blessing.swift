@@ -20,12 +20,12 @@ private func aliasFromBlessingString(blessingStr: String) -> String? {
   return parts[parts.count - 1]
 }
 
-private func blessingStringFromAlias(alias: String) -> String {
-  return Syncbase.defaultBlessingStringPrefix + alias
+private func blessingStringFromAlias(alias: String) throws -> String {
+  return try Principal.appBlessing() + ":" + alias
 }
 
-func blessingPatternFromAlias(alias: String) -> BlessingPattern {
-  return BlessingPattern(blessingStringFromAlias(alias))
+func blessingPatternFromAlias(alias: String) throws -> BlessingPattern {
+  return BlessingPattern(try blessingStringFromAlias(alias))
 }
 
 func personalBlessingString() throws -> String {
