@@ -25,8 +25,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   static func configureSyncbase() {
     try! Syncbase.configure(
-      adminUserId: "zinman@google.com",
-      // Cloud mount-point.
+      // Cloud & mount-point.
+      cloudName: "/(dev.v.io:r:vprod:service:mounttabled)@ns.dev.v.io:8101/sb/syncbased-df0f9bfa",
+      cloudBlessing: "dev.v.io:r:allocator:us:x:syncbased-df0f9bfa",
       mountPoints: ["/ns.dev.v.io:8101/tmp/ios/diceroller/users/"])
   }
 

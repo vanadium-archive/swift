@@ -38,6 +38,7 @@ func failOnNonContextError(err: ErrorType) {
 
 extension XCTestCase {
   class func configureDb(disableUserdataSyncgroup disableUserdataSyncgroup: Bool, disableSyncgroupPublishing: Bool) {
+    Syncbase.isUnitTest = true
     SyncbaseCore.Syncbase.isUnitTest = true
 
     do { try NSFileManager.defaultManager().removeItemAtPath(unitTestRootDir) }
@@ -46,8 +47,8 @@ extension XCTestCase {
     // TODO(zinman): Once we have create-and-join implemented don't always set
     // disableUserdataSyncgroup to true.
     try! Syncbase.configure(
-      adminUserId: "unittest@google.com",
       rootDir: unitTestRootDir,
+      mountPoints: [],
       disableUserdataSyncgroup: disableUserdataSyncgroup,
       disableSyncgroupPublishing: disableSyncgroupPublishing,
       queue: testQueue)

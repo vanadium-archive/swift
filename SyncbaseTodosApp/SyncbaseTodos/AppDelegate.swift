@@ -18,10 +18,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     GIDSignIn.sharedInstance().clientID = clientID
 
     // Configure Syncbase
-    try! Syncbase.configure(adminUserId: "zinman@google.com",
-      // Cloud mount-point.
-      // TODO(mrschmidt): Remove the ios-specific portion of mountpoint when VOM is implemented.
-      mountPoints: ["/ns.dev.v.io:8101/tmp/ios/todos/users/"])
+    try! Syncbase.configure(
+      // Configure cloud & mount points.
+      // TODO(mrschmidt): Remove the ios-specific portion when VOM is implemented.
+      cloudName: "/(dev.v.io:r:vprod:service:mounttabled)@ns.dev.v.io:8101/sb/syncbased-826b256e",
+      cloudBlessing: "dev.v.io:r:allocator:us:x:syncbased-826b256e",
+      mountPoints: ["/ns.dev.v.io:8101/tmp/ios/todos/users"])
     return true
   }
 

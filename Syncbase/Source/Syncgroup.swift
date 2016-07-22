@@ -47,9 +47,11 @@ public class Syncgroup: CustomStringConvertible {
   }
 
   func join() throws {
-    // TODO(razvanm): Find a way to restrict the remote blessing. Cloud is one thing the remote
-    // blessings should include.
-    try coreSyncgroup.join("", expectedSyncbaseBlessings: ["..."], myInfo: Syncgroup.syncgroupMemberInfo)
+    // TODO(razvanm): Find a way to restrict the remote blessing.
+    try coreSyncgroup.join(
+      Syncbase.cloudName ?? "",
+      expectedSyncbaseBlessings: ["..."],
+      myInfo: Syncgroup.syncgroupMemberInfo)
   }
 
   /// Returns the `AccessList` for this syncgroup.

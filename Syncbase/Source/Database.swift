@@ -264,7 +264,9 @@ public class Database: DatabaseHandle, CustomStringConvertible {
           let syncgroup = Syncgroup(coreSyncgroup: coreSyncgroup, database: self)
           let publishName = Syncbase.publishSyncbaseName
           var expectedBlessings = invite.inviterBlessingNames
-          expectedBlessings.append(Syncbase.cloudBlessing)
+          if let cloudBlessing = Syncbase.cloudBlessing {
+            expectedBlessings.append(cloudBlessing)
+          }
           try coreSyncgroup.join(publishName ?? "",
             expectedSyncbaseBlessings: expectedBlessings,
             myInfo: Syncgroup.syncgroupMemberInfo)

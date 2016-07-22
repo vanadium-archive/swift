@@ -33,8 +33,11 @@ func personalBlessingString() throws -> String {
 }
 
 func selfAndCloudAL() throws -> SyncbaseCore.AccessList {
-  return SyncbaseCore.AccessList(allowed:
-      [BlessingPattern(try personalBlessingString()), BlessingPattern(Syncbase.cloudBlessing)])
+  if let cloudBlessing = Syncbase.cloudBlessing {
+    return SyncbaseCore.AccessList(allowed:
+        [BlessingPattern(try personalBlessingString()), BlessingPattern(cloudBlessing)])
+  }
+  return SyncbaseCore.AccessList(allowed: [BlessingPattern(try personalBlessingString())])
 }
 
 func defaultDatabasePerms() throws -> SyncbaseCore.Permissions {

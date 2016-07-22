@@ -13,6 +13,7 @@ public enum Syncbase {
   public static let UserdataSyncgroupName = "userdata__",
     UserdataCollectionPrefix = "__collections/"
   // Initialization state
+  static var isUnitTest = false
   static var didInit = false
   static var didPostLogin = false
   static var didStartShutdown = false
@@ -21,10 +22,11 @@ public enum Syncbase {
   // The userdata collection, created post-login.
   static var userdataCollection: Collection?
   // Options for opening a database.
-  static var adminUserId = ""
+  static var cloudName: String?
+  static var cloudBlessing: String?
   static var disableSyncgroupPublishing = false
   static var disableUserdataSyncgroup = false
-  static var mountPoints = ["/ns.dev.v.io:8101/tmp/todos/users/"]
+  static var mountPoints: [String] = []
   /// Queue used to dispatch all asynchronous callbacks. Defaults to main.
   public static var queue: dispatch_queue_t {
     // Map directly to SyncbaseCore.
@@ -44,14 +46,17 @@ public enum Syncbase {
   }
 
   static var publishSyncbaseName: String? {
-    if Syncbase.disableSyncgroupPublishing {
+    if disableSyncgroupPublishing {
       return nil
     }
-    return mountPoints[0] + "cloud"
+    if usesCloud {
+      return cloudName
+    }
+    return nil
   }
 
-  static var cloudBlessing: String {
-    return "dev.v.io:u:" + Syncbase.adminUserId
+  static var usesCloud: Bool {
+    return cloudName != nil && cloudBlessing != nil
   }
 
   /// Starts Syncbase if needed; creates default database if needed; performs create-or-join for
@@ -62,16 +67,46 @@ public enum Syncbase {
   /// - `/syncgroups/{encodedSyncgroupId}` -> `nil`
   /// - `/ignoredInvites/{encodedSyncgroupId}` -> `nil`
   ///
-  /// - parameter adminUserId:                 The email address for the administrator user.
+  /// Cloud usage is optional. It can be used for initial bootstrapping and increased data
+  /// availability. Apps that use a cloud will automatically synchronize data across all of the same
+  /// user's devices. To allocate a cloud instance of Syncbase, visit https://sb-allocator.v.io/home
+  /// to create your instance. There you'll be able to see the parameters for `cloudName` and
+  /// `cloudBlessing` parameters. After that, please complete the following steps (until we the
+  /// webpage includes similar functionality, see https://github.com/vanadium/issues/issues/1414):
+
+  /// 1. Install Vanadium from https://vanadium.github.io/installation/
+  ///
+  /// 2. Install the principal & sb binaries
+  /// `jiri go install v.io/...`
+  ///
+  /// 3. Create your principal
+  /// `$JIRI_ROOT/release/go/bin/principal create $JIRI_ROOT/.v23creds`
+  ///
+  /// 4. Bless it via OAuth. On the Vanadium blessings page, just click bless.
+  /// `$JIRI_ROOT/release/go/bin/principal -v23.credentials=$JIRI_ROOT/.v23creds seekblessings`
+  ///
+  /// 5. Create the shared database using the app client id blessing. Notice the , in the id...
+  /// it's _blessing_,db
+  /// `$JIRI_ROOT/release/go/bin/sb --v23.credentials=$JIRI_ROOT/.v23creds \
+  /// -service=/ns.dev.v.io:8101/sb/syncbased-<SYNCBASEID> -create-if-absent=true \
+  /// --db dev.v.io:o:<GOOGLE SIGNIN CLIENTID>,db`
+  ///
+  /// 6. At this point you can go to sb-allocator.v.io, click debug on your instance,
+  /// click Syncbase in the upper right, then verify the database was created. You can't currently
+  /// view the collections or syncgroups as the website is not authenticated to show them.
+  ///
   /// - parameter rootDir:                     Where data should be persisted.
+  /// - parameter cloudName:                   Name of the cloud. See https://sb-allocator.v.io/home
+  /// - parameter cloudBlessing:               The cloud's blessing pattern. See https://sb-allocator.v.io/home
   /// - parameter mountPoints:                 // TODO(zinman): Get appropriate documentation on mountPoints
   /// - parameter disableSyncgroupPublishing:  **FOR ADVANCED USERS**. If true, syncgroups will not be published to the cloud peer.
   /// - parameter disableUserdataSyncgroup:    **FOR ADVANCED USERS**. If true, the user's data will not be synced across their devices.
   /// - parameter callback:                    Called on `Syncbase.queue` with either `Database` if successful, or an error if unsuccessful.
   public static func configure(
-    adminUserId adminUserId: String,
     // Default to Application Support/Syncbase.
-    rootDir: String = defaultRootDir,
+    rootDir rootDir: String = defaultRootDir,
+    cloudName: String? = nil,
+    cloudBlessing: String? = nil,
     mountPoints: [String],
     disableSyncgroupPublishing: Bool = false,
     disableUserdataSyncgroup: Bool = false,
@@ -79,7 +114,8 @@ public enum Syncbase {
       if Syncbase.didInit {
         throw SyncbaseError.AlreadyConfigured
       }
-      Syncbase.adminUserId = adminUserId
+      Syncbase.cloudName = cloudName
+      Syncbase.cloudBlessing = cloudBlessing
       Syncbase.mountPoints = mountPoints
       Syncbase.disableSyncgroupPublishing = disableSyncgroupPublishing
       Syncbase.disableUserdataSyncgroup = disableUserdataSyncgroup
@@ -120,8 +156,8 @@ public enum Syncbase {
     try database.createIfMissing()
     userdataCollection = try database.createCollection(
       name: Syncbase.UserdataSyncgroupName, withoutSyncgroup: true)
-
-    if (!Syncbase.disableUserdataSyncgroup) {
+    // We only create a userdata syncgroup if we use the cloud (or we're in a unit test).
+    if (usesCloud || isUnitTest) && !Syncbase.disableUserdataSyncgroup {
       let syncgroup = try userdataCollection!.syncgroup()
       do {
         // TODO(zinman): Return (via throwing) if this fails because the cloud isn't accessible,
