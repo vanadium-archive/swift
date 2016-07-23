@@ -5,6 +5,7 @@
 import XCTest
 @testable import Syncbase
 import enum Syncbase.Syncbase
+import class Syncbase.Database
 @testable import SyncbaseCore
 
 let testQueue = dispatch_queue_create("SyncbaseQueue", DISPATCH_QUEUE_SERIAL)
@@ -134,6 +135,94 @@ class UserdataTest: SyncgroupTest {
 
       // Shouldn't crash unpacking.
       db.userdataCollection
+    }
+  }
+}
+
+class InviteUserdataFilteredTest: SyncgroupTest {
+  func testUserdataFiltered() {
+    withDb { db in
+      db.addSyncgroupInviteHandler(SyncgroupInviteHandler(
+        onInvite: { invite in
+          XCTFail("Not expecting any invites")
+        },
+        onError: { err in
+          XCTFail("Not expecting any errors: \(err)")
+        }))
+      NSThread.sleepForTimeInterval(0.1)
+      db.removeAllSyncgroupInviteHandlers()
+    }
+  }
+}
+
+class InvitedSyncgroupsTest: SyncgroupTest {
+  static let coreSyncgroupId = SyncbaseCore.Identifier(
+    name: "someSg",
+    blessing: "dev.v.io:o:some.apps.googleusercontent.com:someone@google.com")
+  static let coreInvite = SyncbaseCore.SyncgroupInvite(
+    syncgroupId: coreSyncgroupId,
+    addresses: [""],
+    blessingNames: [coreSyncgroupId.blessing])
+
+  func testInvitedSyncgroupsNotIgnoredWhenNew() {
+    withDb { db in
+
+      var didGetInvite = false
+      let handler = SyncgroupInviteHandler(
+        onInvite: { invite in
+          if invite.syncgroupId.name == InvitedSyncgroupsTest.coreSyncgroupId.name {
+            didGetInvite = true
+          }
+        },
+        onError: { err in
+          XCTFail("Not expecting any errors: \(err)")
+      })
+      db.addSyncgroupInviteHandler(handler)
+      let coreHandler = Database.syncgroupInviteHandlers[handler]
+      coreHandler?.onInvite(InvitedSyncgroupsTest.coreInvite)
+      XCTAssertTrue(didGetInvite)
+      db.removeSyncgroupInviteHandler(handler)
+    }
+  }
+
+  func testInvitedSyncgroupsIgnoredWhenJoined() {
+    withDb { db in
+      // We should get the invite when it's not in our userdata
+      let coreInvite = SyncbaseCore.SyncgroupInvite(
+        syncgroupId: InvitedSyncgroupsTest.coreSyncgroupId,
+        addresses: [""],
+        blessingNames: [InvitedSyncgroupsTest.coreSyncgroupId.blessing])
+      var didGetInvite = false
+      var handler = SyncgroupInviteHandler(
+        onInvite: { invite in
+          if invite.syncgroupId == Identifier(coreId: InvitedSyncgroupsTest.coreSyncgroupId) {
+            didGetInvite = true
+          }
+        },
+        onError: { err in
+          XCTFail("Not expecting any errors: \(err)")
+      })
+      db.addSyncgroupInviteHandler(handler)
+      var coreHandler = Database.syncgroupInviteHandlers[handler]
+      coreHandler?.onInvite(coreInvite)
+      XCTAssertTrue(didGetInvite)
+      db.removeSyncgroupInviteHandler(handler)
+
+      // Add it to userdata
+      try Syncbase.addSyncgroupToUserdata(Identifier(coreId: InvitedSyncgroupsTest.coreSyncgroupId))
+
+      // Now we shouldn't get it
+      handler = SyncgroupInviteHandler(
+        onInvite: { invite in
+          XCTFail("Not expecting any invites: \(invite)")
+        },
+        onError: { err in
+          XCTFail("Not expecting any errors: \(err)")
+      })
+      db.addSyncgroupInviteHandler(handler)
+      coreHandler = Database.syncgroupInviteHandlers[handler]
+      coreHandler?.onInvite(coreInvite)
+      db.removeSyncgroupInviteHandler(handler)
     }
   }
 }

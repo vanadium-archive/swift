@@ -21,6 +21,9 @@ public enum Syncbase {
   static var db: Database?
   // The userdata collection, created post-login.
   static var userdataCollection: Collection?
+  // The handler for auto-joining invites that match our user's blessings. We keep it in a var
+  // in order to remove it on `shutdown`.
+  static var autojoinInviteHandler: SyncbaseCore.SyncgroupInvitesScanHandler?
   // Options for opening a database.
   static var cloudName: String?
   static var cloudBlessing: String?
@@ -144,6 +147,15 @@ public enum Syncbase {
 
   /// Shuts down the Syncbase service. You must call configure again before any calls will work.
   public static func shutdown() {
+    // We don't need to log/worry about the catch {} -- the exception is if we can't get a database
+    // handle, which would happen if we haven't logged in, etc. The actual remove handler does not
+    // throw any errors.
+    do { try database().removeAllSyncgroupInviteHandlers() } catch { }
+    do { try database().removeAllWatchChangeHandlers() } catch { }
+    do { try database().removeAllInternalWatchChangeHandlers() } catch { }
+    if let handler = autojoinInviteHandler {
+      do { try database().coreDatabase.stopSyncgroupInvitesScan(handler) } catch { }
+    }
     Syncbase.didStartShutdown = true
     SyncbaseCore.Syncbase.shutdown()
     Syncbase.didInit = false
@@ -180,10 +192,37 @@ public enum Syncbase {
               NSLog("Syncbase - Error watching userdata syncgroups: %@", "\(err)")
             }
         }))
+      // Auto-join syncgroups with the same blessings.
+      autojoinInviteHandler = SyncbaseCore.SyncgroupInvitesScanHandler(onInvite: onSyncgroupInvite)
+      try coreDb.scanForSyncgroupInvites(
+        try database.databaseId.encode(),
+        handler: autojoinInviteHandler!)
     }
 
     Syncbase.db = database
     Syncbase.didPostLogin = true
+  }
+
+  private static func onSyncgroupInvite(invite: SyncbaseCore.SyncgroupInvite) {
+    // Auto-accept groups that have blessings that match our own.
+    let syncgroupId = Identifier(coreId: invite.syncgroupId)
+    guard invite.syncgroupId.blessing == (try? Principal.userBlessing()) &&
+    // Ignore userdata syncgroup which is auto-joined if the blessings are correct in Go.
+    invite.syncgroupId.name != Syncbase.UserdataSyncgroupName &&
+    // Ignore syncgroups that have already been joined.
+    !((try? Syncbase.syncgroupInUserdata(syncgroupId)) ?? false) else {
+      return
+    }
+    do {
+      let invite = SyncgroupInvite(coreInvite: invite)
+      try database().acceptSyncgroupInvite(invite, callback: { (sg, err) in
+        if err != nil {
+          print("Unable to auto-join syncgroup \(sg) with user blessings: \(err)")
+        }
+      })
+    } catch {
+      print("Unable to auto-join syncgroup \(invite.syncgroupId) with user blessings: \(error)")
+    }
   }
 
   private static func onUserdataWatchChange(changes: [WatchChange]) {
@@ -216,6 +255,19 @@ public enum Syncbase {
       throw SyncbaseError.IllegalArgument(detail: "No user data collection")
     }
     try userdataCollection.put(try Syncbase.UserdataCollectionPrefix + syncgroupId.encode(), value: NSData())
+  }
+
+  static func syncgroupInUserdata(syncgroupId: Identifier) throws -> Bool {
+    if !Syncbase.didInit {
+      throw SyncbaseError.NotConfigured
+    }
+    if !Syncbase.didPostLogin {
+      throw SyncbaseError.NotLoggedIn
+    }
+    guard let userdataCollection = Syncbase.userdataCollection else {
+      throw SyncbaseError.IllegalArgument(detail: "No user data collection")
+    }
+    return try userdataCollection.exists(try Syncbase.UserdataCollectionPrefix + syncgroupId.encode())
   }
 
   /// Returns the shared database handle. Must have already called `configure` and be logged in,

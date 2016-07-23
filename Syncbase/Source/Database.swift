@@ -86,10 +86,14 @@ public class Database: DatabaseHandle, CustomStringConvertible {
   // the original reference to Database). Instead, we store the databaseId to make sure that any two
   // Database instances generated from Syncbase.database behave the same with respect to
   // adding/removing watch handlers.
-  private static let syncgroupInviteHandlersMu = NSLock()
-  private static let watchChangeHandlersMu = NSLock()
-  private static var syncgroupInviteHandlers: [SyncgroupInviteHandler: SyncbaseCore.SyncgroupInvitesScanHandler] = [:]
-  private static var watchChangeHandlers: [WatchChangeHandler: WatchOperation] = [:]
+  static var watchChangeHandlers: [WatchChangeHandler: WatchOperation] = [:]
+  static let watchChangeHandlersMu = NSLock()
+  static var syncgroupInviteHandlers: [SyncgroupInviteHandler: SyncbaseCore.SyncgroupInvitesScanHandler] = [:]
+  static let syncgroupInviteHandlersMu = NSLock()
+  // These are the same as above except reserved for internal use only. If we used the dictionaries
+  // above then the removeAll* functions would remove the internal handlers.
+  static var internalWatchChangeHandlers: [WatchChangeHandler: WatchOperation] = [:]
+  static let internalWatchChangeHandlersMu = NSLock()
 
   func createIfMissing() throws {
     do {
@@ -210,18 +214,34 @@ public class Database: DatabaseHandle, CustomStringConvertible {
 
   /// Notifies `handler` of any existing syncgroup invites, and of all subsequent new invites.
   public func addSyncgroupInviteHandler(handler: SyncgroupInviteHandler) {
-    Database.syncgroupInviteHandlersMu.lock()
-    defer { Database.syncgroupInviteHandlersMu.unlock() }
-    let coreHandler = SyncbaseCore.SyncgroupInvitesScanHandler(onInvite: { invite in
-      handler.onInvite(SyncgroupInvite(
-        syncgroupId: Identifier(coreId: invite.syncgroupId),
-        inviterBlessingNames: invite.blessingNames))
+    let coreHandler = SyncbaseCore.SyncgroupInvitesScanHandler(onInvite: { coreInvite in
+      // We don't automatically pass the invite to the end-user, see
+      // https://github.com/vanadium/issues/issues/1408 for more details.
+      if coreInvite.syncgroupId.name == Syncbase.UserdataSyncgroupName {
+        // Ignore userdata syncgroup which is auto-joined if the blessings are correct in Go.
+        return
+      }
+      let invite = SyncgroupInvite(coreInvite: coreInvite)
+      if invite.syncgroupId.blessing == (try? Principal.userBlessing()) {
+        // Ignore syncgroups with our own blessing -- they are auto-joined by the internal
+        // handler started post-login in Syncbase.swift.
+        return
+      }
+      if (try? Syncbase.syncgroupInUserdata(invite.syncgroupId)) ?? false {
+        // Ignore syncgroups that have already been joined.
+        return
+      }
+
+      handler.onInvite(invite)
     })
+
     do {
       try coreDatabase.scanForSyncgroupInvites(
         try databaseId.encode(),
         handler: coreHandler)
+      Database.syncgroupInviteHandlersMu.lock()
       Database.syncgroupInviteHandlers[handler] = coreHandler
+      Database.syncgroupInviteHandlersMu.unlock()
     } catch {
       handler.onError(error)
     }
@@ -465,14 +485,12 @@ public class Database: DatabaseHandle, CustomStringConvertible {
     defer { Database.watchChangeHandlersMu.unlock() }
     if let op = Database.watchChangeHandlers[handler] {
       op.cancel()
+      Database.watchChangeHandlers[handler] = nil
     }
-    Database.watchChangeHandlers[handler] = nil
   }
 
   /// Makes it so all watch change handlers stop receiving notifications attached to this database.
   public func removeAllWatchChangeHandlers() {
-    // Grab a local copy by value so we don't need to worry about concurrency or deadlocking
-    // on the main mutex.
     Database.watchChangeHandlersMu.lock()
     defer { Database.watchChangeHandlersMu.unlock() }
     let handlers = Database.watchChangeHandlers
@@ -480,6 +498,16 @@ public class Database: DatabaseHandle, CustomStringConvertible {
       op.cancel()
     }
     Database.watchChangeHandlers.removeAll()
+  }
+
+  func removeAllInternalWatchChangeHandlers() {
+    Database.internalWatchChangeHandlersMu.lock()
+    defer { Database.internalWatchChangeHandlersMu.unlock() }
+    let handlers = Database.internalWatchChangeHandlers
+    for op in handlers.values {
+      op.cancel()
+    }
+    Database.internalWatchChangeHandlers.removeAll()
   }
 
   public var description: String {

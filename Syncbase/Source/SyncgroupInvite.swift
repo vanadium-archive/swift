@@ -10,6 +10,12 @@ public struct SyncgroupInvite {
   public let syncgroupId: Identifier
   public let inviterBlessingNames: [String]
 
+  init(coreInvite: SyncbaseCore.SyncgroupInvite) {
+    self.init(
+      syncgroupId: Identifier(coreId: coreInvite.syncgroupId),
+      inviterBlessingNames: coreInvite.blessingNames)
+  }
+
   public init(syncgroupId: Identifier, inviterBlessingNames: [String]) {
     self.syncgroupId = syncgroupId
     self.inviterBlessingNames = inviterBlessingNames
