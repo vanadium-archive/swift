@@ -61,9 +61,30 @@ public class Collection: CustomStringConvertible {
     }
   }
 
+  // We support basic data types and [UInt8] and [String] in Swift's Collection.Put.
+  // Since Swift currently does not allow us to specify SyncbaseConvertible as the protocol for
+  // arrays with specific key types, we provide manual overrides for these type array types.
+  // Basic types are handled by a generic 'put' that takes SyncbaseConvertible.
+
   /// Puts `value` for `key`, overwriting any existing value. This call is idempotent, meaning
   /// you can safely call it multiple times in a row with the same values.
   public func put<T: SyncbaseCore.SyncbaseConvertible>(key: String, value: T) throws {
+    try SyncbaseError.wrap {
+      try self.coreCollection.put(key, value: value)
+    }
+  }
+
+  /// Puts `value` for `key`, overwriting any existing value. This call is idempotent, meaning
+  /// you can safely call it multiple times in a row with the same values.
+  public func put(key: String, value: [UInt8]) throws {
+    try SyncbaseError.wrap {
+      try self.coreCollection.put(key, value: value)
+    }
+  }
+
+  /// Puts `value` for `key`, overwriting any existing value. This call is idempotent, meaning
+  /// you can safely call it multiple times in a row with the same values.
+  public func put(key: String, value: [String]) throws {
     try SyncbaseError.wrap {
       try self.coreCollection.put(key, value: value)
     }

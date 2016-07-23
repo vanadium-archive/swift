@@ -53,9 +53,11 @@ class DiceViewController: UIViewController {
       .last?
       .value
     if let value = lastValue {
-      // Get the single byte out via typecasting to an array of UInt8. This will be unnecessary
-      // when we have VOM support in Swift.
-      currentDieRoll = unsafeBitCast(value.bytes, UnsafePointer<UInt8>.self).memory
+      do {
+        currentDieRoll = try UInt8.deserializeFromSyncbase(value)
+      } catch {
+        print("Unexpected error: \(error)")
+      }
       numberLabel.text = currentDieRoll.description
       UIApplication.sharedApplication().networkActivityIndicatorVisible = false
     }
@@ -72,15 +74,11 @@ class DiceViewController: UIViewController {
       nextNum = UInt8(arc4random_uniform(6) + 1)
     } while (nextNum == currentDieRoll)
 
-    // Right now we can only store NSData, so we have to serialize this number to store it.
-    // Soon we will have VOM support and can just put the raw int as the value and expect
-    // it to work properly.
-    let value = NSData(bytes: &nextNum, length: 1)
     do {
       UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-      try collection?.put(rowKey, value: value)
-    } catch let e {
-      print("Unexpected error: \(e)")
+      try collection?.put(rowKey, value: nextNum)
+    } catch {
+      print("Unexpected error: \(error)")
     }
   }
 

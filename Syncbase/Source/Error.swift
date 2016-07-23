@@ -25,6 +25,8 @@ public enum SyncbaseError: ErrorType {
   case InvalidPermissionsChange
   case Exist
   case NoExist
+  case SerializationError(detail: String)
+  case DeserializationError(detail: String)
   case InvalidName(name: String)
   case CorruptDatabase(path: String)
   case InvalidOperation(reason: String)
@@ -58,6 +60,8 @@ public enum SyncbaseError: ErrorType {
     case .CastError(let obj): self = .CastError(obj: obj)
     case .IllegalArgument(let detail): self = .IllegalArgument(detail: detail)
     case .NoAccess(let detail): self = .NoAccess(detail: detail)
+    case .SerializationError(let detail): self = .SerializationError(detail: detail)
+    case .DeserializationError(let detail): self = .DeserializationError(detail: detail)
     case .UnknownVError(let err): self = .UnknownVError(err: err)
     }
   }
@@ -105,6 +109,8 @@ extension SyncbaseError: CustomStringConvertible {
     case .CastError(let obj): return "Unable to convert to cast: \(obj)"
     case .IllegalArgument(let detail): return "Illegal argument: \(detail)"
     case .NoAccess(let detail): return "Access Denied: \(detail)"
+    case .SerializationError(let detail): return "Serialization Error: \(detail)"
+    case .DeserializationError(let detail): return "Deserialization Error: \(detail)"
     case .UnknownVError(let err): return "Unknown error: \(err)"
     }
   }

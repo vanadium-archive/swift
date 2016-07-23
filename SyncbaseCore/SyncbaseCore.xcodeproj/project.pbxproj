@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06638D651D40387B006F3822 /* VOMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06638D641D40387B006F3822 /* VOMTests.swift */; };
+		06638D671D4044D5006F3822 /* MarshalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06638D661D4044D5006F3822 /* MarshalTests.swift */; };
 		30A1F52E1CE68465008FC205 /* BasicDatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30A1F52D1CE68465008FC205 /* BasicDatabaseTests.swift */; };
 		30AD2E0A1CDD506700A28A0C /* SyncbaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30AD2DFF1CDD506700A28A0C /* SyncbaseCore.framework */; };
 		30AD2E311CDD508700A28A0C /* Batch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E1B1CDD508700A28A0C /* Batch.swift */; };
@@ -22,7 +24,7 @@
 		30AD2E3E1CDD508700A28A0C /* SyncbaseCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 30AD2E281CDD508700A28A0C /* SyncbaseCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		30AD2E3F1CDD508700A28A0C /* Syncbase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E291CDD508700A28A0C /* Syncbase.swift */; };
 		30AD2E401CDD508700A28A0C /* Syncgroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E2A1CDD508700A28A0C /* Syncgroup.swift */; };
-		30AD2E441CDD508700A28A0C /* Vom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E2E1CDD508700A28A0C /* Vom.swift */; };
+		30AD2E441CDD508700A28A0C /* VOM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E2E1CDD508700A28A0C /* VOM.swift */; };
 		30AD2E451CDD508700A28A0C /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E2F1CDD508700A28A0C /* Watch.swift */; };
 		30AD2E801CDD569200A28A0C /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E791CDD569200A28A0C /* Logging.swift */; };
 		30AD2E811CDD569200A28A0C /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AD2E7A1CDD569200A28A0C /* Strings.swift */; };
@@ -56,6 +58,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		06638D641D40387B006F3822 /* VOMTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VOMTests.swift; sourceTree = "<group>"; };
+		06638D661D4044D5006F3822 /* MarshalTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarshalTests.swift; sourceTree = "<group>"; };
 		30A1F52D1CE68465008FC205 /* BasicDatabaseTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicDatabaseTests.swift; sourceTree = "<group>"; };
 		30AD2DFF1CDD506700A28A0C /* SyncbaseCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SyncbaseCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30AD2E091CDD506700A28A0C /* SyncbaseCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SyncbaseCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -73,7 +77,7 @@
 		30AD2E281CDD508700A28A0C /* SyncbaseCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncbaseCore.h; sourceTree = "<group>"; };
 		30AD2E291CDD508700A28A0C /* Syncbase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Syncbase.swift; sourceTree = "<group>"; };
 		30AD2E2A1CDD508700A28A0C /* Syncgroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Syncgroup.swift; sourceTree = "<group>"; };
-		30AD2E2E1CDD508700A28A0C /* Vom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vom.swift; sourceTree = "<group>"; };
+		30AD2E2E1CDD508700A28A0C /* VOM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VOM.swift; sourceTree = "<group>"; };
 		30AD2E2F1CDD508700A28A0C /* Watch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
 		30AD2E481CDD508D00A28A0C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		30AD2E791CDD569200A28A0C /* Logging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Logging.swift; path = util/Logging.swift; sourceTree = "<group>"; };
@@ -163,7 +167,7 @@
 				30AD2E271CDD508700A28A0C /* Stream.swift */,
 				30AD2E291CDD508700A28A0C /* Syncbase.swift */,
 				30AD2E2A1CDD508700A28A0C /* Syncgroup.swift */,
-				30AD2E2E1CDD508700A28A0C /* Vom.swift */,
+				30AD2E2E1CDD508700A28A0C /* VOM.swift */,
 				30AD2E2F1CDD508700A28A0C /* Watch.swift */,
 				30AD2E771CDD567D00A28A0C /* Util */,
 			);
@@ -177,6 +181,8 @@
 				93B3C8381D41D7B5005B20C8 /* BridgeTests.swift */,
 				30AD2E481CDD508D00A28A0C /* Info.plist */,
 				9374F6661D00FF68004ECE59 /* TestHelpers.swift */,
+				06638D641D40387B006F3822 /* VOMTests.swift */,
+				06638D661D4044D5006F3822 /* MarshalTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -345,7 +351,7 @@
 				30AD2E381CDD508700A28A0C /* Marshal.swift in Sources */,
 				30AD2E3D1CDD508700A28A0C /* Stream.swift in Sources */,
 				30AD2E321CDD508700A28A0C /* Blob.swift in Sources */,
-				30AD2E441CDD508700A28A0C /* Vom.swift in Sources */,
+				30AD2E441CDD508700A28A0C /* VOM.swift in Sources */,
 				30AD2E341CDD508700A28A0C /* Database.swift in Sources */,
 				30AD2E311CDD508700A28A0C /* Batch.swift in Sources */,
 			);
@@ -355,9 +361,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06638D671D4044D5006F3822 /* MarshalTests.swift in Sources */,
 				30A1F52E1CE68465008FC205 /* BasicDatabaseTests.swift in Sources */,
 				93B3C8391D41D7B5005B20C8 /* BridgeTests.swift in Sources */,
 				9374F6681D00FFE5004ECE59 /* TestHelpers.swift in Sources */,
+				06638D651D40387B006F3822 /* VOMTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

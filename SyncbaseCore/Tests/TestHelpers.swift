@@ -26,6 +26,40 @@ let anySyncgroupPermissions = [
   "Admin": AccessList(allowed: [anyPermissions], notAllowed: []),
   "Read": AccessList(allowed: [anyPermissions], notAllowed: [])]
 
+/// Convert NSData to its hex representation.
+func dataToHexString(data: NSData) -> String {
+  let buf = UnsafePointer<UInt8>(data.bytes)
+
+  func base16(value: UInt8) -> UInt8 {
+    let charA = UInt8(UnicodeScalar("a").value)
+    let char0 = UInt8(UnicodeScalar("0").value)
+    return (value > 9) ? (charA + value - 10) : (char0 + value)
+  }
+
+  let ptr = UnsafeMutablePointer<UInt8>.alloc(data.length * 2)
+  for i in 0 ..< data.length {
+    ptr[i * 2] = base16((buf[i] >> 4) & 0xF)
+    ptr[i * 2 + 1] = base16(buf[i] & 0xF)
+  }
+
+  return String(bytesNoCopy: ptr, length: data.length * 2, encoding: NSASCIIStringEncoding, freeWhenDone: true)!
+}
+
+/// Convert a Hex String to NSData.
+func hexStringToData(hex: String) -> NSData {
+  let result = NSMutableData()
+
+  var startIndex = hex.startIndex
+  for _ in 0..<hex.characters.count / 2 {
+    let endIndex = startIndex.advancedBy(2)
+    let singleByte = UInt8(hex[startIndex..<endIndex], radix: 16)!
+    result.appendBytes([singleByte], length: 1)
+    startIndex = endIndex
+  }
+
+  return result
+}
+
 /// Convert integer seconds into Grand Central Dispatch (GCD)'s dispatch_time_t format.
 func secondsGCD(seconds: Int64) -> dispatch_time_t {
   return dispatch_time(DISPATCH_TIME_NOW, seconds * Int64(NSEC_PER_SEC))

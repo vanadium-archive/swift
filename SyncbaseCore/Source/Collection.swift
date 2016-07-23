@@ -156,8 +156,37 @@ public class Collection {
     return cBytes.extract() ?? NSData()
   }
 
+  // We support basic data types and [UInt8] and [String] in Swift's Collection.Put.
+  // Since Swift currently does not allow us to specify SyncbaseConvertible as the protocol for
+  // arrays with specific key types, we provide manual overrides for these type array types.
+  // Basic types are handled by a generic 'put' that takes SyncbaseConvertible.
+
   /// Put writes the given value to this Collection under the given key.
   public func put(key: String, value: SyncbaseConvertible) throws {
+    let data = try value.serializeToSyncbase()
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_RowPut(
+        try encodedRowName(key),
+        try cBatchHandle(),
+        v23_syncbase_Bytes(data),
+        errPtr)
+    }
+  }
+
+  /// Put writes the byte array to this Collection under the given key.
+  public func put(key: String, value: [UInt8]) throws {
+    let data = try value.serializeToSyncbase()
+    try VError.maybeThrow { errPtr in
+      v23_syncbase_RowPut(
+        try encodedRowName(key),
+        try cBatchHandle(),
+        v23_syncbase_Bytes(data),
+        errPtr)
+    }
+  }
+
+  /// Put writes the String array to this Collection under the given key.
+  public func put(key: String, value: [String]) throws {
     let data = try value.serializeToSyncbase()
     try VError.maybeThrow { errPtr in
       v23_syncbase_RowPut(
