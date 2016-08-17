@@ -14,7 +14,7 @@
 		37B018CC1CFF7A9D004B0A15 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37B018BF1CFF7A9D004B0A15 /* Main.storyboard */; };
 		37B018CD1CFF7A9D004B0A15 /* CircularImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C11CFF7A9D004B0A15 /* CircularImageView.swift */; };
 		37B018CF1CFF7A9D004B0A15 /* MemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C31CFF7A9D004B0A15 /* MemberView.swift */; };
-		37B018D01CFF7A9D004B0A15 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C41CFF7A9D004B0A15 /* Person.swift */; };
+		37B018D01CFF7A9D004B0A15 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C41CFF7A9D004B0A15 /* Contact.swift */; };
 		37B018D11CFF7A9D004B0A15 /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C51CFF7A9D004B0A15 /* Task.swift */; };
 		37B018D21CFF7A9D004B0A15 /* TasksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C61CFF7A9D004B0A15 /* TasksViewController.swift */; };
 		37B018D31CFF7A9D004B0A15 /* TodoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B018C71CFF7A9D004B0A15 /* TodoList.swift */; };
@@ -112,7 +112,7 @@
 		37B018C11CFF7A9D004B0A15 /* CircularImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircularImageView.swift; sourceTree = "<group>"; };
 		37B018C21CFF7A9D004B0A15 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37B018C31CFF7A9D004B0A15 /* MemberView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberView.swift; sourceTree = "<group>"; };
-		37B018C41CFF7A9D004B0A15 /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
+		37B018C41CFF7A9D004B0A15 /* Contact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		37B018C51CFF7A9D004B0A15 /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		37B018C61CFF7A9D004B0A15 /* TasksViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksViewController.swift; sourceTree = "<group>"; };
 		37B018C71CFF7A9D004B0A15 /* TodoList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodoList.swift; sourceTree = "<group>"; };
@@ -197,7 +197,7 @@
 		37B018D51CFF7B48004B0A15 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				37B018C41CFF7A9D004B0A15 /* Person.swift */,
+				37B018C41CFF7A9D004B0A15 /* Contact.swift */,
 				37B018C51CFF7A9D004B0A15 /* Task.swift */,
 				37B018C71CFF7A9D004B0A15 /* TodoList.swift */,
 				932AD50D1D1BCFD3000EA038 /* Marshal.swift */,
@@ -398,7 +398,7 @@
 				37B018C91CFF7A9D004B0A15 /* AppDelegate.swift in Sources */,
 				37B018D11CFF7A9D004B0A15 /* Task.swift in Sources */,
 				37B018D41CFF7A9D004B0A15 /* TodosViewController.swift in Sources */,
-				37B018D01CFF7A9D004B0A15 /* Person.swift in Sources */,
+				37B018D01CFF7A9D004B0A15 /* Contact.swift in Sources */,
 				37B018CD1CFF7A9D004B0A15 /* CircularImageView.swift in Sources */,
 				932AD50E1D1BCFD3000EA038 /* Marshal.swift in Sources */,
 				93213FEF1D1C8BB100297838 /* Syncbase.swift in Sources */,

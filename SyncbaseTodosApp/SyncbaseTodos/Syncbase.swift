@@ -80,6 +80,34 @@ func stopWatchingModelEvents(eventHandler: ModelEventHandler) {
   dispatch.unwatch(eventHandler)
 }
 
+// MARK: Invites
+
+private var inviteHandler: SyncgroupInviteHandler?
+
+func startInviteHandler() throws {
+  if let handler = inviteHandler {
+    try Syncbase.database().removeSyncgroupInviteHandler(handler)
+    inviteHandler = nil
+  }
+  let handler = SyncgroupInviteHandler(
+    onInvite: { (invite: SyncgroupInvite) in
+      // Accept all invites automatically.
+      print("Accepting invite \(invite)")
+      try! Syncbase.database().acceptSyncgroupInvite(invite, callback: { (sg, err) in
+        if let err = err {
+          print("Unable to accept invite: \(err)")
+        } else {
+          print("Accepted invite into syncgroup \(sg)")
+        }
+      })
+    },
+    onError: { (err: ErrorType) in
+      print("Unable to accept invites: \(err)")
+  })
+  try Syncbase.database().addSyncgroupInviteHandler(handler)
+  inviteHandler = handler
+}
+
 // MARK: Watch low-level events
 private var watchHandler: WatchChangeHandler?
 
@@ -177,7 +205,6 @@ func onChangeBatch(changes: [WatchChange]) {
 
     // Process task changes
     for change in changes {
-      assert(firstChange.row != todoListKey)
       if let task = change.toTask() {
         // Is it an update or an insert?
         if let taskIdx = list.tasks.indexOf({ $0.key == task.key }) {
@@ -200,7 +227,7 @@ func onChangeBatch(changes: [WatchChange]) {
   dispatch.notify(events)
 }
 
-// MARK: MODEL API
+// MARK: Model API
 
 func addList(list: TodoList) throws {
   let data = try NSJSONSerialization.dataWithJSONObject(list.toJsonable(), options: [])

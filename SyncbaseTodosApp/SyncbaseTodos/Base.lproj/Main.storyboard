@@ -180,12 +180,6 @@
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="tGB-vG-wwH"/>
-                                    <barButtonItem title="Debug" id="M4k-N2-NVt">
-                                        <connections>
-                                            <action selector="debug" destination="4Az-YS-hA9" id="zFH-Wp-hcs"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="fCt-vQ-eNa"/>
                                 </items>
                             </toolbar>
                         </subviews>
@@ -225,6 +219,7 @@
                         <outlet property="menuToolbar" destination="pgB-6n-kxg" id="t4H-IG-sSd"/>
                         <outlet property="menuToolbarTopConstraint" destination="Tte-CX-3hG" id="TUD-bG-KpB"/>
                         <outlet property="tableView" destination="kmv-xQ-8U6" id="88K-fx-Dzp"/>
+                        <outlet property="toggleSharingButton" destination="rb7-ge-A8E" id="DiM-k8-cmh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jFT-NN-2Df" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -418,7 +413,7 @@
         <scene sceneID="KB2-7v-cHC">
             <objects>
                 <tableViewController id="TEb-eN-UhB" customClass="InviteViewController" customModule="SyncbaseTodos" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="74" sectionHeaderHeight="28" sectionFooterHeight="28" id="p4P-W4-gFc">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="74" sectionHeaderHeight="28" sectionFooterHeight="28" id="p4P-W4-gFc">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -427,42 +422,32 @@
                                 <rect key="frame" x="0.0" y="92" width="600" height="74"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SrI-gO-iqH" id="07a-cu-tgk">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="74"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="73.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="profilePhoto" translatesAutoresizingMaskIntoConstraints="NO" id="ZNe-Xc-Gii" customClass="CircularImageView" customModule="SyncbaseTodos" customModuleProvider="target">
-                                            <rect key="frame" x="18" y="18" width="38" height="38"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" secondItem="ZNe-Xc-Gii" secondAttribute="height" multiplier="1:1" id="X6H-qC-G5F"/>
-                                            </constraints>
-                                        </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A person" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xw3-gj-ST1">
-                                            <rect key="frame" x="71" y="8" width="521" height="58"/>
+                                            <rect key="frame" x="18" y="8" width="574" height="58"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="Xw3-gj-ST1" firstAttribute="leading" secondItem="ZNe-Xc-Gii" secondAttribute="trailing" constant="15" id="5sy-T3-58g"/>
-                                        <constraint firstItem="ZNe-Xc-Gii" firstAttribute="top" secondItem="07a-cu-tgk" secondAttribute="topMargin" constant="10" id="60n-Wl-qqy"/>
                                         <constraint firstItem="Xw3-gj-ST1" firstAttribute="top" secondItem="07a-cu-tgk" secondAttribute="topMargin" id="Gn4-CV-9rE"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="ZNe-Xc-Gii" secondAttribute="bottom" constant="10" id="TT7-Ae-akW"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="Xw3-gj-ST1" secondAttribute="bottom" id="X3K-9W-Xr0"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="Xw3-gj-ST1" secondAttribute="trailing" id="bQu-ls-rnE"/>
-                                        <constraint firstItem="ZNe-Xc-Gii" firstAttribute="leading" secondItem="07a-cu-tgk" secondAttribute="leadingMargin" constant="10" id="z5g-zm-qTP"/>
+                                        <constraint firstItem="Xw3-gj-ST1" firstAttribute="leading" secondItem="07a-cu-tgk" secondAttribute="leadingMargin" constant="10" id="fkA-2x-qZ2"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="nameLabel" destination="Xw3-gj-ST1" id="lvu-cq-AQB"/>
-                                    <outlet property="photoImageView" destination="ZNe-Xc-Gii" id="Pxf-OI-ks4"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="sendEmailCellId" id="fBZ-PZ-K1C" userLabel="SendEmailCell" customClass="SendEmailCell" customModule="SyncbaseTodos" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="166" width="600" height="74"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fBZ-PZ-K1C" id="II9-ei-hFs">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="74"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="73.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sendEmail" translatesAutoresizingMaskIntoConstraints="NO" id="BFR-NP-pD9">
@@ -527,7 +512,6 @@
     </scenes>
     <resources>
         <image name="checkmarkOff" width="24" height="24"/>
-        <image name="profilePhoto" width="88" height="88"/>
         <image name="sendEmail" width="88" height="88"/>
         <image name="v23-icon-white" width="320" height="320"/>
     </resources>

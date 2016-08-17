@@ -124,11 +124,13 @@ public class Syncgroup: CustomStringConvertible {
           mountTables: oldSpec.mountTables,
           isPrivate: oldSpec.isPrivate),
         version: versionedSpec.version))
-      // TODO(sadovsky): There's a race here - it's possible for a collection to get destroyed
-      // after spec.getCollections() but before db.getCollection().
-      try self.database.runInBatch { db in
-        for id in oldSpec.collections {
-          try db.collection(Identifier(coreId: id)).updateAccessList(delta)
+      if !syncgroupOnly {
+        // TODO(sadovsky): There's a race here - it's possible for a collection to get destroyed
+        // after spec.getCollections() but before db.getCollection().
+        try self.database.runInBatch { db in
+          for id in oldSpec.collections {
+            try db.collection(Identifier(coreId: id)).updateAccessList(delta)
+          }
         }
       }
     }

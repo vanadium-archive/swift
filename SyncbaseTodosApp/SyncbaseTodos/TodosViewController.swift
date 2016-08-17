@@ -9,6 +9,7 @@ import Syncbase
 class TodosViewController: UIViewController {
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var addButton: UIBarButtonItem!
+  @IBOutlet weak var toggleSharingButton: UIBarButtonItem!
   // The menu toolbar is shown when the "edit" navigation bar is pressed.
   @IBOutlet weak var menuToolbar: UIToolbar!
   @IBOutlet weak var menuToolbarTopConstraint: NSLayoutConstraint!
@@ -21,11 +22,20 @@ class TodosViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Hide the bottom menu by default
+    // Hide the bottom menu by default.
     menuToolbarTopConstraint.constant = -menuToolbar.frame.size.height
     handler = ModelEventHandler(onEvents: onEvents)
     do {
       try startWatching()
+      try startInviteHandler()
+      // Turn sharing (advertising) on by default, and ensure the text reflects the current initial
+      // state properly.
+      if Syncbase.isAdvertisingPresenceInNeighborhood() {
+        toggleSharingButton.title = "Turn sharing off"
+      } else {
+        toggleSharingButton.title = "Turn sharing on"
+        toggleSharing()
+      }
     } catch {
       print("Unable to start watch: \(error)")
     }
@@ -145,7 +155,7 @@ extension TodosViewController {
     })
     ac.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel, handler: nil))
     ac.addTextFieldWithConfigurationHandler { $0.placeholder = "My New List" }
-    self.presentViewController(ac, animated: true, completion: nil)
+    presentViewController(ac, animated: true, completion: nil)
   }
 
   func addTodoList(name: String) {
@@ -163,12 +173,30 @@ extension TodosViewController {
     }
   }
 
-  @IBAction func debug() {
-    // TODO(azinman): Make real
-  }
-
   @IBAction func toggleSharing() {
-    // TODO(azinman): Make real
+    let isAdvertising = Syncbase.isAdvertisingPresenceInNeighborhood()
+    do {
+      if isAdvertising {
+        try Syncbase.stopAdvertisingPresenceInNeighborhood()
+        toggleSharingButton.title = "Turn sharing on"
+      } else {
+        // Advertise to everyone (we could optionally pick specific users, but no need for this app).
+        try Syncbase.startAdvertisingPresenceInNeighborhood()
+        toggleSharingButton.title = "Turn sharing off"
+      }
+    } catch {
+      var message = "turning off sharing"
+      if !isAdvertising {
+        message = "turning on sharing"
+      }
+      print("Error \(message): \(error)")
+      let ac = UIAlertController(
+        title: "Oops!",
+        message: "Error \(message). Try again.",
+        preferredStyle: .Alert)
+      ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+      presentViewController(ac, animated: true, completion: nil)
+    }
   }
 
   func completeAllTasks(indexPath: NSIndexPath) {

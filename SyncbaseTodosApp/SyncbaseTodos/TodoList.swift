@@ -10,7 +10,7 @@ final class TodoList: Jsonable {
   var collection: Collection? = nil
   var name: String = ""
   var updatedAt: NSDate = NSDate()
-  var members: [Person] = []
+  var members: [Contact] = []
   var tasks: [Task] = []
 
   init(name: String, updatedAt: NSDate = NSDate()) {

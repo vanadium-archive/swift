@@ -242,7 +242,7 @@ class WatchSyncgroupTest: SyncgroupTest {
           XCTAssertFalse(didChange)
           XCTAssertEqual(changes.count, 1)
           let change = changes.first!
-          XCTAssertEqual(change.row, try? Syncbase.UserdataCollectionPrefix + sg1.encode())
+          XCTAssertEqual(change.row, try? Syncbase.UserdataInternalSyncgroupPrefix + sg1.encode())
           XCTAssertEqual(change.changeType, WatchChange.ChangeType.Put)
           XCTAssertEqual(change.value, NSData())
           didChange = true
@@ -295,7 +295,7 @@ class WatchSyncgroupTest: SyncgroupTest {
             XCTAssertFalse(changes.isEmpty)
             for change in changes {
               XCTAssert(change.collectionId?.name == Syncbase.UserdataSyncgroupName)
-              XCTAssert(change.row?.hasPrefix(Syncbase.UserdataCollectionPrefix) ?? false)
+              XCTAssert(change.row?.hasPrefix(Syncbase.UserdataInternalPrefix) ?? false)
             }
             dispatch_semaphore_signal(initialSemaphore)
           },

@@ -18,6 +18,11 @@ public struct SyncgroupInviteHandler: Hashable, Equatable {
   /// `onError` is called, no other methods will be called on this handler.
   public let onError: ErrorType -> Void
 
+  public init(onInvite: SyncgroupInvite -> Void, onError: ErrorType -> Void) {
+    self.onInvite = onInvite
+    self.onError = onError
+  }
+
   // This internal-only variable allows us to test SyncgroupInviteHandler structs for equality.
   // This cannot be done otherwise as function calls cannot be tested for equality.
   // Equality is important to facilitate the add/remove APIs in Database where

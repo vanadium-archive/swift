@@ -40,8 +40,15 @@ class TasksViewController: UIViewController {
   }
 
   func onEvents(events: [ModelEvent]) {
+    // TODO(zinman): Make this more fine-grained
     print("got events: \(events)")
     tableView.reloadData()
+  }
+
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if let ivc = segue.destinationViewController as? InviteViewController {
+      ivc.todoList = todoList
+    }
   }
 }
 
