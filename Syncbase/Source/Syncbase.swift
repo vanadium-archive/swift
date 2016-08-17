@@ -11,7 +11,8 @@ public enum Syncbase {
   // Constants
   static let DbName = "db"
   public static let UserdataSyncgroupName = "userdata__",
-    UserdataCollectionPrefix = "__collections/"
+    UserdataInternalPrefix = "internal__/",
+    UserdataInternalSyncgroupPrefix = UserdataInternalPrefix + "syncgroups/"
   // Initialization state
   static var isUnitTest = false
   static var didInit = false
@@ -67,8 +68,8 @@ public enum Syncbase {
   ///
   /// The "userdata" collection is a per-user collection (and associated syncgroup) for data that
   /// should automatically get synced across a given user's devices. It has the following schema:
-  /// - `/syncgroups/{encodedSyncgroupId}` -> `nil`
-  /// - `/ignoredInvites/{encodedSyncgroupId}` -> `nil`
+  /// - `internal__/syncgroups/{encodedSyncgroupId}` -> `nil`
+  /// - `internal__/ignoredInvites/{encodedSyncgroupId}` -> `nil`
   ///
   /// Cloud usage is optional. It can be used for initial bootstrapping and increased data
   /// availability. Apps that use a cloud will automatically synchronize data across all of the same
@@ -231,7 +232,7 @@ public enum Syncbase {
         continue
       }
       guard let syncgroupId = try? Identifier.decode(
-        row.stringByReplacingOccurrencesOfString(Syncbase.UserdataCollectionPrefix, withString: "")) else {
+        row.stringByReplacingOccurrencesOfString(Syncbase.UserdataInternalSyncgroupPrefix, withString: "")) else {
           print("Syncbase - Unable to decode userdata key: (row)")
           continue
       }
@@ -254,7 +255,7 @@ public enum Syncbase {
     guard let userdataCollection = Syncbase.userdataCollection else {
       throw SyncbaseError.IllegalArgument(detail: "No user data collection")
     }
-    try userdataCollection.put(try Syncbase.UserdataCollectionPrefix + syncgroupId.encode(), value: NSData())
+    try userdataCollection.put(try Syncbase.UserdataInternalSyncgroupPrefix + syncgroupId.encode(), value: NSData())
   }
 
   static func syncgroupInUserdata(syncgroupId: Identifier) throws -> Bool {
@@ -267,7 +268,7 @@ public enum Syncbase {
     guard let userdataCollection = Syncbase.userdataCollection else {
       throw SyncbaseError.IllegalArgument(detail: "No user data collection")
     }
-    return try userdataCollection.exists(try Syncbase.UserdataCollectionPrefix + syncgroupId.encode())
+    return try userdataCollection.exists(try Syncbase.UserdataInternalSyncgroupPrefix + syncgroupId.encode())
   }
 
   /// Returns the shared database handle. Must have already called `configure` and be logged in,

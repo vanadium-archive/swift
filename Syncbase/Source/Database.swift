@@ -418,7 +418,7 @@ public class Database: DatabaseHandle, CustomStringConvertible {
               let change = WatchChange(coreChange: coreChange)
               let isUserdataCollection = change.collectionId?.name == Syncbase.UserdataSyncgroupName
               let isInternalUserdata = isUserdataCollection &&
-              (change.row?.hasPrefix(Syncbase.UserdataCollectionPrefix) ?? false)
+              (change.row?.hasPrefix(Syncbase.UserdataInternalPrefix) ?? false)
 
               // There are two diff kinds of watches -- the internal-only version that only passes
               // internal userdata changes (specifically, puts into the userdata collection with the
