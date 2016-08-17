@@ -114,7 +114,7 @@ public class Syncgroup: CustomStringConvertible {
     try SyncbaseError.wrap {
       // TODO(sadovsky): Make it so SyncgroupSpec can be updated as part of a batch?
       let versionedSpec = try self.coreSyncgroup.getSpec()
-      let permissions = try AccessList.applyDelta(versionedSpec.spec.permissions, delta: delta)
+      let permissions = try AccessList.applyDeltaForSyncgroup(versionedSpec.spec.permissions, delta: delta)
       let oldSpec = versionedSpec.spec
       try self.coreSyncgroup.setSpec(VersionedSpec(
         spec: SyncgroupSpec(description: oldSpec.description,

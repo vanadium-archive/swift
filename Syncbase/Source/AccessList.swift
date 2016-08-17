@@ -73,8 +73,25 @@ public struct AccessList {
     }
   }
 
+  static func applyDeltaForCollection(permissions: Permissions, delta: AccessList) throws -> Permissions {
+    let parsed = try applyDeltaParsed(permissions, delta: delta)
+    var filtered: Permissions = [:]
+    filtered[Tags.Read.rawValue] = parsed[Tags.Read.rawValue]
+    filtered[Tags.Write.rawValue] = parsed[Tags.Write.rawValue]
+    filtered[Tags.Admin.rawValue] = parsed[Tags.Admin.rawValue]
+    return filtered
+  }
+
+  static func applyDeltaForSyncgroup(permissions: Permissions, delta: AccessList) throws -> Permissions {
+    let parsed = try applyDeltaParsed(permissions, delta: delta)
+    var filtered: Permissions = [:]
+    filtered[Tags.Read.rawValue] = parsed[Tags.Read.rawValue]
+    filtered[Tags.Admin.rawValue] = parsed[Tags.Admin.rawValue]
+    return filtered
+  }
+
   /// Applies delta to perms, returning the updates permissions.
-  static func applyDelta(permissions: Permissions, delta: AccessList) throws -> Permissions {
+  static func applyDeltaParsed(permissions: Permissions, delta: AccessList) throws -> Permissions {
     var perms = permissions
     for (userId, level) in delta.users {
       let bp = try blessingPatternFromAlias(userId)

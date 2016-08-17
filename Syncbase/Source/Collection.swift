@@ -113,7 +113,7 @@ public class Collection: CustomStringConvertible {
       try SyncbaseError.wrap {
         let vCx = try db.collection(self.collectionId).coreCollection
         let perms = try vCx.getPermissions()
-        try AccessList.applyDelta(perms, delta: delta)
+        try AccessList.applyDeltaForCollection(perms, delta: delta)
         try vCx.setPermissions(perms)
       }
     }
